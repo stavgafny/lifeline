@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "211119703674",
+    "project_id": "lifeline-17sg71",
+    "storage_bucket": "lifeline-17sg71.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211119703674:android:739fc3e616831b3d829dc3",
+        "android_client_info": {
+          "package_name": "com.example.lifeline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "211119703674-vetio6ve6ggpc7ea9os5jo77nln6qc3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW6anpeznqsOd5Qa0U0I4ok1HZ49ggQaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "211119703674-vetio6ve6ggpc7ea9os5jo77nln6qc3p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "211119703674-3ki9la7ag7vp63p8nrvokj8t9nfm4if3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.lifeline"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
