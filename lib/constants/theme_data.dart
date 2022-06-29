@@ -14,10 +14,10 @@ ThemeData lightTheme = ThemeData(
     background: Color(0xFF6B6496),
     onBackground: Colors.black,
     surface: Color(0xFF3B2F49),
-    onSurface: Color(0xFF2A292E),
+    onSurface: Color(0xFF3B343D),
   ),
   textTheme: GoogleFonts.montserratTextTheme().apply(
-    bodyColor: const Color(0xFF373238),
+    bodyColor: const Color(0xFF3B343D),
   ),
   scaffoldBackgroundColor: const Color(0xFFDDD8EB),
 );
@@ -35,10 +35,10 @@ ThemeData darkTheme = ThemeData(
     background: Color(0xFF181420),
     onBackground: Colors.black,
     surface: Color(0xFF211D26),
-    onSurface: Color(0xFFE6DEF5),
+    onSurface: Color(0xFFDDCDEE),
   ),
   textTheme: GoogleFonts.montserratTextTheme().apply(
-    bodyColor: const Color(0xFFD6CCE3),
+    bodyColor: const Color(0xFFDDCDEE),
   ),
   scaffoldBackgroundColor: const Color(0xFF1F1920),
 );

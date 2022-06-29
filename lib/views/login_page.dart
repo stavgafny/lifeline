@@ -47,16 +47,14 @@ class LoginPage extends StatelessWidget {
                     Text(
                       "Not a member?",
                       style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
                       ),
                     ),
                     Text(
                       " Register now",
                       style: TextStyle(
                         color: Colors.blue,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
                       ),
                     )
                   ],

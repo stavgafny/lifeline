@@ -53,4 +53,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/google_logo.png
+    - assets/logo_outline.png
+    - assets/google_fonts/
