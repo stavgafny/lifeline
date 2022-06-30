@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lifeline/widgets/entry.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // Text controllers
+  final _emailController = TextEditingController();
+
+  final _passwordController = TextEditingController();
+
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message.toString()),
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,32 +46,45 @@ class LoginPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                //! LOGO
                 Image.asset(
                   "assets/logo_outline.png",
                   fit: BoxFit.contain,
                   width: 150.0,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
+                //! LABEL
                 Text(
                   "Hi There!",
                   style: GoogleFonts.pacifico(fontSize: 42.0),
                 ),
+                //! INFO TEXT
                 const Text("Looks Like You Aren't Iogged In"),
                 const SizedBox(
                   height: 20.0,
                 ),
-                Padding(padding: generalPadding, child: Entry.email),
+                //! EMAIL FIELD
+                Padding(
+                  padding: generalPadding,
+                  child: Entry.email(_emailController),
+                ),
                 const SizedBox(height: 10.0),
-                Padding(padding: generalPadding, child: Entry.password),
+                //! PASSWORD FIELD
+                Padding(
+                  padding: generalPadding,
+                  child: Entry.password(_passwordController),
+                ),
                 const SizedBox(height: 10.0),
+                //! SIGN IN BUTTON
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: signIn,
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text("Sign In"),
                   ),
                 ),
                 const SizedBox(height: 10.0),
+                //! REGISTER NOW TEXT
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
@@ -60,6 +104,7 @@ class LoginPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 25.0),
+                //! GOOGLE SIGN IN BUTTON
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.background,

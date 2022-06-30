@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:lifeline/constants/theme_data.dart';
-import 'package:lifeline/views/login_page.dart';
+import 'package:lifeline/views/route_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: title,
       theme: lightTheme,
-      home: const LoginPage(),
+      home: const RoutePage(),
     );
   }
 }

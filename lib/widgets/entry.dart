@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Entry extends StatelessWidget {
+  final TextEditingController? controller;
   final String? hintText;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
   final bool obscureText;
   const Entry({
     Key? key,
+    this.controller,
     this.hintText = "",
     this.prefixIcon,
     this.keyboardType = TextInputType.text,
@@ -23,6 +25,7 @@ class Entry extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         child: TextField(
+          controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
           enableSuggestions: false,
@@ -37,19 +40,21 @@ class Entry extends StatelessWidget {
     );
   }
 
-  static Entry get email {
-    return const Entry(
+  static Entry email(TextEditingController? controller) {
+    return Entry(
+      controller: controller,
       hintText: "Email",
       keyboardType: TextInputType.emailAddress,
-      prefixIcon: Icon(Icons.email_outlined),
+      prefixIcon: const Icon(Icons.email_outlined),
     );
   }
 
-  static Entry get password {
-    return const Entry(
+  static Entry password(TextEditingController? controller) {
+    return Entry(
+      controller: controller,
       hintText: "Password",
       keyboardType: TextInputType.visiblePassword,
-      prefixIcon: Icon(Icons.lock_outline_rounded),
+      prefixIcon: const Icon(Icons.lock_outline_rounded),
       obscureText: true,
     );
   }
