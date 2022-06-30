@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lifeline/widgets/entry.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lifeline/services/auth_error_message.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 
@@ -15,8 +16,19 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // Text controllers
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
+
+  bool get missingField {
+    return _emailController.text.isEmpty || _passwordController.text.isEmpty;
+  }
+
+  void displaySnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
 
   Future signIn() async {
     try {
@@ -25,10 +37,16 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.message.toString()),
-      ));
+      displaySnackBar(AuthErrorMessage.emailPassword(e.code));
     }
+  }
+
+  @override
+  void initState() {
+    // Setting state because sign-in button listens to change in fields (missingField)
+    _emailController.addListener(() => setState(() {}));
+    _passwordController.addListener(() => setState(() {}));
+    super.initState();
   }
 
   @override
@@ -77,7 +95,10 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10.0),
                 //! SIGN IN BUTTON
                 ElevatedButton(
-                  onPressed: signIn,
+                  onPressed: missingField ? null : signIn,
+                  style: const ButtonStyle(
+                    animationDuration: Duration(seconds: 0),
+                  ),
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text("Sign In"),
@@ -124,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                         const Text(
                           'Sign in with Google',
                           style: TextStyle(
-                            color: Color(0xFFD7DEFF),
+                            color: Color(0xFFD2CAF3),
                           ),
                         ),
                       ],

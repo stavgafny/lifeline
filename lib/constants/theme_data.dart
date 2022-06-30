@@ -13,7 +13,7 @@ ThemeData lightTheme = ThemeData(
     onError: Colors.red,
     background: Color(0xFF6B6496),
     onBackground: Colors.black,
-    surface: Color(0xFF3B2F49),
+    surface: Color(0xFF574A67),
     onSurface: Color(0xFF3B343D),
   ),
   textTheme: GoogleFonts.montserratTextTheme().apply(
@@ -32,7 +32,7 @@ ThemeData darkTheme = ThemeData(
     onSecondary: Colors.black,
     error: Colors.red,
     onError: Colors.red,
-    background: Color(0xFF181420),
+    background: Color(0xFF332D47),
     onBackground: Colors.black,
     surface: Color(0xFF211D26),
     onSurface: Color(0xFFDDCDEE),
