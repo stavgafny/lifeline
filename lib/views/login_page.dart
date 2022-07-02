@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lifeline/widgets/entry.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lifeline/services/auth_error_message.dart';
+import '../services/email_password_auth.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 
@@ -17,28 +17,36 @@ class _LoginPageState extends State<LoginPage> {
   // Text controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String authErrorMessage = "";
+  bool processingLogin = false;
 
   bool get missingField {
     return _emailController.text.isEmpty || _passwordController.text.isEmpty;
   }
 
-  void displaySnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
+  signIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  Future signIn() async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      displaySnackBar(AuthErrorMessage.emailPassword(e.code));
+    final requirements =
+        EmailPasswordAuth.validate(email: email, password: password);
+
+    if (requirements.isEmpty) {
+      setState(() => {processingLogin = true});
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (e) {
+        await Future.delayed(const Duration(seconds: 1)).then((value) {
+          authErrorMessage = EmailPasswordAuth.getErrorMessage(e.code);
+        });
+      } finally {
+        processingLogin = false;
+      }
+    } else {
+      authErrorMessage = requirements.join("\n");
     }
+    setState(() {});
   }
 
   @override
@@ -92,16 +100,38 @@ class _LoginPageState extends State<LoginPage> {
                   padding: generalPadding,
                   child: Entry.password(_passwordController),
                 ),
-                const SizedBox(height: 10.0),
+                const SizedBox(height: 5.0),
+                //! ERROR TEXT
+                Visibility(
+                  visible: authErrorMessage.isNotEmpty,
+                  child: Text(
+                    authErrorMessage,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    overflow: TextOverflow.clip,
+                    maxLines: 2,
+                  ),
+                ),
+                const SizedBox(height: 5.0),
                 //! SIGN IN BUTTON
                 ElevatedButton(
-                  onPressed: missingField ? null : signIn,
+                  // Disabled if fields are missing or processing request
+                  onPressed: missingField || processingLogin ? null : signIn,
                   style: const ButtonStyle(
                     animationDuration: Duration(seconds: 0),
+                    splashFactory: NoSplash.splashFactory,
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("Sign In"),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: processingLogin
+                        ? CircularProgressIndicator(
+                            strokeWidth: 3.5,
+                            color: Theme.of(context).colorScheme.primary,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                          )
+                        : const Text("Sign In"),
                   ),
                 ),
                 const SizedBox(height: 10.0),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lifeline/constants/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,9 +33,9 @@ class MyApp extends StatelessWidget {
   //! ROOT
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: title,
-      theme: lightTheme,
+      theme: darkTheme,
       home: const RoutePage(),
     );
   }
