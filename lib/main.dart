@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: title,
-      theme: darkTheme,
+      theme: lightTheme,
       home: const RoutePage(),
     );
   }

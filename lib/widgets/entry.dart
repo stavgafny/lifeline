@@ -26,6 +26,7 @@ class Entry extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         child: TextField(
           controller: controller,
+          textInputAction: TextInputAction.next,
           keyboardType: keyboardType,
           obscureText: obscureText,
           enableSuggestions: false,

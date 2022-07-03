@@ -1,71 +1,41 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lifeline/controllers/form_controller.dart';
 import 'package:lifeline/widgets/entry.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/email_password_auth.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  // Text controllers
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String authErrorMessage = "";
-  bool processingLogin = false;
-
-  bool get missingField {
-    return _emailController.text.isEmpty || _passwordController.text.isEmpty;
-  }
-
-  signIn() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    final requirements =
-        EmailPasswordAuth.validate(email: email, password: password);
-
-    if (requirements.isEmpty) {
-      setState(() => {processingLogin = true});
-      try {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
-      } on FirebaseAuthException catch (e) {
-        await Future.delayed(const Duration(seconds: 1)).then((value) {
-          authErrorMessage = EmailPasswordAuth.getErrorMessage(e.code);
-        });
-      } finally {
-        processingLogin = false;
-      }
-    } else {
-      authErrorMessage = requirements.join("\n");
-    }
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    // Setting state because sign-in button listens to change in fields (missingField)
-    _emailController.addListener(() => setState(() {}));
-    _passwordController.addListener(() => setState(() {}));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    Get.delete<FormController>();
+    final formController =
+        Get.put(FormController([emailController, passwordController]));
+
+    signIn(String email, String password) async {
+      final requirements =
+          EmailPasswordAuth.validate(email: email, password: password);
+      if (requirements.isNotEmpty) {
+        formController.setErrorMessage(requirements.join("\n"));
+      } else {
+        formController.setProcessing(true);
+        String? response = await EmailPasswordAuth.signIn(email, password);
+        if (response != null) {
+          formController.setErrorMessage(response);
+        }
+        formController.setProcessing(false);
+      }
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -92,48 +62,56 @@ class _LoginPageState extends State<LoginPage> {
                 //! EMAIL FIELD
                 Padding(
                   padding: generalPadding,
-                  child: Entry.email(_emailController),
+                  child: Entry.email(emailController),
                 ),
                 const SizedBox(height: 10.0),
                 //! PASSWORD FIELD
                 Padding(
                   padding: generalPadding,
-                  child: Entry.password(_passwordController),
+                  child: Entry.password(passwordController),
                 ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
-                Visibility(
-                  visible: authErrorMessage.isNotEmpty,
-                  child: Text(
-                    authErrorMessage,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                Obx(() {
+                  return Visibility(
+                    visible: formController.errorMessage.value.isNotEmpty,
+                    child: Text(
+                      formController.errorMessage.value,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      overflow: TextOverflow.clip,
+                      maxLines: 2,
                     ),
-                    overflow: TextOverflow.clip,
-                    maxLines: 2,
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: 5.0),
                 //! SIGN IN BUTTON
-                ElevatedButton(
-                  // Disabled if fields are missing or processing request
-                  onPressed: missingField || processingLogin ? null : signIn,
-                  style: const ButtonStyle(
-                    animationDuration: Duration(seconds: 0),
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: processingLogin
-                        ? CircularProgressIndicator(
-                            strokeWidth: 3.5,
-                            color: Theme.of(context).colorScheme.primary,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                          )
-                        : const Text("Sign In"),
-                  ),
-                ),
+                Obx(() {
+                  return ElevatedButton(
+                    // Disabled if fields are missing or processing request
+                    onPressed: formController.missingField ||
+                            formController.processing.value
+                        ? null
+                        : () => signIn(emailController.text.trim(),
+                            passwordController.text.trim()),
+                    style: const ButtonStyle(
+                      animationDuration: Duration(seconds: 0),
+                      splashFactory: NoSplash.splashFactory,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: formController.processing.value
+                          ? CircularProgressIndicator(
+                              strokeWidth: 3.5,
+                              color: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                            )
+                          : const Text("Sign In"),
+                    ),
+                  );
+                }),
                 const SizedBox(height: 10.0),
                 //! REGISTER NOW TEXT
                 Row(

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 const _minPasswordLength = 6;
@@ -35,5 +36,17 @@ class EmailPasswordAuth {
     }
 
     return requirements;
+  }
+
+  static Future<String?> signIn(String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      return await Future.delayed(const Duration(seconds: 1)).then((value) {
+        return getErrorMessage(e.code);
+      });
+    }
+    return null;
   }
 }
