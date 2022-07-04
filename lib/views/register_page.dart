@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/form_controller.dart';
 import '../services/email_password_auth.dart';
+import '../routes/route_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/entry.dart';
 import '../widgets/link_text.dart';
@@ -68,20 +69,14 @@ class RegisterPage extends StatelessWidget {
                 //! PASSWORD FIELD
                 Padding(
                   padding: generalPadding,
-                  child: Entry.password(
-                    passwordController,
-                    autofillHints: false,
-                  ),
+                  child: Entry.password(passwordController),
                 ),
                 const SizedBox(height: 10.0),
                 //! CONFIRM PASSWORD FIELD
                 Padding(
                   padding: generalPadding,
-                  child: Entry.password(
-                    confirmPasswordController,
-                    confirm: true,
-                    autofillHints: false,
-                  ),
+                  child:
+                      Entry.password(confirmPasswordController, confirm: true),
                 ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
@@ -136,7 +131,7 @@ class RegisterPage extends StatelessWidget {
                     const Text("Have an account? "),
                     LinkText(
                       "Sign in",
-                      onTap: () {},
+                      onTap: () => Get.toNamed(RoutePage.login),
                     ),
                   ],
                 ),

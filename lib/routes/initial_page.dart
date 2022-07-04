@@ -10,7 +10,7 @@ class InitialPage extends StatelessWidget {
   Widget build(BuildContext context) {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
-        Get.toNamed(RoutePage.register);
+        Get.toNamed(RoutePage.login);
       } else {
         Get.toNamed(RoutePage.home, arguments: user);
       }

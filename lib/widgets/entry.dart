@@ -55,13 +55,11 @@ class Entry extends StatelessWidget {
   }
 
   static Entry password(TextEditingController? controller,
-      {bool confirm = false, bool autofillHints = true}) {
+      {bool confirm = false}) {
     return Entry(
       controller: controller,
       hintText: "${confirm ? "Confirm " : ''}Password",
-      autofillHints: autofillHints
-          ? const [AutofillHints.password]
-          : const [AutofillHints.newPassword],
+      autofillHints: const [AutofillHints.password],
       keyboardType: TextInputType.visiblePassword,
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       obscureText: true,
