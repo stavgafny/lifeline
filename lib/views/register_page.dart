@@ -41,6 +41,8 @@ class RegisterPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            reverse: true,
+            physics: const NeverScrollableScrollPhysics(),
             child: Column(
               children: [
                 //! LOGO
@@ -57,9 +59,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 //! INFO TEXT
                 const Text("Lets sign you up"),
-                const SizedBox(
-                  height: 20.0,
-                ),
+                const SizedBox(height: 20.0),
                 //! EMAIL FIELD
                 Padding(
                   padding: generalPadding,
@@ -135,6 +135,7 @@ class RegisterPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10.0),
               ],
             ),
           ),

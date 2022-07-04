@@ -4,7 +4,7 @@ import '../views/login_page.dart';
 import '../views/register_page.dart';
 import '../views/home_page.dart';
 
-const _pageTransition = Transition.noTransition;
+const _pageTransition = Transition.fade;
 
 class RoutePage {
   static const String initial = "/";

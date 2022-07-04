@@ -39,6 +39,8 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            reverse: true,
+            physics: const NeverScrollableScrollPhysics(),
             child: Column(
               children: [
                 //! LOGO
@@ -55,9 +57,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 //! INFO TEXT
                 const Text("Looks like you aren't logged in"),
-                const SizedBox(
-                  height: 20.0,
-                ),
+                const SizedBox(height: 20.0),
                 //! EMAIL FIELD
                 Padding(
                   padding: generalPadding,
@@ -153,6 +153,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 10.0),
               ],
             ),
           ),
