@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lifeline/routes/route_pages.dart';
+import '../routes/route_pages.dart';
 
 class InitialPage extends StatelessWidget {
   const InitialPage({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class InitialPage extends StatelessWidget {
   Widget build(BuildContext context) {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
-        Get.toNamed(RoutePage.login);
+        Get.toNamed(RoutePage.register);
       } else {
         Get.toNamed(RoutePage.home, arguments: user);
       }

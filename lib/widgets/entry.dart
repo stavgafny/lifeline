@@ -4,6 +4,7 @@ class Entry extends StatelessWidget {
   final TextEditingController? controller;
   final String? hintText;
   final Widget? prefixIcon;
+  final Iterable<String>? autofillHints;
   final TextInputType? keyboardType;
   final bool obscureText;
   const Entry({
@@ -11,6 +12,7 @@ class Entry extends StatelessWidget {
     this.controller,
     this.hintText = "",
     this.prefixIcon,
+    this.autofillHints,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
   }) : super(key: key);
@@ -27,6 +29,7 @@ class Entry extends StatelessWidget {
         child: TextField(
           controller: controller,
           textInputAction: TextInputAction.next,
+          autofillHints: autofillHints,
           keyboardType: keyboardType,
           obscureText: obscureText,
           enableSuggestions: false,
@@ -45,15 +48,20 @@ class Entry extends StatelessWidget {
     return Entry(
       controller: controller,
       hintText: "Email",
+      autofillHints: const [AutofillHints.email],
       keyboardType: TextInputType.emailAddress,
       prefixIcon: const Icon(Icons.email_outlined),
     );
   }
 
-  static Entry password(TextEditingController? controller) {
+  static Entry password(TextEditingController? controller,
+      {bool confirm = false, bool autofillHints = true}) {
     return Entry(
       controller: controller,
-      hintText: "Password",
+      hintText: "${confirm ? "Confirm " : ''}Password",
+      autofillHints: autofillHints
+          ? const [AutofillHints.password]
+          : const [AutofillHints.newPassword],
       keyboardType: TextInputType.visiblePassword,
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       obscureText: true,

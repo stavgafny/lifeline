@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:lifeline/constants/firebase_options.dart';
+import '../constants/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:lifeline/constants/theme_data.dart';
+import '../constants/theme_data.dart';
 import 'routes/route_pages.dart';
 
 Future<void> main() async {
