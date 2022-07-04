@@ -14,13 +14,13 @@ class ForgotPasswordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-
     Get.delete<FormController>();
+
+    final emailController = TextEditingController();
 
     final formController = Get.put(FormController([emailController]));
 
-    showSuccessDialog() {
+    void showSuccessDialog() {
       Get.defaultDialog(
         title: "Success",
         middleText: "Password reset link sent!\n\n"
@@ -40,7 +40,7 @@ class ForgotPasswordPage extends StatelessWidget {
       );
     }
 
-    passwordReset(String email) async {
+    void passwordReset(String email) async {
       final requirements = EmailPasswordAuth.validate(email: email);
       if (requirements.isNotEmpty) {
         formController.setErrorMessage(requirements.join("\n"));

@@ -15,15 +15,22 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.delete<FormController>();
+
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
-
-    Get.delete<FormController>();
 
     final formController =
         Get.put(FormController([emailController, passwordController]));
 
-    signIn(String email, String password) async {
+    void unfocus() {
+      FocusScopeNode currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }
+
+    void signIn(String email, String password) async {
       final requirements =
           EmailPasswordAuth.validate(email: email, password: password);
       if (requirements.isNotEmpty) {
@@ -82,6 +89,7 @@ class LoginPage extends StatelessWidget {
                       LinkText(
                         "Forgot password?",
                         onTap: () {
+                          unfocus();
                           Get.toNamed(RoutePage.forgotPassword);
                         },
                       ),
@@ -126,7 +134,10 @@ class LoginPage extends StatelessWidget {
                     const Text("Not a member yet? "),
                     LinkText(
                       "Sign up",
-                      onTap: () => Get.toNamed(RoutePage.register),
+                      onTap: () {
+                        unfocus();
+                        Get.toNamed(RoutePage.register);
+                      },
                     ),
                   ],
                 ),

@@ -15,16 +15,23 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.delete<FormController>();
+
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
 
-    Get.delete<FormController>();
-
     final formController = Get.put(FormController(
         [emailController, passwordController, confirmPasswordController]));
 
-    signUp(String email, String password, String confirmPassword) async {
+    void unfocus() {
+      FocusScopeNode currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }
+
+    void signUp(String email, String password, String confirmPassword) async {
       final requirements = EmailPasswordAuth.validate(
           email: email, password: password, confirmPassword: confirmPassword);
       if (requirements.isNotEmpty) {
@@ -120,7 +127,10 @@ class RegisterPage extends StatelessWidget {
                     const Text("Have an account? "),
                     LinkText(
                       "Sign in",
-                      onTap: () => Get.toNamed(RoutePage.login),
+                      onTap: () {
+                        unfocus();
+                        Get.toNamed(RoutePage.login);
+                      },
                     ),
                   ],
                 ),
