@@ -1,0 +1,30 @@
+import 'package:get/get.dart';
+import './initial_page.dart';
+import '../views/login_page.dart';
+import '../views/home_page.dart';
+
+const _pageTransition = Transition.noTransition;
+
+class RoutePage {
+  static const String initial = "/";
+  static const String login = "/login";
+  static const String home = "/home";
+}
+
+final List<GetPage<dynamic>> routePages = [
+  GetPage(
+    name: RoutePage.initial,
+    page: () => const InitialPage(),
+    transition: _pageTransition,
+  ),
+  GetPage(
+    name: RoutePage.login,
+    page: () => const LoginPage(),
+    transition: _pageTransition,
+  ),
+  GetPage(
+    name: RoutePage.home,
+    page: () => const HomePage(),
+    transition: _pageTransition,
+  ),
+];
