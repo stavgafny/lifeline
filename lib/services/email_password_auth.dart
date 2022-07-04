@@ -9,11 +9,14 @@ class EmailPasswordAuth {
   /// * Error Codes: [ invalid-email, user-disabled, user-not-found, wrong-password ]
   ///
   /// Error codes are from FirebaseAuthException
-  static String getErrorMessage(String code) {
+  ///
+  /// If **isPasswordReset** is true then explicit error for user not found rather than user/ password incorrect
+  static String getErrorMessage(String code, {bool? isPasswordReset}) {
     switch (code) {
       case 'invalid-email':
         return 'Not a valid email format';
       case 'user-not-found':
+        if (isPasswordReset == true) return "User not found";
         continue invalidCredentials;
       case 'user-disabled':
         return 'It seems that this user has been disabled';
@@ -33,26 +36,29 @@ class EmailPasswordAuth {
 
   static List<String> validate({
     required String email,
-    required String password,
+    String? password,
     String? confirmPassword,
   }) {
     List<String> requirements = [];
     if (!GetUtils.isEmail(email)) {
       requirements.add("Please enter a valid email");
     }
-    if (password.length < _minPasswordLength) {
-      requirements.add("Password must be at least 6 characters");
-    }
-    if (confirmPassword != null) {
-      if (confirmPassword != password) {
-        requirements.add("Password and Confirm Password does not match");
+    if (password != null) {
+      if (password.length < _minPasswordLength) {
+        requirements.add("Password must be at least 6 characters");
+      }
+      if (confirmPassword != null) {
+        if (confirmPassword != password) {
+          requirements.add("Password and Confirm Password does not match");
+        }
       }
     }
 
     return requirements;
   }
 
-  static Future<String?> signIn(String email, String password) async {
+  static Future<String?> signIn(
+      {required String email, required String password}) async {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
@@ -64,13 +70,25 @@ class EmailPasswordAuth {
     return null;
   }
 
-  static Future<String?> signUp(String email, String password) async {
+  static Future<String?> signUp(
+      {required String email, required String password}) async {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       return await Future.delayed(const Duration(seconds: 1)).then((value) {
         return getErrorMessage(e.code);
+      });
+    }
+    return null;
+  }
+
+  static Future<String?> passwordReset({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      return await Future.delayed(const Duration(seconds: 1)).then((value) {
+        return getErrorMessage(e.code, isPasswordReset: true);
       });
     }
     return null;

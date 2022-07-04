@@ -5,6 +5,7 @@ import '../services/email_password_auth.dart';
 import '../routes/route_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/entry.dart';
+import '../widgets/loading_button.dart';
 import '../widgets/link_text.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
@@ -16,7 +17,9 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+
     Get.delete<FormController>();
+
     final formController =
         Get.put(FormController([emailController, passwordController]));
 
@@ -27,7 +30,8 @@ class LoginPage extends StatelessWidget {
         formController.setErrorMessage(requirements.join("\n"));
       } else {
         formController.setProcessing(true);
-        String? response = await EmailPasswordAuth.signIn(email, password);
+        String? response =
+            await EmailPasswordAuth.signIn(email: email, password: password);
         if (response != null) {
           formController.setErrorMessage(response);
         }
@@ -69,6 +73,21 @@ class LoginPage extends StatelessWidget {
                   padding: generalPadding,
                   child: Entry.password(passwordController),
                 ),
+                //! FORGOT PASSWORD LINK
+                Padding(
+                  padding: generalPadding,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      LinkText(
+                        "Forgot password?",
+                        onTap: () {
+                          Get.toNamed(RoutePage.forgotPassword);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
                 Obx(() {
@@ -87,8 +106,9 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 5.0),
                 //! SIGN IN BUTTON
                 Obx(() {
-                  return ElevatedButton(
-                    // Disabled if fields are missing or processing request
+                  return LoadingButton(
+                    text: "Sign In",
+                    condition: formController.processing.value,
                     onPressed: formController.missingField ||
                             formController.processing.value
                         ? null
@@ -96,25 +116,10 @@ class LoginPage extends StatelessWidget {
                               emailController.text.trim(),
                               passwordController.text.trim(),
                             ),
-                    style: const ButtonStyle(
-                      animationDuration: Duration(seconds: 0),
-                      splashFactory: NoSplash.splashFactory,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: formController.processing.value
-                          ? CircularProgressIndicator(
-                              strokeWidth: 3.5,
-                              color: Theme.of(context).colorScheme.primary,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.surface,
-                            )
-                          : const Text("Sign In"),
-                    ),
                   );
                 }),
                 const SizedBox(height: 10.0),
-                //! REGISTER NOW TEXT
+                //! REGISTER NOW TEXT & LINK
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

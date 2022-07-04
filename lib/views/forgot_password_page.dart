@@ -6,34 +6,50 @@ import '../routes/route_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/entry.dart';
 import '../widgets/loading_button.dart';
-import '../widgets/link_text.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class ForgotPasswordPage extends StatelessWidget {
+  const ForgotPasswordPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
 
     Get.delete<FormController>();
 
-    final formController = Get.put(FormController(
-        [emailController, passwordController, confirmPasswordController]));
+    final formController = Get.put(FormController([emailController]));
 
-    signUp(String email, String password, String confirmPassword) async {
-      final requirements = EmailPasswordAuth.validate(
-          email: email, password: password, confirmPassword: confirmPassword);
+    showSuccessDialog() {
+      Get.defaultDialog(
+        title: "Success",
+        middleText: "Password reset link sent!\n\n"
+            "Set up a new password...\n"
+            "You know the drill",
+        confirm: ElevatedButton(
+          onPressed: () {
+            Get.back();
+            Get.toNamed(RoutePage.login);
+          },
+          child: const Text("Go to Login"),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        titleStyle: const TextStyle(color: Colors.white),
+        middleTextStyle: const TextStyle(color: Colors.white),
+        radius: 50,
+      );
+    }
+
+    passwordReset(String email) async {
+      final requirements = EmailPasswordAuth.validate(email: email);
       if (requirements.isNotEmpty) {
         formController.setErrorMessage(requirements.join("\n"));
       } else {
         formController.setProcessing(true);
-        String? response =
-            await EmailPasswordAuth.signUp(email: email, password: password);
-        if (response != null) {
+        String? response = await EmailPasswordAuth.passwordReset(email: email);
+        if (response == null) {
+          showSuccessDialog();
+        } else {
           formController.setErrorMessage(response);
         }
         formController.setProcessing(false);
@@ -57,29 +73,16 @@ class RegisterPage extends StatelessWidget {
                 ),
                 //! LABEL
                 Text(
-                  "Create Account",
+                  "Recover Password",
                   style: GoogleFonts.pacifico(fontSize: 42.0),
                 ),
                 //! INFO TEXT
-                const Text("Lets sign you up"),
+                const Text("Fear not. We'll email you a recovery password"),
                 const SizedBox(height: 20.0),
                 //! EMAIL FIELD
                 Padding(
                   padding: generalPadding,
                   child: Entry.email(emailController),
-                ),
-                const SizedBox(height: 10.0),
-                //! PASSWORD FIELD
-                Padding(
-                  padding: generalPadding,
-                  child: Entry.password(passwordController),
-                ),
-                const SizedBox(height: 10.0),
-                //! CONFIRM PASSWORD FIELD
-                Padding(
-                  padding: generalPadding,
-                  child:
-                      Entry.password(confirmPasswordController, confirm: true),
                 ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
@@ -92,39 +95,22 @@ class RegisterPage extends StatelessWidget {
                         color: Theme.of(context).colorScheme.error,
                       ),
                       overflow: TextOverflow.clip,
-                      maxLines: 3,
+                      maxLines: 1,
                     ),
                   );
                 }),
                 const SizedBox(height: 5.0),
-                //! SIGN UP BUTTON
+                //! SIGN IN BUTTON
                 Obx(() {
                   return LoadingButton(
-                    text: "Sign Up",
+                    text: "Reset Password",
                     condition: formController.processing.value,
                     onPressed: formController.missingField ||
                             formController.processing.value
                         ? null
-                        : () => signUp(
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                              confirmPasswordController.text.trim(),
-                            ),
+                        : () => passwordReset(emailController.text.trim()),
                   );
                 }),
-                const SizedBox(height: 10.0),
-                //! REGISTER NOW TEXT
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Have an account? "),
-                    LinkText(
-                      "Sign in",
-                      onTap: () => Get.toNamed(RoutePage.login),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
               ],
             ),
           ),

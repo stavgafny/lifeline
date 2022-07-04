@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import './initial_page.dart';
 import '../views/login_page.dart';
 import '../views/register_page.dart';
+import '../views/forgot_password_page.dart';
 import '../views/home_page.dart';
 
 const _pageTransition = Transition.fade;
@@ -10,6 +11,7 @@ class RoutePage {
   static const String initial = "/";
   static const String login = "/login";
   static const String register = "/register";
+  static const String forgotPassword = "/forgot_password";
   static const String home = "/home";
 }
 
@@ -27,6 +29,11 @@ final List<GetPage<dynamic>> routePages = [
   GetPage(
     name: RoutePage.register,
     page: () => const RegisterPage(),
+    transition: _pageTransition,
+  ),
+  GetPage(
+    name: RoutePage.forgotPassword,
+    page: () => const ForgotPasswordPage(),
     transition: _pageTransition,
   ),
   GetPage(
