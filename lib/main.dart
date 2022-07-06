@@ -14,6 +14,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Sets phone status bar transparant
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
+
   // Disabling http fetching for fonts, uses assets instead
   GoogleFonts.config.allowRuntimeFetching = false;
 
@@ -36,6 +41,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: title,
       theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.light,
       getPages: routePages,
       initialRoute: RoutePage.initial,
     );
