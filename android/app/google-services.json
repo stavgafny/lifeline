@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "211119703674-deo5u0siri9f2ek1o2jemscgdpl5t4s8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lifeline",
+            "certificate_hash": "2f6b3bac950970209c078d86f7071a0abeae639b"
+          }
+        },
+        {
           "client_id": "211119703674-vetio6ve6ggpc7ea9os5jo77nln6qc3p.apps.googleusercontent.com",
           "client_type": 3
         }

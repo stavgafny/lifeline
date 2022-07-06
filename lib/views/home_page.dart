@@ -5,42 +5,16 @@ import '../routes/route_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/navbar.dart';
 
-Widget onError() {
-  return Scaffold(
-    body: SafeArea(
-      child: Center(
-        child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              const Text("Whoops!", style: TextStyle(fontSize: 50.0)),
-              const Text("Something went wrong",
-                  style: TextStyle(fontSize: 20.0)),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                    Get.toNamed(RoutePage.login);
-                  },
-                  child: const Text("Go Back"),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final User? user = Get.arguments;
-    if (user == null) return onError();
+    if (user == null) {
+      Future.delayed(const Duration(seconds: 0))
+          .then((value) => Get.toNamed(RoutePage.error));
+    }
 
     return Scaffold(
       appBar: AppBar(

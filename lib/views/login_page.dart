@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/form_controller.dart';
-import '../services/email_password_auth.dart';
 import '../routes/route_pages.dart';
+import '../services/email_password_auth.dart';
+import '../services/google_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/entry.dart';
 import '../widgets/loading_button.dart';
@@ -143,29 +144,32 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 25.0),
                 //! GOOGLE SIGN IN BUTTON
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.background,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/google_logo.png",
-                          fit: BoxFit.scaleDown,
-                          width: 25,
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Sign in with Google',
-                          style: TextStyle(
-                            color: Color(0xFFD2CAF3),
+                GestureDetector(
+                  onTap: () => GoogleAuth.signIn(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Image.asset(
+                            "assets/google_logo.png",
+                            fit: BoxFit.scaleDown,
+                            width: 25,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Sign in with Google',
+                            style: TextStyle(
+                              color: Color(0xFFD2CAF3),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
