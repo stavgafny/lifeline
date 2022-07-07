@@ -1,9 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import './user_auth.dart';
 import 'package:get/get.dart';
 
 const _minPasswordLength = 6;
 
 class EmailPasswordAuth {
+  static bool get verified {
+    return true;
+  }
+
   /// Return informative message from given error code
   ///
   /// * Error Codes: [ invalid-email, user-disabled, user-not-found, wrong-password ]
@@ -92,5 +97,16 @@ class EmailPasswordAuth {
       });
     }
     return null;
+  }
+
+  /// Returns true or false if email verification was sent to the user
+  static Future<bool> sendEmailVerification() async {
+    try {
+      final user = UserAuth.user!;
+      await user.sendEmailVerification();
+    } on FirebaseAuthException {
+      return false;
+    }
+    return true;
   }
 }

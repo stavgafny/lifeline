@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../routes/route_pages.dart';
+import '../services/user_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/navbar.dart';
 
@@ -10,8 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Get.arguments;
-    if (user == null) {
+    if (!UserAuth.exist) {
       Future.delayed(const Duration(seconds: 0))
           .then((value) => Get.toNamed(RoutePage.error));
     }
@@ -63,7 +62,7 @@ class HomePage extends StatelessWidget {
                 height: Get.height / 2,
               ),
               ElevatedButton(
-                onPressed: () => FirebaseAuth.instance.signOut(),
+                onPressed: () => UserAuth.signOut(),
                 child: const Text("Log Out"),
               ),
             ],
