@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/form_controller.dart';
-import '../services/email_password_auth.dart';
-import '../routes/route_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/entry.dart';
-import '../widgets/loading_button.dart';
+import '../../controllers/form_controller.dart';
+import '../../services/email_password_auth.dart';
+import '../../routes/route_pages.dart';
+import '../../widgets/entry.dart';
+import '../../widgets/loading_button.dart';
 
 const generalPadding = EdgeInsets.symmetric(horizontal: 50.0);
 

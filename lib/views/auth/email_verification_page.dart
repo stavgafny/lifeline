@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../routes/route_pages.dart';
-import '../services/user_auth.dart';
-import '../services/email_password_auth.dart';
+import '../../routes/route_pages.dart';
+import '../../services/user_auth.dart';
+import '../../services/email_password_auth.dart';
 
 //* Check every {verifyCheckDuration} if user is verified
-//* After email resend ability disabled for 10 seconds countdown
+//* After email resend ability disabled for {resendTimeout} seconds countdown
 
 const Duration verifyCheckDuration = Duration(seconds: 3);
 const int resendTimeout = 30;

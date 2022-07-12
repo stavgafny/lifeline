@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import './initial_page.dart';
-import '../views/error_page.dart';
-import '../views/email_verification_page.dart';
-import '../views/login_page.dart';
-import '../views/register_page.dart';
-import '../views/forgot_password_page.dart';
-import '../views/home_page.dart';
+import 'initial_route_page.dart';
+import '../views/auth/error_page.dart';
+import '../views/auth/email_verification_page.dart';
+import '../views/auth/login_page.dart';
+import '../views/auth/register_page.dart';
+import '../views/auth/forgot_password_page.dart';
+import '../views/user/home_page.dart';
 
 const _pageTransition = Transition.fade;
 
@@ -22,7 +22,7 @@ class RoutePage {
 final List<GetPage<dynamic>> routePages = [
   GetPage(
     name: RoutePage.initial,
-    page: () => const InitialPage(),
+    page: () => const InitialRoutePage(),
     transition: _pageTransition,
   ),
   GetPage(

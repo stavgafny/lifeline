@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../routes/route_pages.dart';
 import '../services/user_auth.dart';
 
-class InitialPage extends StatelessWidget {
-  const InitialPage({Key? key}) : super(key: key);
+class InitialRoutePage extends StatelessWidget {
+  const InitialRoutePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
