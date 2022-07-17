@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import '../../routes/route_pages.dart';
-import '../../services/user_auth.dart';
+import '../../services/auth/user_auth.dart';
 import './swipeables_screens/dashboard_screen.dart';
 import './swipeables_screens/home_screen.dart';
 import './swipeables_screens/timeline_screen.dart';
@@ -33,12 +33,17 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         title: Text("Lifeline", style: GoogleFonts.pacifico(fontSize: 32.0)),
         leading: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            UserAuth.signOut();
+          },
           child: const Icon(Icons.people),
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Get.changeThemeMode(
+                  Get.isDarkMode ? ThemeMode.light : ThemeMode.dark);
+            },
             child: const Padding(
               padding: EdgeInsets.only(right: 20),
               child: Icon(Icons.menu),
@@ -60,10 +65,10 @@ class _HomePageState extends State<HomePage> {
       ),
       body: PageView(
         controller: pageController,
+        scrollDirection: Axis.horizontal,
         onPageChanged: (int index) {
           setState(() => screenIndex = index);
         },
-        scrollDirection: Axis.horizontal,
         children: const [
           DashboardScreen(),
           HomeScreen(),

@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import './user_auth.dart';
+import 'user_auth.dart';
 import 'package:get/get.dart';
 
 const _minPasswordLength = 6;

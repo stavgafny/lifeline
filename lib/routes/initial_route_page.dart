@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../routes/route_pages.dart';
-import '../services/user_auth.dart';
+import '../services/auth/user_auth.dart';
 
 class InitialRoutePage extends StatelessWidget {
   const InitialRoutePage({Key? key}) : super(key: key);

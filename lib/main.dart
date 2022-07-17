@@ -14,6 +14,9 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Sets phone orientation only to portrait
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   // Sets phone status bar transparant
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -22,7 +25,7 @@ Future<void> main() async {
   // Disabling http fetching for fonts, uses assets instead
   GoogleFonts.config.allowRuntimeFetching = false;
 
-  // Adding the appropriate licenses to LicenseRegistry
+  // Adding the appropriate licenses to LicenseRegistry2
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
