@@ -33,6 +33,7 @@ class EventBubble extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: double.infinity,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
               shape: BoxShape.circle,
@@ -42,11 +43,9 @@ class EventBubble extends StatelessWidget {
                 opacity: 0.5,
               ),
             ),
-            child: Center(
-              child: Text(
-                days,
-                style: GoogleFonts.pacifico(fontSize: 50.0),
-              ),
+            child: Text(
+              days,
+              style: GoogleFonts.pacifico(fontSize: 50.0, height: -(1 / 3.0)),
             ),
           ),
         ),
