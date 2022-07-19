@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../routes/route_pages.dart';
 import '../../services/auth/user_auth.dart';
 import '../../services/auth/email_password_auth.dart';
@@ -70,18 +71,32 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Verify Email", style: TextStyle(fontSize: 40.0)),
+            //! LOGO
+            Image.asset(
+              "assets/logo_outline.png",
+              fit: BoxFit.contain,
+              width: 150.0,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            //! LABEL
+            Text(
+              "Verify Email",
+              style: GoogleFonts.pacifico(fontSize: 42.0),
+            ),
+            //! INFO TEXT
             const SizedBox(height: 20),
             const Text("A verification email has been sent to you"),
             const SizedBox(height: 20),
             const Text("Didn't get any email?"),
             const SizedBox(height: 10),
+            //! RESEND EMAIL BUTTON
             ElevatedButton.icon(
               onPressed: canResend ? () => sendEmail() : null,
               icon: const Icon(Icons.email),
               label: Text(
                   "Resend Email${canResend ? '' : ' In: $currentResendTimeout'}"),
             ),
+            //! GO BACK BUTTON
             OutlinedButton(
               onPressed: () {
                 UserAuth.signOut();
