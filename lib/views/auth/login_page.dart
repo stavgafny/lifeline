@@ -99,34 +99,30 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
-                Obx(() {
-                  return Visibility(
-                    visible: formController.errorMessage.value.isNotEmpty,
-                    child: Text(
-                      formController.errorMessage.value,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                Obx(() => Visibility(
+                      visible: formController.errorMessage.value.isNotEmpty,
+                      child: Text(
+                        formController.errorMessage.value,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        overflow: TextOverflow.clip,
+                        maxLines: 2,
                       ),
-                      overflow: TextOverflow.clip,
-                      maxLines: 2,
-                    ),
-                  );
-                }),
+                    )),
                 const SizedBox(height: 5.0),
                 //! SIGN IN BUTTON
-                Obx(() {
-                  return LoadingButton(
-                    text: "Sign In",
-                    condition: formController.processing.value,
-                    onPressed: formController.missingField ||
-                            formController.processing.value
-                        ? null
-                        : () => signIn(
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                            ),
-                  );
-                }),
+                Obx(() => LoadingButton(
+                      text: "Sign In",
+                      condition: formController.processing.value,
+                      onPressed: formController.missingField ||
+                              formController.processing.value
+                          ? null
+                          : () => signIn(
+                                emailController.text.trim(),
+                                passwordController.text.trim(),
+                              ),
+                    )),
                 const SizedBox(height: 10.0),
                 //! REGISTER NOW TEXT & LINK
                 Row(

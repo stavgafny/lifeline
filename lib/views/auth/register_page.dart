@@ -90,35 +90,31 @@ class RegisterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 5.0),
                 //! ERROR TEXT
-                Obx(() {
-                  return Visibility(
-                    visible: formController.errorMessage.value.isNotEmpty,
-                    child: Text(
-                      formController.errorMessage.value,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                Obx(() => Visibility(
+                      visible: formController.errorMessage.value.isNotEmpty,
+                      child: Text(
+                        formController.errorMessage.value,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                        overflow: TextOverflow.clip,
+                        maxLines: 3,
                       ),
-                      overflow: TextOverflow.clip,
-                      maxLines: 3,
-                    ),
-                  );
-                }),
+                    )),
                 const SizedBox(height: 5.0),
                 //! SIGN UP BUTTON
-                Obx(() {
-                  return LoadingButton(
-                    text: "Sign Up",
-                    condition: formController.processing.value,
-                    onPressed: formController.missingField ||
-                            formController.processing.value
-                        ? null
-                        : () => signUp(
-                              emailController.text.trim(),
-                              passwordController.text.trim(),
-                              confirmPasswordController.text.trim(),
-                            ),
-                  );
-                }),
+                Obx(() => LoadingButton(
+                      text: "Sign Up",
+                      condition: formController.processing.value,
+                      onPressed: formController.missingField ||
+                              formController.processing.value
+                          ? null
+                          : () => signUp(
+                                emailController.text.trim(),
+                                passwordController.text.trim(),
+                                confirmPasswordController.text.trim(),
+                              ),
+                    )),
                 const SizedBox(height: 10.0),
                 //! REGISTER NOW TEXT
                 Row(
