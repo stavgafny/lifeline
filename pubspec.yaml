@@ -36,6 +36,7 @@ dependencies:
   google_sign_in: ^5.3.3
   google_fonts: ^3.0.1
   curved_navigation_bar: ^1.0.3
+  percent_indicator: ^4.2.2
 
 dev_dependencies:
   flutter_test:
