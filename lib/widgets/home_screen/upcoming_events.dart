@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../upcoming_event.dart';
+import 'upcoming_event.dart';
 
 class UpcomingEvents extends StatefulWidget {
   static const double defaultHeight = 150.0;
