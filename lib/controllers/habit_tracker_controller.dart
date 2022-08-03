@@ -63,17 +63,26 @@ class HabitTrackerController {
     clearTimer();
   }
 
-  String format(Duration value) {
-    if (value.inDays > 0) return "${value.inDays}d";
-    if (value.inHours > 0) return "${value.inHours}h";
-    final stringifiedMinutes = (value.inMinutes).toString().padLeft(2, "0");
-    final stringifiedSeconds =
-        (value.inSeconds % 60).toString().padLeft(2, "0");
-    return "$stringifiedMinutes:$stringifiedSeconds";
+  @override
+  String toString({bool detailed = false}) {
+    return "${_format(progress.value, detailed)} / ${_format(duration.value, detailed)}";
   }
 
-  @override
-  String toString() {
-    return "${format(progress.value)} / ${format(duration.value)}";
+  String _format(Duration value, bool detailed) {
+    if (detailed) {
+      final hours = value.inHours.toString();
+      final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+      final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+      return "$hours:$minutes:$sesconds";
+    }
+
+    if (value.inHours > 0) {
+      final minutes = value.inMinutes % 60;
+      return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+    }
+
+    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+    return "$minutes:$sesconds";
   }
 }

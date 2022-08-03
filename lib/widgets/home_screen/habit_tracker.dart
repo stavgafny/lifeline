@@ -13,12 +13,12 @@ class HabitTracker extends StatelessWidget {
 
   bool get _selected => HabitTrackerController.selected.value == tracker.id;
 
+  void playTap() {
+    tracker.togglePlaying();
+  }
+
   @override
   Widget build(BuildContext context) {
-    void playTap() {
-      tracker.togglePlaying();
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
       child: Container(
@@ -30,110 +30,155 @@ class HabitTracker extends StatelessWidget {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: playTap,
-                      child: SizedBox(
-                        width: 50.0,
-                        height: 50.0,
-                        child: Stack(
-                          children: [
-                            Obx(
-                              () => CircularPercentIndicator(
-                                radius: 25.0,
-                                lineWidth: 4,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.onSecondary,
-                                progressColor:
-                                    Theme.of(context).colorScheme.primary,
-                                percent: tracker.toIndicator,
-                              ),
-                            ),
-                            Center(
-                              child: Obx(
-                                () => Icon(
-                                  tracker.playing.value
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                _playPauseIndicator(context),
+                const SizedBox(width: 15.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(child: _label(context)),
+                          const SizedBox(width: 5),
+                          _precent(context),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 15.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Obx(
-                              () => Text(
-                                tracker.name.value,
-                                style: const TextStyle(fontSize: 20.0),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Obx(
-                              () => Text(
-                                tracker.precentFormat,
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onSecondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Obx(
-                          () => Text(
-                            tracker.toString(),
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSecondary,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-                Obx(
-                  () => GestureDetector(
-                    onTap: () {
-                      HabitTrackerController.setSelected(
-                          _selected ? null : tracker.id);
-                    },
-                    child:
-                        Icon(_selected ? Icons.expand_less : Icons.expand_more),
+                      const SizedBox(height: 4),
+                      _duration(context),
+                    ],
                   ),
                 ),
+                _expandIcon(context),
               ],
             ),
+            _expandedSection(context)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _playPauseIndicator(BuildContext context) {
+    return GestureDetector(
+      onTap: playTap,
+      child: SizedBox(
+        width: 50.0,
+        height: 50.0,
+        child: Stack(
+          children: [
             Obx(
-              () => _ExpandedSection(
-                expand: _selected,
-                child: SizedBox(
-                  height: 80,
-                  child: Center(
-                    child: Column(
-                      children: const [
-                        SizedBox(height: 20),
-                        Text("Test"),
-                      ],
-                    ),
+              () => CircularPercentIndicator(
+                radius: 25.0,
+                lineWidth: 4,
+                backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                progressColor: Theme.of(context).colorScheme.primary,
+                percent: tracker.toIndicator,
+              ),
+            ),
+            Center(
+              child: Obx(
+                () => Icon(
+                  tracker.playing.value ? Icons.pause : Icons.play_arrow,
+                  size: 30.0,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _label(BuildContext context) {
+    return Obx(
+      () => GestureDetector(
+        onTap: () {},
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: _selected
+                ? Theme.of(context).colorScheme.onSecondary.withAlpha(50)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Visibility(
+                visible: _selected,
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 6),
+                  child: Icon(
+                    Icons.label_outline,
+                    size: 20.0,
                   ),
                 ),
               ),
-            )
-          ],
+              Flexible(
+                child: Text(
+                  tracker.name.value,
+                  style: const TextStyle(fontSize: 18.0),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _precent(BuildContext context) {
+    return Obx(
+      () => Text(
+        tracker.precentFormat,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _duration(BuildContext context) {
+    return Obx(
+      () => Text(
+        tracker.toString(detailed: _selected),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _expandIcon(BuildContext context) {
+    return Obx(
+      () => GestureDetector(
+        onTap: () {
+          HabitTrackerController.setSelected(_selected ? null : tracker.id);
+        },
+        child: Icon(_selected ? Icons.expand_less : Icons.expand_more),
+      ),
+    );
+  }
+
+  Widget _expandedSection(BuildContext context) {
+    return Obx(
+      () => _ExpandedSection(
+        expand: _selected,
+        child: SizedBox(
+          height: 100,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                SizedBox(height: 10),
+                Text("Test"),
+                Text("Test"),
+              ],
+            ),
+          ),
         ),
       ),
     );
