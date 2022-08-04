@@ -5,16 +5,59 @@ import '../../controllers/habit_tracker_controller.dart';
 
 class HabitTracker extends StatelessWidget {
   final HabitTrackerController tracker;
+  final Function onChange;
+  final Function onRemovePressed;
 
   const HabitTracker({
     required this.tracker,
+    required this.onRemovePressed,
+    required this.onChange,
     Key? key,
   }) : super(key: key);
 
   bool get _selected => HabitTrackerController.selected.value == tracker.id;
 
-  void playTap() {
-    tracker.togglePlaying();
+  void _playTap() => tracker.togglePlaying();
+
+  void _labelTap(BuildContext context) {
+    final controller = TextEditingController(text: tracker.name.value);
+    controller.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: tracker.name.value.length,
+    );
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Label',
+            )),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+          MaterialButton(
+            onPressed: () {
+              tracker.name.value = controller.text;
+              Navigator.pop(context);
+              onChange();
+            },
+            child: Text(
+              "OK",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -32,7 +75,7 @@ class HabitTracker extends StatelessWidget {
             Row(
               children: [
                 _playPauseIndicator(context),
-                const SizedBox(width: 15.0),
+                const SizedBox(width: 12.0),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +88,7 @@ class HabitTracker extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      _duration(context),
+                      _progressDuration(context),
                     ],
                   ),
                 ),
@@ -61,7 +104,7 @@ class HabitTracker extends StatelessWidget {
 
   Widget _playPauseIndicator(BuildContext context) {
     return GestureDetector(
-      onTap: playTap,
+      onTap: _playTap,
       child: SizedBox(
         width: 50.0,
         height: 50.0,
@@ -93,7 +136,7 @@ class HabitTracker extends StatelessWidget {
   Widget _label(BuildContext context) {
     return Obx(
       () => GestureDetector(
-        onTap: () {},
+        onTap: () => _selected ? _labelTap(context) : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -141,12 +184,15 @@ class HabitTracker extends StatelessWidget {
     );
   }
 
-  Widget _duration(BuildContext context) {
+  Widget _progressDuration(BuildContext context) {
     return Obx(
-      () => Text(
-        tracker.toString(detailed: _selected),
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSecondary,
+      () => Visibility(
+        visible: !_selected,
+        child: Text(
+          tracker.toString(),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
         ),
       ),
     );
@@ -172,15 +218,96 @@ class HabitTracker extends StatelessWidget {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                SizedBox(height: 10),
-                Text("Test"),
-                Text("Test"),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                _editableDuration(context, "Progress", tracker.progress),
+                const SizedBox(height: 10),
+                _editableDuration(context, "Duration", tracker.duration),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        tracker.reset();
+                        onChange();
+                      },
+                      child: _resetIcon(context),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {
+                        onRemovePressed();
+                        onChange();
+                      },
+                      child: _removeIcon(context),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _editableDuration(
+      BuildContext context, String text, Rx<Duration> durationObservable) {
+    return Row(
+      children: [
+        Text(
+          text,
+          style: const TextStyle(fontSize: 16.0),
+        ),
+        const SizedBox(width: 5),
+        GestureDetector(
+          onTap: () {
+            tracker.togglePlaying(playing: false);
+            showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+            ).then((value) {
+              if (value != null) {
+                durationObservable.value = Duration(
+                  hours: value.hour,
+                  minutes: value.minute,
+                );
+                onChange();
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: _selected
+                  ? Theme.of(context).colorScheme.onSecondary.withAlpha(50)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              tracker.format(durationObservable.value, true),
+              style: const TextStyle(fontSize: 16.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _resetIcon(BuildContext context) {
+    return Icon(
+      Icons.restart_alt_rounded,
+      color: tracker.hasProgress
+          ? Theme.of(context).colorScheme.onSurface
+          : Theme.of(context).colorScheme.onSecondary,
+    );
+  }
+
+  Widget _removeIcon(BuildContext context) {
+    return Icon(
+      Icons.delete_outline,
+      color: Theme.of(context).colorScheme.onSurface,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HabitTrackerController {
@@ -16,6 +17,7 @@ class HabitTrackerController {
   late final Rx<Duration> duration;
   late final Rx<Duration> progress;
   late final RxBool playing;
+  late final Rx<TimeOfDay> deadline;
 
   Timer? _timer;
   late DateTime _keepTime;
@@ -25,50 +27,68 @@ class HabitTrackerController {
     required Duration duration,
     required Duration progress,
     required bool playing,
+    required TimeOfDay deadline,
   }) {
     this.name = name.obs;
     this.duration = duration.obs;
     this.progress = progress.obs;
     this.playing = playing.obs;
+    this.deadline = deadline.obs;
+
     togglePlaying(playing: this.playing.value);
   }
 
-  double get _toPrecent => progress.value.inSeconds / duration.value.inSeconds;
+  bool get _emptyDuration => duration.value.inSeconds == 0;
 
-  double get toIndicator =>
-      progress.value.inSeconds > duration.value.inSeconds ? 1 : _toPrecent;
+  double get _toPrecent =>
+      _emptyDuration ? 0 : progress.value.inSeconds / duration.value.inSeconds;
+
+  double get toIndicator => _emptyDuration
+      ? 0
+      : progress.value.inSeconds > duration.value.inSeconds
+          ? 1
+          : _toPrecent;
 
   String get precentFormat => "${(_toPrecent * 100).floor()}%";
 
-  void clearTimer() => _timer != null ? _timer!.cancel() : null;
+  bool get hasProgress => progress.value.inSeconds > 0;
 
-  void togglePlaying({bool? playing}) {
-    this.playing.value = playing ?? !this.playing.value;
-    if (this.playing.value) {
-      start();
-    } else {
-      stop();
-    }
-  }
+  void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
-  void start() {
-    clearTimer();
+  void _start() {
+    playing.value = true;
+    _clearTimer();
     _keepTime = DateTime.now().subtract(progress.value);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       progress.value = DateTime.now().difference(_keepTime);
     });
   }
 
-  void stop() {
-    clearTimer();
+  void _stop() {
+    playing.value = false;
+    _clearTimer();
+  }
+
+  void togglePlaying({bool? playing}) {
+    playing = playing ?? !this.playing.value;
+    if (playing) {
+      _start();
+    } else {
+      _stop();
+    }
+  }
+
+  void reset() {
+    progress.value = const Duration();
+    _stop();
   }
 
   @override
   String toString({bool detailed = false}) {
-    return "${_format(progress.value, detailed)} / ${_format(duration.value, detailed)}";
+    return "${format(progress.value, detailed)} / ${format(duration.value, detailed)}";
   }
 
-  String _format(Duration value, bool detailed) {
+  String format(Duration value, bool detailed) {
     if (detailed) {
       final hours = value.inHours.toString();
       final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
