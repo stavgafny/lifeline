@@ -277,7 +277,7 @@ class HabitTracker extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              tracker.format(durationObservable.value, true),
+              formatDuration(durationObservable.value, true),
               style: const TextStyle(fontSize: 16.0),
             ),
           ),

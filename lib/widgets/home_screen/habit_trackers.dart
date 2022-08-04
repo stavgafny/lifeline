@@ -8,7 +8,7 @@ final trackers = <HabitTrackerController>[
     duration: const Duration(hours: 3),
     progress: const Duration(hours: 2, minutes: 13),
     playing: false,
-    deadline: const TimeOfDay(hour: 0, minute: 0),
+    deadline: const TimeOfDay(hour: 19, minute: 30),
   ),
   HabitTrackerController(
     name: "Code",

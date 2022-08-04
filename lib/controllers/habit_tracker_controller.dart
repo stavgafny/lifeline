@@ -2,6 +2,24 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+String formatDuration(Duration value, bool detailed) {
+  if (detailed) {
+    final hours = value.inHours.toString();
+    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+    return "$hours:$minutes:$sesconds";
+  }
+
+  if (value.inHours > 0) {
+    final minutes = value.inMinutes % 60;
+    return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+  }
+
+  final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+  final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+  return "$minutes:$sesconds";
+}
+
 class HabitTrackerController {
   static int _uniqueId = 0;
   static int get uniqueId => _uniqueId++;
@@ -13,14 +31,13 @@ class HabitTrackerController {
   }
 
   final int id = uniqueId;
-  late final Rx<String> name;
-  late final Rx<Duration> duration;
-  late final Rx<Duration> progress;
-  late final RxBool playing;
-  late final Rx<TimeOfDay> deadline;
+  Rx<String> name;
+  Rx<Duration> duration;
+  Rx<Duration> progress;
+  RxBool playing;
+  Rx<TimeOfDay> deadline;
 
   Timer? _timer;
-  late DateTime _keepTime;
 
   HabitTrackerController({
     required String name,
@@ -28,14 +45,13 @@ class HabitTrackerController {
     required Duration progress,
     required bool playing,
     required TimeOfDay deadline,
-  }) {
-    this.name = name.obs;
-    this.duration = duration.obs;
-    this.progress = progress.obs;
-    this.playing = playing.obs;
-    this.deadline = deadline.obs;
-
+  })  : name = name.obs,
+        duration = duration.obs,
+        progress = progress.obs,
+        playing = playing.obs,
+        deadline = deadline.obs {
     togglePlaying(playing: this.playing.value);
+    _initializeTimer();
   }
 
   bool get _emptyDuration => duration.value.inSeconds == 0;
@@ -55,54 +71,32 @@ class HabitTrackerController {
 
   void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
-  void _start() {
-    playing.value = true;
+  void _initializeTimer() {
+    // Interval each second, updates progress and checks if deadline arrived
     _clearTimer();
-    _keepTime = DateTime.now().subtract(progress.value);
+    final keepTime = DateTime.now().subtract(progress.value);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      progress.value = DateTime.now().difference(_keepTime);
+      if (playing.value) {
+        progress.value = DateTime.now().difference(keepTime);
+      }
     });
   }
 
-  void _stop() {
-    playing.value = false;
-    _clearTimer();
-  }
-
   void togglePlaying({bool? playing}) {
-    playing = playing ?? !this.playing.value;
-    if (playing) {
-      _start();
-    } else {
-      _stop();
+    // If playing set new keep time to track of
+    this.playing.value = playing ?? !this.playing.value;
+    if (this.playing.value) {
+      _initializeTimer();
     }
   }
 
   void reset() {
     progress.value = const Duration();
-    _stop();
+    togglePlaying(playing: false);
   }
 
   @override
   String toString({bool detailed = false}) {
-    return "${format(progress.value, detailed)} / ${format(duration.value, detailed)}";
-  }
-
-  String format(Duration value, bool detailed) {
-    if (detailed) {
-      final hours = value.inHours.toString();
-      final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-      final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-      return "$hours:$minutes:$sesconds";
-    }
-
-    if (value.inHours > 0) {
-      final minutes = value.inMinutes % 60;
-      return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
-    }
-
-    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-    return "$minutes:$sesconds";
+    return "${formatDuration(progress.value, detailed)} / ${formatDuration(duration.value, detailed)}";
   }
 }
