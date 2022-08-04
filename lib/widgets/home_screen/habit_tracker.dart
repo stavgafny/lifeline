@@ -227,21 +227,9 @@ class HabitTracker extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        tracker.reset();
-                        onChange();
-                      },
-                      child: _resetIcon(context),
-                    ),
+                    _resetIcon(context),
                     const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () {
-                        onRemovePressed();
-                        onChange();
-                      },
-                      child: _removeIcon(context),
-                    ),
+                    _removeIcon(context),
                   ],
                 ),
               ],
@@ -266,7 +254,10 @@ class HabitTracker extends StatelessWidget {
             tracker.togglePlaying(playing: false);
             showTimePicker(
               context: context,
-              initialTime: TimeOfDay.now(),
+              initialTime: TimeOfDay(
+                hour: durationObservable.value.inHours,
+                minute: durationObservable.value.inMinutes % 60,
+              ),
             ).then((value) {
               if (value != null) {
                 durationObservable.value = Duration(
@@ -296,18 +287,31 @@ class HabitTracker extends StatelessWidget {
   }
 
   Widget _resetIcon(BuildContext context) {
-    return Icon(
-      Icons.restart_alt_rounded,
-      color: tracker.hasProgress
-          ? Theme.of(context).colorScheme.onSurface
-          : Theme.of(context).colorScheme.onSecondary,
+    return GestureDetector(
+      onTap: () {
+        tracker.reset();
+        onChange();
+      },
+      child: Icon(
+        Icons.restart_alt_rounded,
+        color: tracker.hasProgress
+            ? Theme.of(context).colorScheme.onSurface
+            : Theme.of(context).colorScheme.onSecondary,
+      ),
     );
   }
 
   Widget _removeIcon(BuildContext context) {
-    return Icon(
-      Icons.delete_outline,
-      color: Theme.of(context).colorScheme.onSurface,
+    return GestureDetector(
+      onTap: () {
+        HabitTrackerController.setSelected(null);
+        onRemovePressed();
+        onChange();
+      },
+      child: Icon(
+        Icons.delete_outline,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
   }
 }
