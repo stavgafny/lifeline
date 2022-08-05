@@ -8,21 +8,29 @@ final trackers = <HabitTrackerController>[
     duration: const Duration(hours: 3),
     progress: const Duration(hours: 2, minutes: 13),
     playing: false,
-    deadline: const TimeOfDay(hour: 19, minute: 30),
+    deadline: Deadline(
+      date: Deadline.getNextDate(DeadlineRoutine.daily),
+      routine: DeadlineRoutine.daily,
+    ),
   ),
   HabitTrackerController(
     name: "Code",
     duration: const Duration(hours: 2, minutes: 30),
     progress: const Duration(),
     playing: false,
-    deadline: const TimeOfDay(hour: 12, minute: 0),
+    deadline: Deadline(
+        date: Deadline.getNextDate(DeadlineRoutine.weekly),
+        routine: DeadlineRoutine.weekly),
   ),
   HabitTrackerController(
     name: "Play",
     duration: const Duration(minutes: 30),
     progress: const Duration(),
     playing: true,
-    deadline: const TimeOfDay(hour: 4, minute: 30),
+    deadline: Deadline(
+      date: Deadline.getNextDate(DeadlineRoutine.monthly),
+      routine: DeadlineRoutine.monthly,
+    ),
   ),
 ];
 

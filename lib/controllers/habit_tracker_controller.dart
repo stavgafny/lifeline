@@ -1,23 +1,41 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-String formatDuration(Duration value, bool detailed) {
-  if (detailed) {
-    final hours = value.inHours.toString();
-    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-    return "$hours:$minutes:$sesconds";
+enum DeadlineRoutine { daily, weekly, monthly }
+
+class Deadline {
+  static DateTime getNextDate(DeadlineRoutine routine) {
+    final current = DateTime.now();
+    switch (routine) {
+      case DeadlineRoutine.daily:
+        return DateTime(current.year, current.month, current.day + 1);
+      case DeadlineRoutine.weekly:
+        return DateTime(current.year, current.month, current.day + 7);
+      case DeadlineRoutine.monthly:
+        return DateTime(current.year, current.month + 1, current.day);
+    }
   }
 
-  if (value.inHours > 0) {
-    final minutes = value.inMinutes % 60;
-    return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
-  }
+  final DateTime date;
+  final DeadlineRoutine routine;
 
-  final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-  final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-  return "$minutes:$sesconds";
+  Deadline({required this.date, required this.routine});
+
+  bool get arrived => DateTime.now().isAfter(date);
+
+  String get stringifiedRoutine => routine.name.capitalizeFirst!;
+
+  Duration get timeRemain => date.difference(DateTime.now());
+
+  DeadlineRoutine getNextRoutine() => DeadlineRoutine
+      .values[(routine.index + 1) % DeadlineRoutine.values.length];
+
+  Deadline copyWithChanges({DateTime? date, DeadlineRoutine? routine}) {
+    return Deadline(
+      date: date ?? this.date,
+      routine: routine ?? this.routine,
+    );
+  }
 }
 
 class HabitTrackerController {
@@ -35,7 +53,7 @@ class HabitTrackerController {
   Rx<Duration> duration;
   Rx<Duration> progress;
   RxBool playing;
-  Rx<TimeOfDay> deadline;
+  Rx<Deadline> deadline;
 
   Timer? _timer;
 
@@ -44,7 +62,7 @@ class HabitTrackerController {
     required Duration duration,
     required Duration progress,
     required bool playing,
-    required TimeOfDay deadline,
+    required Deadline deadline,
   })  : name = name.obs,
         duration = duration.obs,
         progress = progress.obs,
@@ -73,12 +91,21 @@ class HabitTrackerController {
 
   void _initializeTimer() {
     // Interval each second, updates progress and checks if deadline arrived
+    // If deadline arrived, reset progress and set a new deadline based on it's routine
     _clearTimer();
     final keepTime = DateTime.now().subtract(progress.value);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (playing.value) {
         progress.value = DateTime.now().difference(keepTime);
       }
+      if (deadline.value.arrived) {
+        reset();
+        deadline.value = deadline.value.copyWithChanges(
+          date: Deadline.getNextDate(deadline.value.routine),
+        );
+      }
+      // Update time remain
+      deadline.value = deadline.value.copyWithChanges();
     });
   }
 
@@ -92,11 +119,35 @@ class HabitTrackerController {
 
   void reset() {
     progress.value = const Duration();
-    togglePlaying(playing: false);
+    _initializeTimer();
   }
 
+  void dispose() => _clearTimer();
+
   @override
-  String toString({bool detailed = false}) {
-    return "${formatDuration(progress.value, detailed)} / ${formatDuration(duration.value, detailed)}";
+  String toString({bool detailed = false}) =>
+      "${formatDuration(progress.value, detailed)} / ${formatDuration(duration.value, detailed)}";
+}
+
+String formatDuration(Duration value, bool detailed) {
+  if (detailed) {
+    final hours = value.inHours.toString();
+    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+    return "$hours:$minutes:$sesconds";
   }
+
+  if (value.inDays > 0) {
+    final hours = value.inHours % 24;
+    return "${value.inDays}d${(hours > 0) ? " ${hours}h" : ""}";
+  }
+
+  if (value.inHours > 0) {
+    final minutes = value.inMinutes % 60;
+    return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+  }
+
+  final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+  final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+  return "$minutes:$sesconds";
 }

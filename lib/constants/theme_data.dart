@@ -35,7 +35,7 @@ ThemeData darkTheme = ThemeData(
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
     primary: Color(0xFF9B79E1),
-    onPrimary: Colors.black,
+    onPrimary: Color(0xFF34304B),
     secondary: Color(0xFF151219),
     onSecondary: Color(0xFF655E6A),
     error: Colors.red,
