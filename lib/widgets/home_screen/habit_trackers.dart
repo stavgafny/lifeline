@@ -42,7 +42,9 @@ class HabitTrackers extends StatefulWidget {
 }
 
 class _HabitTrackersState extends State<HabitTrackers> {
-  void update() {}
+  void update() {
+    print("UPDATE");
+  }
 
   @override
   Widget build(BuildContext context) {

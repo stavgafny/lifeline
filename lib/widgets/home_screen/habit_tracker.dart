@@ -266,7 +266,8 @@ class HabitTracker extends StatelessWidget {
         ),
         const SizedBox(width: 5),
         TappableText(
-          text: formatDuration(durationObservable.value, true),
+          text:
+              formatDuration(durationObservable.value, DurationFormat.detailed),
           onTap: () {
             tracker.togglePlaying(playing: false);
             showTimePicker(
@@ -311,31 +312,17 @@ class HabitTracker extends StatelessWidget {
   }
 
   Widget _deadlineDate(BuildContext context, {bool timeOnly = false}) {
-    final textWidget = Obx(
+    return Obx(
       () => Text(
-        formatDuration(tracker.deadline.value.timeRemain, false),
+        (timeOnly ? "" : "Time Left: ") +
+            formatDuration(
+                tracker.deadline.value.timeRemain, DurationFormat.shortened),
         style: TextStyle(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.primary,
           fontSize: 12.0,
         ),
       ),
     );
-
-    return timeOnly
-        ? textWidget
-        : Row(
-            children: [
-              Text(
-                "Time Left:",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.background,
-                  fontSize: 12.0,
-                ),
-              ),
-              const SizedBox(width: 4),
-              textWidget,
-            ],
-          );
   }
 
   Widget _resetIcon(BuildContext context) {

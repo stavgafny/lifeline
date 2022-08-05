@@ -125,29 +125,46 @@ class HabitTrackerController {
   void dispose() => _clearTimer();
 
   @override
-  String toString({bool detailed = false}) =>
-      "${formatDuration(progress.value, detailed)} / ${formatDuration(duration.value, detailed)}";
+  String toString() =>
+      "${formatDuration(progress.value, DurationFormat.fixed)} / ${formatDuration(duration.value, DurationFormat.fixed)}";
 }
 
-String formatDuration(Duration value, bool detailed) {
-  if (detailed) {
-    final hours = value.inHours.toString();
-    final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-    final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-    return "$hours:$minutes:$sesconds";
-  }
+/// * [shortened] -> 1d -> 23h -> 59m -> 59s
+///
+/// * [fixed] 1d 20h -> 1d -> 23h 11m -> 23h -> 10:05
+///
+/// * [detailed] 01:59:00
+enum DurationFormat { shortened, fixed, detailed }
 
-  if (value.inDays > 0) {
-    final hours = value.inHours % 24;
-    return "${value.inDays}d${(hours > 0) ? " ${hours}h" : ""}";
-  }
+String formatDuration(Duration value, DurationFormat detailed) {
+  switch (detailed) {
+    case DurationFormat.shortened:
+      {
+        return value.inDays > 0
+            ? "${value.inDays}d"
+            : value.inHours > 0
+                ? "${value.inHours}h"
+                : value.inMinutes > 0
+                    ? "${value.inMinutes}m"
+                    : "${value.inMinutes}s";
+      }
+    case DurationFormat.fixed:
+      {
+        if (value.inHours > 0) {
+          final minutes = value.inMinutes % 60;
+          return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+        }
 
-  if (value.inHours > 0) {
-    final minutes = value.inMinutes % 60;
-    return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+        final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+        final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+        return "$minutes:$sesconds";
+      }
+    case DurationFormat.detailed:
+      {
+        final hours = value.inHours.toString();
+        final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
+        final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
+        return "$hours:$minutes:$sesconds";
+      }
   }
-
-  final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-  final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-  return "$minutes:$sesconds";
 }
