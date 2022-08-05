@@ -4,6 +4,17 @@ import 'package:get/get.dart';
 enum DeadlineRoutine { daily, weekly, monthly }
 
 class Deadline {
+  static Stream onGlobalTimeChange() async* {
+    final time = DateTime.now();
+    await Duration(
+            milliseconds: time.millisecond, microseconds: time.microsecond)
+        .delay();
+    while (true) {
+      await const Duration(seconds: 1).delay();
+      yield null;
+    }
+  }
+
   static DateTime getNextDate(DeadlineRoutine routine) {
     final current = DateTime.now();
     switch (routine) {
@@ -69,7 +80,18 @@ class HabitTrackerController {
         playing = playing.obs,
         deadline = deadline.obs {
     togglePlaying(playing: this.playing.value);
-    _initializeTimer();
+
+    Deadline.onGlobalTimeChange().listen((event) {
+      // Update time remain
+      this.deadline.value = this.deadline.value.copyWithChanges();
+
+      // If deadline arrived, reset progress and set a new deadline based on it's routine
+      if (this.deadline.value.arrived) {
+        reset();
+        this.deadline.value = this.deadline.value.copyWithChanges(
+            date: Deadline.getNextDate(this.deadline.value.routine));
+      }
+    });
   }
 
   bool get _emptyDuration => duration.value.inSeconds == 0;
@@ -90,36 +112,30 @@ class HabitTrackerController {
   void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
   void _initializeTimer() {
-    // Interval each second, updates progress and checks if deadline arrived
-    // If deadline arrived, reset progress and set a new deadline based on it's routine
-    _clearTimer();
+    // Interval each second and updates progress
+
+    // Set new time to keep track of
     final keepTime = DateTime.now().subtract(progress.value);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (playing.value) {
-        progress.value = DateTime.now().difference(keepTime);
-      }
-      if (deadline.value.arrived) {
-        reset();
-        deadline.value = deadline.value.copyWithChanges(
-          date: Deadline.getNextDate(deadline.value.routine),
-        );
-      }
-      // Update time remain
-      deadline.value = deadline.value.copyWithChanges();
+      progress.value = DateTime.now().difference(keepTime);
     });
   }
 
   void togglePlaying({bool? playing}) {
-    // If playing set new keep time to track of
     this.playing.value = playing ?? !this.playing.value;
-    if (this.playing.value) {
-      _initializeTimer();
-    }
+    refresh(() {});
+  }
+
+  void refresh(Function callback) {
+    // Stops potential timer and after callback is called, resumes if timer was playing
+    _clearTimer();
+    callback();
+    if (playing.value) _initializeTimer();
   }
 
   void reset() {
-    progress.value = const Duration();
-    _initializeTimer();
+    // Resets progress
+    refresh(() => progress.value = const Duration());
   }
 
   void dispose() => _clearTimer();

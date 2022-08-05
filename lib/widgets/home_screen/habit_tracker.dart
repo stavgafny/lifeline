@@ -269,7 +269,6 @@ class HabitTracker extends StatelessWidget {
           text:
               formatDuration(durationObservable.value, DurationFormat.detailed),
           onTap: () {
-            tracker.togglePlaying(playing: false);
             showTimePicker(
               context: context,
               initialTime: TimeOfDay(
@@ -278,10 +277,12 @@ class HabitTracker extends StatelessWidget {
               ),
             ).then((value) {
               if (value != null) {
-                durationObservable.value = Duration(
-                  hours: value.hour,
-                  minutes: value.minute,
-                );
+                tracker.refresh(() {
+                  durationObservable.value = Duration(
+                    hours: value.hour,
+                    minutes: value.minute,
+                  );
+                });
                 onChange();
               }
             });
