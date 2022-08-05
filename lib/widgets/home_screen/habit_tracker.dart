@@ -96,7 +96,7 @@ class HabitTracker extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _progressDuration(context),
-                              _deadlineDate(context, timeOnly: true),
+                              _deadlineDate(context, expanded: false),
                             ],
                           ),
                         ),
@@ -238,7 +238,7 @@ class HabitTracker extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _deadlineDate(context),
+                  _deadlineDate(context, expanded: true),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -311,12 +311,14 @@ class HabitTracker extends StatelessWidget {
     );
   }
 
-  Widget _deadlineDate(BuildContext context, {bool timeOnly = false}) {
+  Widget _deadlineDate(BuildContext context, {required bool expanded}) {
     return Obx(
       () => Text(
-        (timeOnly ? "" : "Time Left: ") +
+        (expanded ? "Time Left: " : "") +
             formatDuration(
-                tracker.deadline.value.timeRemain, DurationFormat.shortened),
+              tracker.deadline.value.timeRemain,
+              expanded ? DurationFormat.fixed : DurationFormat.shortened,
+            ),
         style: TextStyle(
           color: Theme.of(context).colorScheme.primary,
           fontSize: 12.0,

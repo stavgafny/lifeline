@@ -137,34 +137,37 @@ class HabitTrackerController {
 enum DurationFormat { shortened, fixed, detailed }
 
 String formatDuration(Duration value, DurationFormat detailed) {
+  final days = value.inDays;
+  final hours = value.inHours % Duration.hoursPerDay;
+  final minutes = value.inMinutes % Duration.minutesPerHour;
+  final seconds = value.inSeconds % Duration.secondsPerMinute;
+  final digitalTime =
+      "${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
   switch (detailed) {
     case DurationFormat.shortened:
       {
-        return value.inDays > 0
-            ? "${value.inDays}d"
-            : value.inHours > 0
-                ? "${value.inHours}h"
-                : value.inMinutes > 0
-                    ? "${value.inMinutes}m"
-                    : "${value.inMinutes}s";
+        return days > 0
+            ? "${days}d"
+            : hours > 0
+                ? "${hours}h"
+                : minutes > 0
+                    ? "${minutes}m"
+                    : "${seconds}s";
       }
     case DurationFormat.fixed:
       {
-        if (value.inHours > 0) {
-          final minutes = value.inMinutes % 60;
-          return "${value.inHours}h${(minutes > 0) ? " ${minutes}m" : ""}";
+        if (days > 0) {
+          return "${days}d${(hours > 0) ? " ${hours}h" : ""}";
+        }
+        if (hours > 0) {
+          return "${hours}h${(minutes > 0) ? " ${minutes}m" : ""}";
         }
 
-        final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-        final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-        return "$minutes:$sesconds";
+        return digitalTime;
       }
     case DurationFormat.detailed:
       {
-        final hours = value.inHours.toString();
-        final minutes = (value.inMinutes % 60).toString().padLeft(2, "0");
-        final sesconds = (value.inSeconds % 60).toString().padLeft(2, "0");
-        return "$hours:$minutes:$sesconds";
+        return "$hours:$digitalTime";
       }
   }
 }
