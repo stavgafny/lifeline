@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:get/get.dart';
 
-enum DeadlineRoutine { daily, weekly, monthly }
+enum DeadlineRoutine { test, daily, weekly, monthly }
 
-class Deadline {
+class Deadline extends GetxController {
   static Stream onGlobalTimeChange() async* {
     final time = DateTime.now();
     await Duration(
@@ -18,6 +18,9 @@ class Deadline {
   static DateTime getNextDate(DeadlineRoutine routine) {
     final current = DateTime.now();
     switch (routine) {
+      case DeadlineRoutine.test:
+        return DateTime(current.year, current.month, current.day, current.hour,
+            current.minute, current.second + 10);
       case DeadlineRoutine.daily:
         return DateTime(current.year, current.month, current.day + 1);
       case DeadlineRoutine.weekly:
@@ -29,19 +32,23 @@ class Deadline {
 
   final DateTime date;
   final DeadlineRoutine routine;
+  final Rx<Duration> timeRemain;
 
-  Deadline({required this.date, required this.routine});
+  Deadline({required this.date, required this.routine})
+      : timeRemain = date.difference(DateTime.now()).obs;
 
   bool get arrived => DateTime.now().isAfter(date);
 
   String get stringifiedRoutine => routine.name.capitalizeFirst!;
 
-  Duration get timeRemain => date.difference(DateTime.now());
+  void updateTimeRemain() => timeRemain.value = date.difference(DateTime.now());
 
   DeadlineRoutine getNextRoutine() => DeadlineRoutine
       .values[(routine.index + 1) % DeadlineRoutine.values.length];
 
   Deadline copyWithChanges({DateTime? date, DeadlineRoutine? routine}) {
+    //! dispose's timeRemain observable
+    dispose();
     return Deadline(
       date: date ?? this.date,
       routine: routine ?? this.routine,
@@ -49,7 +56,7 @@ class Deadline {
   }
 }
 
-class HabitTrackerController {
+class HabitTrackerController extends GetxController {
   static int _uniqueId = 0;
   static int get uniqueId => _uniqueId++;
 
@@ -67,6 +74,8 @@ class HabitTrackerController {
   Rx<Deadline> deadline;
 
   Timer? _timer;
+  // Global time listener
+  late final StreamSubscription<dynamic> _listener;
 
   HabitTrackerController({
     required String name,
@@ -80,18 +89,9 @@ class HabitTrackerController {
         playing = playing.obs,
         deadline = deadline.obs {
     togglePlaying(playing: this.playing.value);
-
-    Deadline.onGlobalTimeChange().listen((event) {
-      // Update time remain
-      this.deadline.value = this.deadline.value.copyWithChanges();
-
-      // If deadline arrived, reset progress and set a new deadline based on it's routine
-      if (this.deadline.value.arrived) {
-        reset();
-        this.deadline.value = this.deadline.value.copyWithChanges(
-            date: Deadline.getNextDate(this.deadline.value.routine));
-      }
-    });
+    _updateDeadline();
+    _listener =
+        Deadline.onGlobalTimeChange().listen((event) => _updateDeadline());
   }
 
   bool get _emptyDuration => duration.value.inSeconds == 0;
@@ -121,12 +121,23 @@ class HabitTrackerController {
     });
   }
 
-  void togglePlaying({bool? playing}) {
-    this.playing.value = playing ?? !this.playing.value;
-    refresh(() {});
+  void _updateDeadline() {
+    // Update time remain
+    deadline.value.updateTimeRemain();
+
+    // If deadline arrived, reset progress and set a new deadline based on it's routine
+    if (deadline.value.arrived) {
+      reset();
+      deadline.value = deadline.value
+          .copyWithChanges(date: Deadline.getNextDate(deadline.value.routine));
+    }
   }
 
-  void refresh(Function callback) {
+  void togglePlaying({bool? playing}) {
+    refreshTimer(() => this.playing.value = playing ?? !this.playing.value);
+  }
+
+  void refreshTimer(Function callback) {
     // Stops potential timer and after callback is called, resumes if timer was playing
     _clearTimer();
     callback();
@@ -135,10 +146,17 @@ class HabitTrackerController {
 
   void reset() {
     // Resets progress
-    refresh(() => progress.value = const Duration());
+    refreshTimer(() => progress.value = const Duration());
   }
 
-  void dispose() => _clearTimer();
+  @override
+  void dispose() {
+    //! dispose's observables, global time listener(_listener) and timer
+    deadline.value.dispose();
+    _listener.cancel();
+    _clearTimer();
+    super.dispose();
+  }
 
   @override
   String toString() =>

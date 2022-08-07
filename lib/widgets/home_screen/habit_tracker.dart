@@ -1,20 +1,32 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../tappable_text.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import '../../services/habit_tracker/storage.dart';
+import '../tappable_text.dart';
 import '../../controllers/habit_tracker_controller.dart';
 
 class HabitTracker extends StatelessWidget {
   final HabitTrackerController tracker;
-  final Function onChange;
-  final Function onRemovePressed;
+  final void Function(HabitTrackerController tracker, HabitTrackerEvent event)
+      onUpdate;
 
-  const HabitTracker({
+  final List<StreamSubscription<dynamic>> _listeners = [];
+
+  HabitTracker({
     required this.tracker,
-    required this.onRemovePressed,
-    required this.onChange,
+    required this.onUpdate,
     Key? key,
-  }) : super(key: key);
+  }) : super(key: key) {
+    _listeners.addAll([
+      tracker.name.listen((_) => update(HabitTrackerEvent.name)),
+      tracker.deadline.listen((_) => update(HabitTrackerEvent.deadline)),
+      tracker.progress.listen((_) => update(HabitTrackerEvent.progress)),
+      tracker.duration.listen((_) => update(HabitTrackerEvent.duration)),
+    ]);
+  }
+
+  void update(HabitTrackerEvent event) => onUpdate(tracker, event);
 
   bool get _selected => HabitTrackerController.selected.value == tracker.id;
 
@@ -47,9 +59,8 @@ class HabitTracker extends StatelessWidget {
           ),
           MaterialButton(
             onPressed: () {
-              tracker.name.value = controller.text;
+              tracker.name.value = controller.text.trim();
               Navigator.pop(context);
-              onChange();
             },
             child: Text(
               "OK",
@@ -277,13 +288,12 @@ class HabitTracker extends StatelessWidget {
               ),
             ).then((value) {
               if (value != null) {
-                tracker.refresh(() {
+                tracker.refreshTimer(() {
                   durationObservable.value = Duration(
                     hours: value.hour,
                     minutes: value.minute,
                   );
                 });
-                onChange();
               }
             });
           },
@@ -305,7 +315,6 @@ class HabitTracker extends StatelessWidget {
               date: Deadline.getNextDate(nextRoutine),
               routine: nextRoutine,
             );
-            onChange();
           },
         ),
       ],
@@ -317,7 +326,7 @@ class HabitTracker extends StatelessWidget {
       () => Text(
         (expanded ? "Time Left: " : "") +
             formatDuration(
-              tracker.deadline.value.timeRemain,
+              tracker.deadline.value.timeRemain.value,
               expanded ? DurationFormat.fixed : DurationFormat.shortened,
             ),
         style: TextStyle(
@@ -331,9 +340,10 @@ class HabitTracker extends StatelessWidget {
   Widget _resetIcon(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (!tracker.hasProgress) return;
         tracker.togglePlaying(playing: false);
         tracker.reset();
-        onChange();
+        update(HabitTrackerEvent.reset);
       },
       child: Icon(
         Icons.restart_alt_rounded,
@@ -348,9 +358,10 @@ class HabitTracker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         HabitTrackerController.setSelected(null);
-        tracker.dispose();
-        onRemovePressed();
-        onChange();
+        for (final listener in _listeners) {
+          listener.cancel();
+        }
+        update(HabitTrackerEvent.remove);
       },
       child: Icon(
         Icons.delete_outline,
