@@ -5,13 +5,14 @@ enum HabitTrackerEvent {
   progress,
   duration,
   deadline,
-  reset,
   remove,
 }
 
 class HabitTrackerStorage {
-  static void handleChange(
+  static void emitChange(
       HabitTrackerController tracker, HabitTrackerEvent event) {
+    print("${tracker.name.value} updated:::: ${event.name}");
+
     switch (event) {
       case HabitTrackerEvent.name:
         return;
@@ -21,10 +22,7 @@ class HabitTrackerStorage {
         return;
       case HabitTrackerEvent.deadline:
         return;
-      case HabitTrackerEvent.reset:
-        return;
       case HabitTrackerEvent.remove:
-        tracker.dispose();
         trackers.remove(tracker);
         return;
     }
@@ -34,10 +32,10 @@ class HabitTrackerStorage {
     HabitTrackerController(
       name: "[TEST]",
       duration: const Duration(seconds: 10),
-      progress: const Duration(),
+      progress: const Duration(seconds: 2),
       playing: false,
       deadline: Deadline(
-        date: Deadline.getNextDate(DeadlineRoutine.test),
+        date: DateTime.now().subtract(const Duration(seconds: 10)),
         routine: DeadlineRoutine.test,
       ),
     ),

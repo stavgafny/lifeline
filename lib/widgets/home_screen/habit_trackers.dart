@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import './habit_tracker.dart';
 import '../../services/habit_tracker/storage.dart';
-import '../../controllers/habit_tracker_controller.dart';
+import './habit_tracker.dart';
 
 class HabitTrackers extends StatefulWidget {
   const HabitTrackers({Key? key}) : super(key: key);
@@ -11,33 +10,23 @@ class HabitTrackers extends StatefulWidget {
 }
 
 class _HabitTrackersState extends State<HabitTrackers> {
-  List<HabitTracker> habitTrackers = [];
-
-  @override
-  void initState() {
-    habitTrackers = HabitTrackerStorage.trackers
-        .map((tracker) => HabitTracker(
-            key: ValueKey(tracker.id.toString()),
-            tracker: tracker,
-            onUpdate: update))
-        .toList();
-
-    super.initState();
-  }
-
-  void update(HabitTrackerController tracker, HabitTrackerEvent event) {
-    if (event == HabitTrackerEvent.remove) {
-      habitTrackers.removeAt(HabitTrackerStorage.trackers.indexOf(tracker));
-      habitTrackers = [...habitTrackers];
-      setState(() {});
-    }
-    HabitTrackerStorage.handleChange(tracker, event);
+  void removedHabit() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView(children: habitTrackers),
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: HabitTrackerStorage.trackers.length,
+        itemBuilder: (context, index) {
+          return HabitTracker(
+            tracker: HabitTrackerStorage.trackers[index],
+            onRemove: removedHabit,
+          );
+        },
+      ),
     );
   }
 }

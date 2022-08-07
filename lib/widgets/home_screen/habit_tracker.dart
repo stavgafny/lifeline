@@ -1,32 +1,18 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../../services/habit_tracker/storage.dart';
 import '../tappable_text.dart';
 import '../../controllers/habit_tracker_controller.dart';
 
 class HabitTracker extends StatelessWidget {
   final HabitTrackerController tracker;
-  final void Function(HabitTrackerController tracker, HabitTrackerEvent event)
-      onUpdate;
+  final Function onRemove;
 
-  final List<StreamSubscription<dynamic>> _listeners = [];
-
-  HabitTracker({
+  const HabitTracker({
     required this.tracker,
-    required this.onUpdate,
+    required this.onRemove,
     Key? key,
-  }) : super(key: key) {
-    _listeners.addAll([
-      tracker.name.listen((_) => update(HabitTrackerEvent.name)),
-      tracker.deadline.listen((_) => update(HabitTrackerEvent.deadline)),
-      tracker.progress.listen((_) => update(HabitTrackerEvent.progress)),
-      tracker.duration.listen((_) => update(HabitTrackerEvent.duration)),
-    ]);
-  }
-
-  void update(HabitTrackerEvent event) => onUpdate(tracker, event);
+  }) : super(key: key);
 
   bool get _selected => HabitTrackerController.selected.value == tracker.id;
 
@@ -74,6 +60,7 @@ class HabitTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("BUILD ${tracker.name.value}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
       child: Container(
@@ -343,7 +330,6 @@ class HabitTracker extends StatelessWidget {
         if (!tracker.hasProgress) return;
         tracker.togglePlaying(playing: false);
         tracker.reset();
-        update(HabitTrackerEvent.reset);
       },
       child: Icon(
         Icons.restart_alt_rounded,
@@ -358,10 +344,8 @@ class HabitTracker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         HabitTrackerController.setSelected(null);
-        for (final listener in _listeners) {
-          listener.cancel();
-        }
-        update(HabitTrackerEvent.remove);
+        tracker.dispose();
+        onRemove();
       },
       child: Icon(
         Icons.delete_outline,

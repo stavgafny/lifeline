@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:lifeline/services/habit_tracker/storage.dart';
 
 enum DeadlineRoutine { test, daily, weekly, monthly }
 
@@ -74,8 +75,7 @@ class HabitTrackerController extends GetxController {
   Rx<Deadline> deadline;
 
   Timer? _timer;
-  // Global time listener
-  late final StreamSubscription<dynamic> _listener;
+  final List<StreamSubscription<dynamic>> _listeners = [];
 
   HabitTrackerController({
     required String name,
@@ -88,10 +88,15 @@ class HabitTrackerController extends GetxController {
         progress = progress.obs,
         playing = playing.obs,
         deadline = deadline.obs {
+    _listeners.addAll([
+      Deadline.onGlobalTimeChange().listen((event) => _updateDeadline()),
+      this.name.listen((_) => _emitChange(HabitTrackerEvent.name)),
+      this.progress.listen((_) => _emitChange(HabitTrackerEvent.progress)),
+      this.duration.listen((_) => _emitChange(HabitTrackerEvent.duration)),
+      this.deadline.listen((_) => _emitChange(HabitTrackerEvent.deadline)),
+    ]);
     togglePlaying(playing: this.playing.value);
     _updateDeadline();
-    _listener =
-        Deadline.onGlobalTimeChange().listen((event) => _updateDeadline());
   }
 
   bool get _emptyDuration => duration.value.inSeconds == 0;
@@ -133,6 +138,9 @@ class HabitTrackerController extends GetxController {
     }
   }
 
+  void _emitChange(HabitTrackerEvent event) =>
+      HabitTrackerStorage.emitChange(this, event);
+
   void togglePlaying({bool? playing}) {
     refreshTimer(() => this.playing.value = playing ?? !this.playing.value);
   }
@@ -151,9 +159,12 @@ class HabitTrackerController extends GetxController {
 
   @override
   void dispose() {
-    //! dispose's observables, global time listener(_listener) and timer
+    //! emits to storage, dispose's observables, listeners(global time, storage update) and timer
+    _emitChange(HabitTrackerEvent.remove);
     deadline.value.dispose();
-    _listener.cancel();
+    for (var listener in _listeners) {
+      listener.cancel();
+    }
     _clearTimer();
     super.dispose();
   }
