@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../services/habit_tracker/storage.dart';
-import './habit_tracker.dart';
+import 'package:lifeline/controllers/habit_tracker_controller.dart';
+import 'package:lifeline/services/habit_tracker/storage.dart';
+import 'package:lifeline/widgets/home_screen/habit_tracker.dart';
 
 class HabitTrackers extends StatefulWidget {
   const HabitTrackers({Key? key}) : super(key: key);
@@ -10,22 +11,32 @@ class HabitTrackers extends StatefulWidget {
 }
 
 class _HabitTrackersState extends State<HabitTrackers> {
-  void removedHabit() {
-    setState(() {});
+  final _animatedListKey = GlobalKey<AnimatedListState>();
+
+  void _removedHabit(HabitTrackerController tracker) {
+    int index = HabitTrackerStorage.trackers.indexOf(tracker);
+    tracker.dispose();
+    _animatedListKey.currentState!.removeItem(
+      index,
+      (context, animation) => HabitTracker(
+        tracker: tracker,
+        onRemove: _removedHabit,
+        animation: animation,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: HabitTrackerStorage.trackers.length,
-        itemBuilder: (context, index) {
-          return HabitTracker(
-            tracker: HabitTrackerStorage.trackers[index],
-            onRemove: removedHabit,
-          );
-        },
+      child: AnimatedList(
+        key: _animatedListKey,
+        initialItemCount: HabitTrackerStorage.trackers.length,
+        itemBuilder: (context, index, animation) => HabitTracker(
+          tracker: HabitTrackerStorage.trackers[index],
+          onRemove: _removedHabit,
+          animation: animation,
+        ),
       ),
     );
   }

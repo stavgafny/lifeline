@@ -6,11 +6,13 @@ import '../../controllers/habit_tracker_controller.dart';
 
 class HabitTracker extends StatelessWidget {
   final HabitTrackerController tracker;
-  final Function onRemove;
+  final Function(HabitTrackerController) onRemove;
+  final Animation<double> animation;
 
   const HabitTracker({
     required this.tracker,
     required this.onRemove,
+    required this.animation,
     Key? key,
   }) : super(key: key);
 
@@ -61,52 +63,63 @@ class HabitTracker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("BUILD ${tracker.name.value}");
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
-      child: Container(
-        padding: const EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(15.0),
+    return FadeTransition(
+      key: ValueKey(tracker.id),
+      opacity: animation,
+      child: SizeTransition(
+        sizeFactor: CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeInOutQuad,
         ),
-        child: Column(
-          children: [
-            Row(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Column(
               children: [
-                _playPauseIndicator(context),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                Row(
+                  children: [
+                    _playPauseIndicator(context),
+                    const SizedBox(width: 12.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(child: _label(context)),
-                          const SizedBox(width: 5),
-                          _precent(context),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Obx(
-                        () => Visibility(
-                          visible: !_selected,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Row(
                             children: [
-                              _progressDuration(context),
-                              _deadlineDate(context, expanded: false),
+                              Flexible(child: _label(context)),
+                              const SizedBox(width: 5),
+                              _precent(context),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 4),
+                          Obx(
+                            () => Visibility(
+                              visible: !_selected,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _progressDuration(context),
+                                  _deadlineDate(context, expanded: false),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    _expandIcon(context),
+                  ],
                 ),
-                _expandIcon(context),
+                _expandedSection(context)
               ],
             ),
-            _expandedSection(context)
-          ],
+          ),
         ),
       ),
     );
@@ -344,8 +357,7 @@ class HabitTracker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         HabitTrackerController.setSelected(null);
-        tracker.dispose();
-        onRemove();
+        onRemove(tracker);
       },
       child: Icon(
         Icons.delete_outline,

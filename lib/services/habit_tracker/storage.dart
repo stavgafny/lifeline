@@ -11,8 +11,6 @@ enum HabitTrackerEvent {
 class HabitTrackerStorage {
   static void emitChange(
       HabitTrackerController tracker, HabitTrackerEvent event) {
-    print("${tracker.name.value} updated:::: ${event.name}");
-
     switch (event) {
       case HabitTrackerEvent.name:
         return;
