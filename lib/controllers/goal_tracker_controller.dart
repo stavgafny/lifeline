@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:lifeline/services/habit_tracker/storage.dart';
 
-enum DeadlineRoutine { test, daily, weekly, monthly }
+enum DeadlineRoutine { daily, weekly, monthly }
 
 class Deadline extends GetxController {
-  static Stream onGlobalTimeChange() async* {
+  static Stream<void> onGlobalTimeChange() async* {
     final time = DateTime.now();
     await Duration(
             milliseconds: time.millisecond, microseconds: time.microsecond)
@@ -19,9 +18,6 @@ class Deadline extends GetxController {
   static DateTime getNextDate(DeadlineRoutine routine) {
     final current = DateTime.now();
     switch (routine) {
-      case DeadlineRoutine.test:
-        return DateTime(current.year, current.month, current.day, current.hour,
-            current.minute, current.second + 10);
       case DeadlineRoutine.daily:
         return DateTime(current.year, current.month, current.day + 1);
       case DeadlineRoutine.weekly:
@@ -57,13 +53,14 @@ class Deadline extends GetxController {
   }
 }
 
-class HabitTrackerController extends GetxController {
+class GoalTrackerController extends GetxController {
   static int _uniqueId = 0;
   static int get uniqueId => _uniqueId++;
 
+  // Selected tracker from the list of trackers
   static Rx<int> selected = (-1).obs;
 
-  static setSelected(int? id) {
+  static void setSelected(int? id) {
     selected.value = id ?? -1;
   }
 
@@ -75,25 +72,25 @@ class HabitTrackerController extends GetxController {
   Rx<Deadline> deadline;
 
   Timer? _timer;
-  final List<StreamSubscription<dynamic>> _listeners = [];
+  DateTime? keepTime;
+  final List<StreamSubscription<void>> _listeners = [];
 
-  HabitTrackerController({
+  GoalTrackerController({
     required String name,
     required Duration duration,
     required Duration progress,
     required bool playing,
     required Deadline deadline,
+    DateTime? keptTime,
   })  : name = name.obs,
         duration = duration.obs,
-        progress = progress.obs,
+        progress = keptTime != null
+            ? (DateTime.now().difference(keptTime)).obs
+            : progress.obs,
         playing = playing.obs,
         deadline = deadline.obs {
     _listeners.addAll([
       Deadline.onGlobalTimeChange().listen((event) => _updateDeadline()),
-      this.name.listen((_) => _emitChange(HabitTrackerEvent.name)),
-      this.progress.listen((_) => _emitChange(HabitTrackerEvent.progress)),
-      this.duration.listen((_) => _emitChange(HabitTrackerEvent.duration)),
-      this.deadline.listen((_) => _emitChange(HabitTrackerEvent.deadline)),
     ]);
     togglePlaying(playing: this.playing.value);
     _updateDeadline();
@@ -116,13 +113,26 @@ class HabitTrackerController extends GetxController {
 
   void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
+  void refreshTimer(Function callback) {
+    // Stops potential timer and after callback is called, resumes if timer was playing
+    _clearTimer();
+    callback();
+    if (playing.value) _initializeTimer();
+  }
+
+  void reset() {
+    // Resets progress
+    refreshTimer(() => progress.value = const Duration());
+  }
+
   void _initializeTimer() {
     // Interval each second and updates progress
 
     // Set new time to keep track of
-    final keepTime = DateTime.now().subtract(progress.value);
+    keepTime = DateTime.now().subtract(progress.value);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      progress.value = DateTime.now().difference(keepTime);
+      // Ticks update to display, actual time is in keepTime
+      progress.value = DateTime.now().difference(keepTime!);
     });
   }
 
@@ -138,29 +148,13 @@ class HabitTrackerController extends GetxController {
     }
   }
 
-  void _emitChange(HabitTrackerEvent event) =>
-      HabitTrackerStorage.emitChange(this, event);
-
   void togglePlaying({bool? playing}) {
     refreshTimer(() => this.playing.value = playing ?? !this.playing.value);
-  }
-
-  void refreshTimer(Function callback) {
-    // Stops potential timer and after callback is called, resumes if timer was playing
-    _clearTimer();
-    callback();
-    if (playing.value) _initializeTimer();
-  }
-
-  void reset() {
-    // Resets progress
-    refreshTimer(() => progress.value = const Duration());
   }
 
   @override
   void dispose() {
     //! emits to storage, dispose's observables, listeners(global time, storage update) and timer
-    _emitChange(HabitTrackerEvent.remove);
     deadline.value.dispose();
     for (var listener in _listeners) {
       listener.cancel();
@@ -172,6 +166,37 @@ class HabitTrackerController extends GetxController {
   @override
   String toString() =>
       "${formatDuration(progress.value, DurationFormat.fixed)} / ${formatDuration(duration.value, DurationFormat.fixed)}";
+
+  static GoalTrackerController fromJson(Map<String, dynamic> json) {
+    bool isPlaynig = json["playing"] != "F";
+    final tracker = GoalTrackerController(
+      name: json["name"],
+      duration: Duration(milliseconds: int.parse(json["duration"])),
+      progress: Duration(milliseconds: int.parse(json["progress"])),
+      playing: isPlaynig,
+      deadline: Deadline(
+        date: DateTime.fromMillisecondsSinceEpoch(
+            int.parse(json["deadline_date"])),
+        routine: DeadlineRoutine.values.byName(json["deadline_rotuine"]),
+      ),
+      keptTime: isPlaynig
+          ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["playing"]))
+          : null,
+    );
+    return tracker;
+  }
+
+  Map<String, dynamic> toJson() => {
+        // Returns F if not playing, else, returns time kept when started (unix time)
+        "name": name.value,
+        "duration": duration.value.inMilliseconds.toString(),
+        "progress": progress.value.inMilliseconds.toString(),
+        "playing": (playing.value & (keepTime != null))
+            ? keepTime!.millisecondsSinceEpoch.toString()
+            : "F",
+        "deadline_date": deadline.value.date.millisecondsSinceEpoch.toString(),
+        "deadline_rotuine": deadline.value.routine.name,
+      };
 }
 
 /// * [shortened] -> 1d -> 23h -> 59m -> 59s

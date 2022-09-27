@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../tappable_text.dart';
-import '../../controllers/habit_tracker_controller.dart';
+import '../../controllers/goal_tracker_controller.dart';
 
-class HabitTracker extends StatelessWidget {
-  final HabitTrackerController tracker;
-  final Function(HabitTrackerController) onRemove;
+class GoalTracker extends StatelessWidget {
+  final GoalTrackerController tracker;
   final Animation<double> animation;
+  final Function? onChange;
+  final Function(GoalTrackerController)? onRemove;
 
-  const HabitTracker({
+  const GoalTracker({
     required this.tracker,
-    required this.onRemove,
     required this.animation,
+    this.onChange,
+    this.onRemove,
     Key? key,
   }) : super(key: key);
 
-  bool get _selected => HabitTrackerController.selected.value == tracker.id;
-
-  void _playTap() => tracker.togglePlaying();
+  bool get _selected => GoalTrackerController.selected.value == tracker.id;
 
   void _labelTap(BuildContext context) {
     final controller = TextEditingController(text: tracker.name.value);
@@ -48,6 +48,7 @@ class HabitTracker extends StatelessWidget {
           MaterialButton(
             onPressed: () {
               tracker.name.value = controller.text.trim();
+              onChange?.call();
               Navigator.pop(context);
             },
             child: Text(
@@ -62,7 +63,6 @@ class HabitTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("BUILD ${tracker.name.value}");
     return FadeTransition(
       key: ValueKey(tracker.id),
       opacity: animation,
@@ -71,53 +71,59 @@ class HabitTracker extends StatelessWidget {
           parent: animation,
           curve: Curves.easeInOutQuad,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
-          child: Container(
-            padding: const EdgeInsets.all(20.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    _playPauseIndicator(context),
-                    const SizedBox(width: 12.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Flexible(child: _label(context)),
-                              const SizedBox(width: 5),
-                              _precent(context),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Obx(
-                            () => Visibility(
-                              visible: !_selected,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _progressDuration(context),
-                                  _deadlineDate(context, expanded: false),
-                                ],
+        child: GestureDetector(
+          onTap: () {
+            GoalTrackerController.setSelected(_selected ? null : tracker.id);
+          },
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      _playPauseIndicator(context),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(child: _label(context)),
+                                const SizedBox(width: 5),
+                                _precent(context),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Obx(
+                              () => Visibility(
+                                visible: !_selected,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _progressDuration(context),
+                                    _deadlineDate(context, expanded: false),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    _expandIcon(context),
-                  ],
-                ),
-                _expandedSection(context)
-              ],
+                      _expandIcon(),
+                    ],
+                  ),
+                  _expandedSection(context)
+                ],
+              ),
             ),
           ),
         ),
@@ -127,7 +133,10 @@ class HabitTracker extends StatelessWidget {
 
   Widget _playPauseIndicator(BuildContext context) {
     return GestureDetector(
-      onTap: _playTap,
+      onTap: () {
+        tracker.togglePlaying();
+        onChange?.call();
+      },
       child: SizedBox(
         width: 50.0,
         height: 50.0,
@@ -219,14 +228,9 @@ class HabitTracker extends StatelessWidget {
     );
   }
 
-  Widget _expandIcon(BuildContext context) {
+  Widget _expandIcon() {
     return Obx(
-      () => GestureDetector(
-        onTap: () {
-          HabitTrackerController.setSelected(_selected ? null : tracker.id);
-        },
-        child: Icon(_selected ? Icons.expand_less : Icons.expand_more),
-      ),
+      () => Icon(_selected ? Icons.expand_less : Icons.expand_more),
     );
   }
 
@@ -244,7 +248,7 @@ class HabitTracker extends StatelessWidget {
               const SizedBox(height: 10),
               _editableDuration(context, "Duration", tracker.duration),
               const SizedBox(height: 20),
-              _deadlineRoutine(context),
+              _deadlineRoutine(),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -254,7 +258,7 @@ class HabitTracker extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       _resetIcon(context),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12.0),
                       _removeIcon(context),
                     ],
                   ),
@@ -294,6 +298,7 @@ class HabitTracker extends StatelessWidget {
                     minutes: value.minute,
                   );
                 });
+                onChange?.call();
               }
             });
           },
@@ -302,7 +307,7 @@ class HabitTracker extends StatelessWidget {
     );
   }
 
-  Widget _deadlineRoutine(BuildContext context) {
+  Widget _deadlineRoutine() {
     return Row(
       children: [
         const Text("Routine"),
@@ -315,6 +320,7 @@ class HabitTracker extends StatelessWidget {
               date: Deadline.getNextDate(nextRoutine),
               routine: nextRoutine,
             );
+            onChange?.call();
           },
         ),
       ],
@@ -343,6 +349,7 @@ class HabitTracker extends StatelessWidget {
         if (!tracker.hasProgress) return;
         tracker.togglePlaying(playing: false);
         tracker.reset();
+        onChange?.call();
       },
       child: Icon(
         Icons.restart_alt_rounded,
@@ -356,8 +363,8 @@ class HabitTracker extends StatelessWidget {
   Widget _removeIcon(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        HabitTrackerController.setSelected(null);
-        onRemove(tracker);
+        GoalTrackerController.setSelected(null);
+        onRemove?.call(tracker);
       },
       child: Icon(
         Icons.delete_outline,
