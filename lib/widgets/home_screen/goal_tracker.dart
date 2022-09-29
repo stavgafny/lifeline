@@ -395,7 +395,7 @@ class _ExpandedSectionState extends State<_ExpandedSection>
     _runExpandCheck();
   }
 
-  ///Setting up the animation
+  /// Setting up the animation
   void prepareAnimations() {
     expandController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 200));

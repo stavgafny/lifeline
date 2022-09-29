@@ -9,8 +9,41 @@ void startTask() {
   FlutterForegroundTask.setTaskHandler(_TaskService());
 }
 
-AndroidNotificationOptions _androidNotificationOptions =
-    AndroidNotificationOptions(
+class GoalTrackerNotification {
+  GoalTrackerController tracker;
+  int playingTrackers;
+  GoalTrackerNotification(this.tracker, this.playingTrackers);
+}
+
+class GoalTrackerForegroundTask extends StatelessWidget {
+  final Scaffold child;
+
+  static final List<NotificationButton> _notificationButtons = [];
+
+  const GoalTrackerForegroundTask({
+    required this.child,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return WillStartForegroundTask(
+      onWillStart: () async {
+        // Only if at least 1 playing tracker
+        final notificationInfo = await GoalTrackerStorage.getNotificationInfo();
+        if (notificationInfo == null) return false;
+        _notificationButtons.clear();
+        _notificationButtons.add(
+          NotificationButton(
+            id: "stop",
+            text: "Stop${notificationInfo.playingTrackers > 1 ? ' All' : ''}",
+          ),
+        );
+
+        return true;
+      },
+      callback: startTask,
+      androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'notification_channel_id',
         channelName: 'Task Notification',
         channelDescription:
@@ -22,40 +55,14 @@ AndroidNotificationOptions _androidNotificationOptions =
           resPrefix: ResourcePrefix.img,
           name: 'notification',
         ),
-        buttons: [
-      const NotificationButton(id: 'stop', text: 'Stop'),
-    ]);
-
-ForegroundTaskOptions _foregroundTaskOptions = const ForegroundTaskOptions(
-  interval: 1000,
-  allowWakeLock: false,
-  autoRunOnBoot: false,
-  allowWifiLock: false,
-);
-
-class GoalTrackerNotification {
-  GoalTrackerController tracker;
-  int playingTrackers;
-  GoalTrackerNotification(this.tracker, this.playingTrackers);
-}
-
-class GoalTrackerForegroundTask extends StatelessWidget {
-  final Scaffold child;
-
-  const GoalTrackerForegroundTask({
-    required this.child,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return WillStartForegroundTask(
-      onWillStart: () async {
-        return await GoalTrackerStorage.getNotificationInfo() != null;
-      },
-      callback: startTask,
-      androidNotificationOptions: _androidNotificationOptions,
-      foregroundTaskOptions: _foregroundTaskOptions,
+        buttons: _notificationButtons,
+      ),
+      foregroundTaskOptions: const ForegroundTaskOptions(
+        interval: 1000,
+        allowWakeLock: false,
+        autoRunOnBoot: false,
+        allowWifiLock: false,
+      ),
       notificationTitle: "",
       notificationText: "",
       child: child,
@@ -77,9 +84,14 @@ class _TaskService extends TaskHandler {
 
   void _update() async {
     // Updates notification to show latest played tracker information and playing trackers count if there are more
+    final playingTrackers = _goalTrackerNotification?.playingTrackers ?? 0;
+    final otherTrackers = playingTrackers > 1
+        ? "${' ' * 5}\r\n(+${playingTrackers - 1} Tracker${playingTrackers - 1 > 1 ? 's' : ''})"
+        : "";
     await FlutterForegroundTask.updateService(
-      notificationTitle: _goalTrackerNotification?.tracker.name.toString(),
-      notificationText: _goalTrackerNotification?.tracker.toString(),
+      notificationTitle: _goalTrackerNotification?.tracker.name.value,
+      notificationText:
+          "${_goalTrackerNotification?.tracker.toString()}$otherTrackers",
     );
   }
 
