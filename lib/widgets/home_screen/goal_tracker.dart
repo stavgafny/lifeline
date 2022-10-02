@@ -282,7 +282,7 @@ class GoalTracker extends StatelessWidget {
         const SizedBox(width: 5),
         TappableText(
           text:
-              formatDuration(durationObservable.value, DurationFormat.detailed),
+              formatDuration(durationObservable.value, DurationFormat.absolute),
           onTap: () {
             showTimePicker(
               context: context,
@@ -333,7 +333,7 @@ class GoalTracker extends StatelessWidget {
         (expanded ? "Time Left: " : "") +
             formatDuration(
               tracker.deadline.value.timeRemain.value,
-              expanded ? DurationFormat.fixed : DurationFormat.shortened,
+              expanded ? DurationFormat.detailed : DurationFormat.shortened,
             ),
         style: TextStyle(
           color: Theme.of(context).colorScheme.primary,

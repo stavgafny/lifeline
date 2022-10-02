@@ -165,7 +165,7 @@ class GoalTrackerController extends GetxController {
 
   @override
   String toString() =>
-      "${formatDuration(progress.value, DurationFormat.fixed)} / ${formatDuration(duration.value, DurationFormat.fixed)}";
+      "${formatDuration(progress.value, DurationFormat.detailed)} / ${formatDuration(duration.value, DurationFormat.detailed)}";
 
   static GoalTrackerController fromJson(Map<String, dynamic> json) {
     bool isPlaynig = json["playing"] != "F";
@@ -199,21 +199,24 @@ class GoalTrackerController extends GetxController {
       };
 }
 
-/// * [shortened] -> 1d -> 23h -> 59m -> 59s
+/// * [absolute] 3:12:59:25
 ///
-/// * [fixed] 1d 20h -> 1d -> 23h 11m -> 23h -> 10:05
+/// * [shortened] > |d > |h > |m > |s
 ///
-/// * [detailed] 01:59:00
-enum DurationFormat { shortened, fixed, detailed }
+/// * [detailed] |d? |h? (|m?|s?) > |m? |s? > 0s
+enum DurationFormat { absolute, shortened, detailed }
 
-String formatDuration(Duration value, DurationFormat detailed) {
+String formatDuration(Duration value, DurationFormat format) {
   final days = value.inDays;
   final hours = value.inHours % Duration.hoursPerDay;
   final minutes = value.inMinutes % Duration.minutesPerHour;
   final seconds = value.inSeconds % Duration.secondsPerMinute;
-  final digitalTime =
-      "${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
-  switch (detailed) {
+  switch (format) {
+    case DurationFormat.absolute:
+      {
+        return "$days:$hours:${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
+      }
+
     case DurationFormat.shortened:
       {
         return days > 0
@@ -224,20 +227,18 @@ String formatDuration(Duration value, DurationFormat detailed) {
                     ? "${minutes}m"
                     : "${seconds}s";
       }
-    case DurationFormat.fixed:
-      {
-        if (days > 0) {
-          return "${days}d${(hours > 0) ? " ${hours}h" : ""}";
-        }
-        if (hours > 0) {
-          return "${hours}h${(minutes > 0) ? " ${minutes}m" : ""}";
-        }
 
-        return digitalTime;
-      }
     case DurationFormat.detailed:
       {
-        return "$hours:$digitalTime";
+        if (days > 0 || hours > 0) {
+          return ("${days > 0 ? "${days}d" : ""}"
+                  "${hours > 0 ? " ${hours}h" : ""}"
+                  "${minutes > 0 ? " ${minutes}m" : seconds > 0 ? " ${seconds}s" : ""}")
+              .trim();
+        }
+        return ("${minutes > 0 ? " ${minutes}m" : ""}"
+                "${seconds > 0 ? " ${seconds}s" : ""}")
+            .padLeft(1, "0s");
       }
   }
 }
