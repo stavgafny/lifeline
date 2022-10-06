@@ -230,15 +230,12 @@ String formatDuration(Duration value, DurationFormat format) {
 
     case DurationFormat.detailed:
       {
-        if (days > 0 || hours > 0) {
-          return ("${days > 0 ? "${days}d" : ""}"
-                  "${hours > 0 ? " ${hours}h" : ""}"
-                  "${minutes > 0 ? " ${minutes}m" : seconds > 0 ? " ${seconds}s" : ""}")
-              .trim();
-        }
-        return ("${minutes > 0 ? " ${minutes}m" : ""}"
-                "${seconds > 0 ? " ${seconds}s" : ""}")
-            .padLeft(1, "0s");
+        return ("${days > 0 ? "${days}d" : ""}"
+                "${hours > 0 ? " ${hours}h" : ""}"
+                "${minutes > 0 ? " ${minutes}m" : ""}"
+                "${seconds > 0 && !((days > 0 || hours > 0) && minutes > 0) ? " ${seconds}s" : ""}")
+            .padRight(1, " 0s")
+            .trim();
       }
   }
 }

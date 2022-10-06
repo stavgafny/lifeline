@@ -35,7 +35,7 @@ class _GoalTrackersState extends State<GoalTrackers>
       child: Column(
         children: [
           FutureBuilder<List<GoalTrackerController>>(
-              future: GoalTrackerStorage.load(),
+              future: GoalTrackerStorage.fetch(),
               builder: (context,
                   AsyncSnapshot<List<GoalTrackerController>> snapshot) {
                 if (snapshot.hasData) {
