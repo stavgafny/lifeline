@@ -51,10 +51,10 @@ ThemeData darkTheme = ThemeData(
   scaffoldBackgroundColor: const Color(0xFF1F1920),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFFE9DDF7),
-    backgroundColor: Color(0xFF47374B),
+    backgroundColor: Color(0xFF503B55),
   ),
   navigationBarTheme: const NavigationBarThemeData(
-    backgroundColor: Color(0xFF56405B),
+    backgroundColor: Color(0xFF64476B),
     indicatorColor: Color(0xFFE9DDF7),
   ),
 );

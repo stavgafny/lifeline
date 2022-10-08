@@ -10,6 +10,9 @@ import './swipeables_screens/dashboard_screen.dart';
 import './swipeables_screens/home_screen.dart';
 import './swipeables_screens/timeline_screen.dart';
 
+const int _screenChangeAnimationDuration = 250;
+const int _defaultScreenIndex = 1;
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -18,9 +21,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int screenIndex = 1;
-
-  late PageController pageController = PageController(initialPage: screenIndex);
+  int screenIndex = _defaultScreenIndex;
+  PageController pageController =
+      PageController(initialPage: _defaultScreenIndex);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: Text("Lifeline", style: GoogleFonts.pacifico(fontSize: 32.0)),
+          title: Text("Lifeline", style: GoogleFonts.pacifico(fontSize: 28.0)),
           leading: GestureDetector(
             onTap: () {
               UserAuth.signOut();
@@ -82,10 +85,15 @@ class _HomePageState extends State<HomePage> {
           height: 50,
           color: Theme.of(context).navigationBarTheme.backgroundColor!,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          animationDuration: const Duration(milliseconds: 250),
+          animationDuration:
+              const Duration(milliseconds: _screenChangeAnimationDuration),
           index: screenIndex,
-          onTap: (int index) {
-            pageController.jumpToPage(index);
+          letIndexChange: (int index) {
+            if (index != screenIndex) {
+              pageController.jumpToPage(index);
+              return true;
+            }
+            return false;
           },
           items: [
             Icon(

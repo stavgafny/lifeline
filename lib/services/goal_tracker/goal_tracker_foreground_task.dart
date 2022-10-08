@@ -49,7 +49,7 @@ class GoalTrackerForegroundTask extends StatelessWidget {
         channelDescription:
             'This notification appears when the task is running.',
         channelImportance: NotificationChannelImportance.DEFAULT,
-        priority: NotificationPriority.HIGH,
+        priority: NotificationPriority.MAX,
         iconData: const NotificationIconData(
           resType: ResourceType.mipmap,
           resPrefix: ResourcePrefix.img,
