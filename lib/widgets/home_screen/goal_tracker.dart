@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lifeline/widgets/wheel_input.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../tappable_text.dart';
 import '../../controllers/goal_tracker_controller.dart';
@@ -284,23 +285,25 @@ class GoalTracker extends StatelessWidget {
           text:
               formatDuration(durationObservable.value, DurationFormat.absolute),
           onTap: () {
-            showTimePicker(
+            showDialog(
               context: context,
-              initialTime: TimeOfDay(
-                hour: durationObservable.value.inHours,
-                minute: durationObservable.value.inMinutes % 60,
+              builder: (context) => WheelInputDurationDialog(
+                days: durationObservable.value.inDays,
+                hours: durationObservable.value.inHours % Duration.hoursPerDay,
+                minutes: durationObservable.value.inMinutes %
+                    Duration.minutesPerHour,
+                onSubmit: (days, hours, minutes) {
+                  tracker.refreshTimer(() {
+                    durationObservable.value = Duration(
+                      days: days,
+                      hours: hours,
+                      minutes: minutes,
+                    );
+                  });
+                  onChange?.call();
+                },
               ),
-            ).then((value) {
-              if (value != null) {
-                tracker.refreshTimer(() {
-                  durationObservable.value = Duration(
-                    hours: value.hour,
-                    minutes: value.minute,
-                  );
-                });
-                onChange?.call();
-              }
-            });
+            );
           },
         ),
       ],
@@ -344,19 +347,16 @@ class GoalTracker extends StatelessWidget {
   }
 
   Widget _resetIcon(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (!tracker.hasProgress) return;
-        tracker.togglePlaying(playing: false);
-        tracker.reset();
-        onChange?.call();
-      },
-      child: Icon(
-        Icons.restart_alt_rounded,
-        color: tracker.hasProgress
-            ? Theme.of(context).colorScheme.onSurface
-            : Theme.of(context).colorScheme.onSecondary,
-      ),
+    return IconButton(
+      onPressed: tracker.hasProgress
+          ? () {
+              tracker.togglePlaying(playing: false);
+              tracker.reset();
+              onChange?.call();
+            }
+          : null,
+      icon: const Icon(Icons.restart_alt_rounded),
+      style: IconButton.styleFrom(splashFactory: NoSplash.splashFactory),
     );
   }
 
