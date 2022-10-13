@@ -29,7 +29,7 @@ class GoalTrackerForegroundTask extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillStartForegroundTask(
       onWillStart: () async {
-        // only if at least 1 playing tracker
+        // Only if at least 1 playing tracker
         final notificationInfo = await GoalTrackerStorage.getNotificationInfo();
         if (notificationInfo == null) return false;
         _notificationButtons.clear();
@@ -48,7 +48,7 @@ class GoalTrackerForegroundTask extends StatelessWidget {
         channelName: 'Task Notification',
         channelDescription:
             'This notification appears when the task is running.',
-        channelImportance: NotificationChannelImportance.DEFAULT,
+        channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.MAX,
         iconData: const NotificationIconData(
           resType: ResourceType.mipmap,
@@ -56,6 +56,10 @@ class GoalTrackerForegroundTask extends StatelessWidget {
           name: 'notification',
         ),
         buttons: _notificationButtons,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: true,
+        playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
         interval: 1000,
@@ -75,7 +79,7 @@ class _TaskService extends TaskHandler {
   GoalTrackerNotification? _goalTrackerNotification;
 
   void _killIfNone() async {
-    // kills service if on foreground or goal tracker notification is null
+    // Kills service if on foreground or goal tracker notification is null
     if (await FlutterForegroundTask.isAppOnForeground ||
         _goalTrackerNotification == null) {
       await FlutterForegroundTask.stopService();
@@ -83,15 +87,18 @@ class _TaskService extends TaskHandler {
   }
 
   void _update() async {
-    // updates notification to show latest played tracker information and playing trackers count if there are more
+    // Updates notification to show latest played tracker information and playing trackers count if there are more
     final playingTrackers = _goalTrackerNotification?.playingTrackers ?? 0;
     final otherTrackers = playingTrackers > 1
-        ? "${' ' * 5}\r\n(+${playingTrackers - 1} Tracker${playingTrackers - 1 > 1 ? 's' : ''})"
+        ? "\r\n(+${playingTrackers - 1} Tracker${playingTrackers - 1 > 1 ? 's' : ''})"
         : "";
     await FlutterForegroundTask.updateService(
       notificationTitle: _goalTrackerNotification?.tracker.name.value,
-      notificationText:
-          "${_goalTrackerNotification?.tracker.toString()}$otherTrackers",
+      notificationText: "${_goalTrackerNotification?.tracker.toString()}"
+          "${' ' * 2}"
+          "(${_goalTrackerNotification?.tracker.precentFormat})"
+          "${' ' * 2}"
+          "$otherTrackers",
     );
   }
 
@@ -102,7 +109,7 @@ class _TaskService extends TaskHandler {
 
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
-    // updates notification information if still has a playing tracker
+    // Updates notification information if still has a playing tracker
     _killIfNone();
     _update();
   }
