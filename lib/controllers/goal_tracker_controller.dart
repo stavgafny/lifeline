@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-enum DeadlineRoutine { daily, weekly, monthly }
+String _leadingZero(int value) {
+  return value.toString().padLeft(2, "0");
+}
 
 class Deadline extends GetxController {
   static Stream<void> onGlobalTimeChange() async* {
@@ -15,40 +18,44 @@ class Deadline extends GetxController {
     }
   }
 
-  static DateTime getNextDate(DeadlineRoutine routine) {
-    final current = DateTime.now();
-    switch (routine) {
-      case DeadlineRoutine.daily:
-        return DateTime(current.year, current.month, current.day + 1);
-      case DeadlineRoutine.weekly:
-        return DateTime(current.year, current.month, current.day + 7);
-      case DeadlineRoutine.monthly:
-        return DateTime(current.year, current.month + 1, current.day);
-    }
+  static DateTime getNextDate(int days, TimeOfDay time) {
+    final current = DateTime.now().add(Duration(days: days));
+    return DateTime(
+        current.year, current.month, current.day, time.hour, time.minute);
   }
 
   final DateTime date;
-  final DeadlineRoutine routine;
+  final int days;
+  final TimeOfDay time;
+  final RxBool active;
   final Rx<Duration> timeRemain;
 
-  Deadline({required this.date, required this.routine})
-      : timeRemain = date.difference(DateTime.now()).obs;
+  Deadline(
+      {required this.days,
+      required this.time,
+      DateTime? date,
+      required bool active})
+      : date = date ?? getNextDate(days, time),
+        timeRemain =
+            (date ?? getNextDate(days, time)).difference(DateTime.now()).obs,
+        active = active.obs;
 
   bool get arrived => DateTime.now().isAfter(date);
 
-  String get stringifiedRoutine => routine.name.capitalizeFirst!;
+  String get stringifedTime =>
+      "${_leadingZero(time.hour)}:${_leadingZero(time.minute)}";
 
   void updateTimeRemain() => timeRemain.value = date.difference(DateTime.now());
 
-  DeadlineRoutine getNextRoutine() => DeadlineRoutine
-      .values[(routine.index + 1) % DeadlineRoutine.values.length];
-
-  Deadline copyWithChanges({DateTime? date, DeadlineRoutine? routine}) {
+  Deadline copyWithChanges(
+      {DateTime? date, int? days, TimeOfDay? time, bool? active}) {
     //! dispose's timeRemain observable
     dispose();
     return Deadline(
       date: date ?? this.date,
-      routine: routine ?? this.routine,
+      days: days ?? this.days,
+      time: time ?? this.time,
+      active: active ?? this.active.value,
     );
   }
 }
@@ -70,6 +77,7 @@ class GoalTrackerController extends GetxController {
   Rx<Duration> progress;
   RxBool playing;
   Rx<Deadline> deadline;
+  Function onDeadlineReached = () {};
 
   Timer? _timer;
   DateTime? keepTime;
@@ -113,18 +121,6 @@ class GoalTrackerController extends GetxController {
 
   void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
-  void refreshTimer(Function callback) {
-    // Stops potential timer and after callback is called, resumes if timer was playing
-    _clearTimer();
-    callback();
-    if (playing.value) _initializeTimer();
-  }
-
-  void reset() {
-    // Resets progress
-    refreshTimer(() => progress.value = const Duration());
-  }
-
   void _initializeTimer() {
     // Interval each second and updates progress
 
@@ -140,12 +136,32 @@ class GoalTrackerController extends GetxController {
     // Update time remain
     deadline.value.updateTimeRemain();
 
-    // If deadline arrived, reset progress and set a new deadline based on it's routine
+    // If deadline arrived, reset progress, set new deadline based on days and save to local storage
     if (deadline.value.arrived) {
-      reset();
-      deadline.value = deadline.value
-          .copyWithChanges(date: Deadline.getNextDate(deadline.value.routine));
+      // Check if deadline is active to reset
+      if (deadline.value.active.value) {
+        reset();
+      }
+      deadline.value = deadline.value.copyWithChanges(
+        date: Deadline.getNextDate(
+          deadline.value.days,
+          deadline.value.time,
+        ),
+      );
+      onDeadlineReached();
     }
+  }
+
+  void refreshTimer(Function callback) {
+    // Stops potential timer and after callback is called, resumes if timer was playing
+    _clearTimer();
+    callback();
+    if (playing.value) _initializeTimer();
+  }
+
+  void reset() {
+    // Resets progress
+    refreshTimer(() => progress.value = const Duration());
   }
 
   void togglePlaying({bool? playing}) {
@@ -169,6 +185,7 @@ class GoalTrackerController extends GetxController {
 
   static GoalTrackerController fromJson(Map<String, dynamic> json) {
     bool isPlaynig = json["playing"] != "F";
+    int timeOfDay = int.parse(json["deadline_time"]);
     final tracker = GoalTrackerController(
       name: json["name"],
       duration: Duration(milliseconds: int.parse(json["duration"])),
@@ -177,7 +194,12 @@ class GoalTrackerController extends GetxController {
       deadline: Deadline(
         date: DateTime.fromMillisecondsSinceEpoch(
             int.parse(json["deadline_date"])),
-        routine: DeadlineRoutine.values.byName(json["deadline_rotuine"]),
+        days: int.parse(json["deadline_days"]),
+        time: TimeOfDay(
+          hour: timeOfDay ~/ Duration.minutesPerHour,
+          minute: timeOfDay % Duration.minutesPerHour,
+        ),
+        active: json["deadline_active"] == "T",
       ),
       keptTime: isPlaynig
           ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["playing"]))
@@ -195,7 +217,11 @@ class GoalTrackerController extends GetxController {
             ? keepTime!.millisecondsSinceEpoch.toString()
             : "F",
         "deadline_date": deadline.value.date.millisecondsSinceEpoch.toString(),
-        "deadline_rotuine": deadline.value.routine.name,
+        "deadline_days": deadline.value.days.toString(),
+        "deadline_time": ((deadline.value.time.hour * Duration.minutesPerHour) +
+                deadline.value.time.minute)
+            .toString(),
+        "deadline_active": deadline.value.active.value ? "T" : "F",
       };
 }
 
@@ -214,7 +240,7 @@ String formatDuration(Duration value, DurationFormat format) {
   switch (format) {
     case DurationFormat.absolute:
       {
-        return "$days:$hours:${minutes.toString().padLeft(2, "0")}:${seconds.toString().padLeft(2, "0")}";
+        return "$days:$hours:${_leadingZero(minutes)}:${_leadingZero(seconds)}";
       }
 
     case DurationFormat.shortened:

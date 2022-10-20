@@ -69,8 +69,9 @@ class _GoalTrackersState extends State<GoalTrackers>
                   progress: const Duration(hours: 2, minutes: 13),
                   playing: false,
                   deadline: Deadline(
-                    date: Deadline.getNextDate(DeadlineRoutine.daily),
-                    routine: DeadlineRoutine.daily,
+                    days: 1,
+                    time: TimeOfDay.now(),
+                    active: true,
                   ),
                 ),
                 GoalTrackerController(
@@ -79,8 +80,9 @@ class _GoalTrackersState extends State<GoalTrackers>
                   progress: const Duration(),
                   playing: false,
                   deadline: Deadline(
-                    date: Deadline.getNextDate(DeadlineRoutine.weekly),
-                    routine: DeadlineRoutine.weekly,
+                    days: 2,
+                    time: TimeOfDay.now(),
+                    active: false,
                   ),
                 ),
                 GoalTrackerController(
@@ -89,8 +91,9 @@ class _GoalTrackersState extends State<GoalTrackers>
                   progress: const Duration(),
                   playing: false,
                   deadline: Deadline(
-                    date: Deadline.getNextDate(DeadlineRoutine.monthly),
-                    routine: DeadlineRoutine.monthly,
+                    days: 3,
+                    time: TimeOfDay.now(),
+                    active: false,
                   ),
                 ),
               ]);

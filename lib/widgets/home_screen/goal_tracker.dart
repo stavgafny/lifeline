@@ -11,13 +11,15 @@ class GoalTracker extends StatelessWidget {
   final Function? onChange;
   final Function(GoalTrackerController)? onRemove;
 
-  const GoalTracker({
+  GoalTracker({
     required this.tracker,
     required this.animation,
     this.onChange,
     this.onRemove,
     Key? key,
-  }) : super(key: key);
+  }) : super(key: key) {
+    tracker.onDeadlineReached = onChange ?? () {};
+  }
 
   bool get _selected => GoalTrackerController.selected.value == tracker.id;
 
@@ -111,7 +113,7 @@ class GoalTracker extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     _progressDuration(context),
-                                    _deadlineDate(context, expanded: false),
+                                    _deadlineRemain(context, expanded: false),
                                   ],
                                 ),
                               ),
@@ -249,20 +251,14 @@ class GoalTracker extends StatelessWidget {
               const SizedBox(height: 10),
               _editableDuration(context, "Duration", tracker.duration),
               const SizedBox(height: 20),
-              _deadlineRoutine(),
-              const SizedBox(height: 10),
+              _deadline(context),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _deadlineDate(context, expanded: true),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      _resetIcon(context),
-                      const SizedBox(width: 12.0),
-                      _removeIcon(context),
-                    ],
-                  ),
+                  _resetIcon(context),
+                  const SizedBox(width: 10.0),
+                  _removeIcon(context),
+                  const SizedBox(width: 5.0),
                 ],
               ),
             ],
@@ -310,27 +306,97 @@ class GoalTracker extends StatelessWidget {
     );
   }
 
-  Widget _deadlineRoutine() {
-    return Row(
-      children: [
-        const Text("Routine"),
-        const SizedBox(width: 5),
-        TappableText(
-          text: tracker.deadline.value.stringifiedRoutine,
-          onTap: () {
-            final nextRoutine = tracker.deadline.value.getNextRoutine();
-            tracker.deadline.value = tracker.deadline.value.copyWithChanges(
-              date: Deadline.getNextDate(nextRoutine),
-              routine: nextRoutine,
-            );
-            onChange?.call();
-          },
-        ),
-      ],
+  Widget _deadline(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withAlpha(100),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Deadline", style: TextStyle(fontSize: 20)),
+              Obx(
+                () => Checkbox(
+                  value: tracker.deadline.value.active.value,
+                  onChanged: (value) {
+                    if (value != null) {
+                      tracker.deadline.value.active.value = value;
+                      onChange?.call();
+                    }
+                  },
+                  activeColor: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Reset Every"),
+              TappableText(
+                text: "${tracker.deadline.value.days} day"
+                    "${tracker.deadline.value.days > 1 ? "s" : ""}",
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => WheelInputDeadlineDialog(
+                      days: tracker.deadline.value.days,
+                      onSubmit: (days) {
+                        tracker.deadline.value =
+                            tracker.deadline.value.copyWithChanges(
+                          days: days,
+                          date: Deadline.getNextDate(
+                            days,
+                            tracker.deadline.value.time,
+                          ),
+                        );
+                        onChange?.call();
+                      },
+                    ),
+                  );
+                },
+              ),
+              const Text("At"),
+              TappableText(
+                text: tracker.deadline.value.stringifedTime,
+                onTap: () {
+                  showTimePicker(
+                    context: context,
+                    initialTime: tracker.deadline.value.time,
+                    initialEntryMode: TimePickerEntryMode.dial,
+                  ).then((value) {
+                    if (value != null) {
+                      tracker.deadline.value =
+                          tracker.deadline.value.copyWithChanges(
+                        time: value,
+                        date: Deadline.getNextDate(
+                          tracker.deadline.value.days,
+                          value,
+                        ),
+                      );
+                      onChange?.call();
+                    }
+                  });
+                },
+              ),
+              const SizedBox(width: 28),
+            ],
+          ),
+          const SizedBox(height: 4),
+          _deadlineRemain(context, expanded: true),
+        ],
+      ),
     );
   }
 
-  Widget _deadlineDate(BuildContext context, {required bool expanded}) {
+  Widget _deadlineRemain(BuildContext context, {required bool expanded}) {
+    // Display deadline remaining time if active, add "Time left" on expanded
+    if (!tracker.deadline.value.active.value) return const SizedBox();
     return Obx(
       () => Text(
         (expanded ? "Time Left: " : "") +
