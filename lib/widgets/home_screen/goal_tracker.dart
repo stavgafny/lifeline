@@ -308,7 +308,7 @@ class GoalTracker extends StatelessWidget {
 
   Widget _deadline(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface.withAlpha(100),
         borderRadius: BorderRadius.circular(10.0),
@@ -319,7 +319,18 @@ class GoalTracker extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Deadline", style: TextStyle(fontSize: 20)),
+              Row(
+                children: [
+                  const Text("Deadline", style: TextStyle(fontSize: 20.0)),
+                  const SizedBox(width: 6.0),
+                  Column(
+                    children: [
+                      const SizedBox(height: 6.0),
+                      _deadlineRemain(context, expanded: true),
+                    ],
+                  ),
+                ],
+              ),
               Obx(
                 () => Checkbox(
                   value: tracker.deadline.value.active.value,
@@ -347,14 +358,7 @@ class GoalTracker extends StatelessWidget {
                     builder: (context) => WheelInputDeadlineDialog(
                       days: tracker.deadline.value.days,
                       onSubmit: (days) {
-                        tracker.deadline.value =
-                            tracker.deadline.value.copyWithChanges(
-                          days: days,
-                          date: Deadline.getNextDate(
-                            days,
-                            tracker.deadline.value.time,
-                          ),
-                        );
+                        Deadline.modify(tracker.deadline, days: days);
                         onChange?.call();
                       },
                     ),
@@ -369,26 +373,18 @@ class GoalTracker extends StatelessWidget {
                     context: context,
                     initialTime: tracker.deadline.value.time,
                     initialEntryMode: TimePickerEntryMode.dial,
-                  ).then((value) {
-                    if (value != null) {
-                      tracker.deadline.value =
-                          tracker.deadline.value.copyWithChanges(
-                        time: value,
-                        date: Deadline.getNextDate(
-                          tracker.deadline.value.days,
-                          value,
-                        ),
-                      );
+                  ).then((time) {
+                    if (time != null) {
+                      Deadline.modify(tracker.deadline, time: time);
                       onChange?.call();
                     }
                   });
                 },
               ),
-              const SizedBox(width: 28),
+              const SizedBox(width: 30.0),
             ],
           ),
-          const SizedBox(height: 4),
-          _deadlineRemain(context, expanded: true),
+          const SizedBox(height: 6.0),
         ],
       ),
     );
@@ -396,17 +392,21 @@ class GoalTracker extends StatelessWidget {
 
   Widget _deadlineRemain(BuildContext context, {required bool expanded}) {
     // Display deadline remaining time if active, add "Time left" on expanded
-    if (!tracker.deadline.value.active.value) return const SizedBox();
+    if (!tracker.deadline.value.active.value && !expanded) {
+      return const SizedBox();
+    }
     return Obx(
       () => Text(
-        (expanded ? "Time Left: " : "") +
-            formatDuration(
-              tracker.deadline.value.timeRemain.value,
-              expanded ? DurationFormat.detailed : DurationFormat.shortened,
-            ),
+        formatDuration(
+          tracker.deadline.value.timeRemain.value,
+          expanded ? DurationFormat.detailed : DurationFormat.shortened,
+        ),
         style: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
-          fontSize: 12.0,
+          color: Theme.of(context)
+              .colorScheme
+              .primary
+              .withAlpha(tracker.deadline.value.active.value ? 255 : 100),
+          fontSize: 13,
         ),
       ),
     );

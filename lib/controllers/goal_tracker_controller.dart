@@ -18,26 +18,45 @@ class Deadline extends GetxController {
     }
   }
 
-  static DateTime getNextDate(int days, TimeOfDay time) {
-    final current = DateTime.now().add(Duration(days: days));
-    return DateTime(
-        current.year, current.month, current.day, time.hour, time.minute);
+  static DateTime _getDate(int days, TimeOfDay time) {
+    // Get the next date with given days and the time to reset
+    // If current time is before reset time then subtracts 1 day
+    final current = DateTime.now();
+    if (current.isBefore(DateTime(
+        current.year, current.month, current.day, time.hour, time.minute))) {
+      days--;
+    }
+    final value = DateTime.now().add(Duration(days: days));
+    return DateTime(value.year, value.month, value.day, time.hour, time.minute);
   }
 
-  final DateTime date;
+  static void modify(Rx<Deadline> deadline,
+      {int? days, TimeOfDay? time, bool? active, DateTime? date}) {
+    // Modifies deadline and updates date accourdingly after (if no date given, get next one instead of old date)
+    //! dispose's active and timeRemain observables
+    deadline.value.dispose();
+    deadline.value = Deadline(
+      days: days ?? deadline.value.days,
+      time: time ?? deadline.value.time,
+      active: active ?? deadline.value.active.value,
+      date: date,
+    );
+  }
+
   final int days;
   final TimeOfDay time;
   final RxBool active;
   final Rx<Duration> timeRemain;
+  final DateTime date;
 
   Deadline(
       {required this.days,
       required this.time,
       DateTime? date,
       required bool active})
-      : date = date ?? getNextDate(days, time),
+      : date = date ?? _getDate(days, time),
         timeRemain =
-            (date ?? getNextDate(days, time)).difference(DateTime.now()).obs,
+            (date ?? _getDate(days, time)).difference(DateTime.now()).obs,
         active = active.obs;
 
   bool get arrived => DateTime.now().isAfter(date);
@@ -46,18 +65,6 @@ class Deadline extends GetxController {
       "${_leadingZero(time.hour)}:${_leadingZero(time.minute)}";
 
   void updateTimeRemain() => timeRemain.value = date.difference(DateTime.now());
-
-  Deadline copyWithChanges(
-      {DateTime? date, int? days, TimeOfDay? time, bool? active}) {
-    //! dispose's timeRemain observable
-    dispose();
-    return Deadline(
-      date: date ?? this.date,
-      days: days ?? this.days,
-      time: time ?? this.time,
-      active: active ?? this.active.value,
-    );
-  }
 }
 
 class GoalTrackerController extends GetxController {
@@ -142,12 +149,7 @@ class GoalTrackerController extends GetxController {
       if (deadline.value.active.value) {
         reset();
       }
-      deadline.value = deadline.value.copyWithChanges(
-        date: Deadline.getNextDate(
-          deadline.value.days,
-          deadline.value.time,
-        ),
-      );
+      Deadline.modify(deadline);
       onDeadlineReached();
     }
   }
