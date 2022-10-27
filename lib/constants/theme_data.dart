@@ -48,7 +48,7 @@ ThemeData darkTheme = ThemeData(
   textTheme: GoogleFonts.montserratTextTheme().apply(
     bodyColor: const Color(0xFFDDCDEE),
   ),
-  scaffoldBackgroundColor: const Color(0xFF1F1920),
+  scaffoldBackgroundColor: const Color(0xFF1C171D),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFFE9DDF7),
     backgroundColor: Color(0xFF503B55),
