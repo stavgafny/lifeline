@@ -25,83 +25,85 @@ class _GoalTrackersState extends State<GoalTrackers>
     );
   }
 
-  void _saveTrackers(List<GoalTrackerController> trackers) {
-    GoalTrackerStorage.save(trackers);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column(
-        children: [
-          FutureBuilder<List<GoalTrackerController>>(
-              future: GoalTrackerStorage.fetch(),
-              builder: (context,
-                  AsyncSnapshot<List<GoalTrackerController>> snapshot) {
-                if (snapshot.hasData) {
-                  return Expanded(
-                    child: AnimatedList(
-                      key: _animatedListKey,
-                      initialItemCount: snapshot.data!.length,
-                      itemBuilder: (context, index, animation) => GoalTracker(
-                        tracker: snapshot.data![index],
-                        animation: animation,
-                        onChange: () => _saveTrackers(snapshot.data!),
-                        onRemove: (GoalTrackerController tracker) {
-                          snapshot.data!.removeAt(index);
-                          _removeTracker(tracker, index);
-                          _saveTrackers(snapshot.data!);
-                        },
-                      ),
+      child: FutureBuilder<List<GoalTrackerController>>(
+        future: GoalTrackerStorage.fetch(),
+        builder:
+            (context, AsyncSnapshot<List<GoalTrackerController>> snapshot) {
+          if (snapshot.hasData) {
+            GoalTrackerStorage.storedTrackers = snapshot.data;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: AnimatedList(
+                    key: _animatedListKey,
+                    initialItemCount: snapshot.data!.length,
+                    itemBuilder: (context, index, animation) => GoalTracker(
+                      tracker: snapshot.data![index],
+                      animation: animation,
+                      onRemove: (GoalTrackerController tracker) {
+                        snapshot.data!.removeAt(index);
+                        _removeTracker(tracker, index);
+                      },
                     ),
-                  );
-                } else {
-                  return const Expanded(
-                      child: Center(child: CircularProgressIndicator()));
-                }
-              }),
-          ElevatedButton(
-            onPressed: () {
-              GoalTrackerStorage.save([
-                GoalTrackerController(
-                  name: "Read this is a very long as text",
-                  duration: const Duration(hours: 3),
-                  progress: const Duration(hours: 2, minutes: 13),
-                  playing: false,
-                  deadline: Deadline(
-                    days: 1,
-                    time: TimeOfDay.now(),
-                    active: true,
                   ),
                 ),
-                GoalTrackerController(
-                  name: "Code",
-                  duration: const Duration(hours: 2, minutes: 30),
-                  progress: const Duration(),
-                  playing: false,
-                  deadline: Deadline(
-                    days: 2,
-                    time: TimeOfDay.now(),
-                    active: false,
-                  ),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        GoalTrackerStorage.storedTrackers = [
+                          GoalTrackerController(
+                            name: "Read this is a very long as text",
+                            duration: const Duration(hours: 3),
+                            progress: const Duration(hours: 2, minutes: 13),
+                            playing: false,
+                            deadline: Deadline(
+                              days: 1,
+                              time: TimeOfDay.now(),
+                              active: true,
+                            ),
+                          ),
+                          GoalTrackerController(
+                            name: "Code",
+                            duration: const Duration(hours: 2, minutes: 30),
+                            progress: const Duration(),
+                            playing: false,
+                            deadline: Deadline(
+                              days: 2,
+                              time: TimeOfDay.now(),
+                              active: false,
+                            ),
+                          ),
+                          GoalTrackerController(
+                            name: "Play",
+                            duration: const Duration(minutes: 30),
+                            progress: const Duration(),
+                            playing: false,
+                            deadline: Deadline(
+                              days: 3,
+                              time: TimeOfDay.now(),
+                              active: false,
+                            ),
+                          ),
+                        ];
+                        await GoalTrackerStorage.saveStoredTrackers();
+                      },
+                      child: const Text("RESET"),
+                    ),
+                    const SizedBox(height: 20.0),
+                  ],
                 ),
-                GoalTrackerController(
-                  name: "Play",
-                  duration: const Duration(minutes: 30),
-                  progress: const Duration(),
-                  playing: false,
-                  deadline: Deadline(
-                    days: 3,
-                    time: TimeOfDay.now(),
-                    active: false,
-                  ),
-                ),
-              ]);
-            },
-            child: const Text("RESET"),
-          ),
-          const SizedBox(height: 40.0),
-        ],
+              ],
+            );
+          } else {
+            return const Expanded(
+                child: Center(child: CircularProgressIndicator()));
+          }
+        },
       ),
     );
   }

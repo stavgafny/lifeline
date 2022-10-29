@@ -29,7 +29,11 @@ class GoalTrackerForegroundTask extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillStartForegroundTask(
       onWillStart: () async {
-        // Only if at least 1 playing tracker
+        // Save stored trackers if closing/minimizing the app
+        if (!await FlutterForegroundTask.isAppOnForeground) {
+          await GoalTrackerStorage.saveStoredTrackers();
+        }
+        // Show notification if at least 1 tracker is currently playing
         final notificationInfo = await GoalTrackerStorage.getNotificationInfo();
         if (notificationInfo == null) return false;
         _notificationButtons.clear();

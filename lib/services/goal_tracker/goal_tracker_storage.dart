@@ -14,14 +14,23 @@ DateTime _getPlayedDate(Map<String, dynamic> jsonTracker) {
 }
 
 class GoalTrackerStorage {
-  static void save(List<GoalTrackerController> trackers) async {
-    // stores given trackers
+  static List<GoalTrackerController>? storedTrackers;
+
+  static Future<void> _save(List<GoalTrackerController> trackers) async {
+    // Stores given trackers
     final jsonTrackers = [];
     for (final tracker in trackers) {
       jsonTrackers.add(tracker.toJson());
     }
-    FlutterForegroundTask.saveData(
+    await FlutterForegroundTask.saveData(
         key: "goal_trackers", value: jsonEncode(jsonTrackers));
+  }
+
+  static Future<void> saveStoredTrackers() async {
+    // Save stored trackers only if has been assigned
+    if (storedTrackers != null) {
+      await _save(storedTrackers!);
+    }
   }
 
   static Future<List<GoalTrackerController>> fetch() async {
@@ -61,6 +70,6 @@ class GoalTrackerStorage {
     for (var tracker in trackers) {
       tracker.togglePlaying(playing: false);
     }
-    save(trackers);
+    _save(trackers);
   }
 }

@@ -8,18 +8,14 @@ import '../../controllers/goal_tracker_controller.dart';
 class GoalTracker extends StatelessWidget {
   final GoalTrackerController tracker;
   final Animation<double> animation;
-  final Function? onChange;
   final Function(GoalTrackerController)? onRemove;
 
-  GoalTracker({
+  const GoalTracker({
     required this.tracker,
     required this.animation,
-    this.onChange,
     this.onRemove,
     Key? key,
-  }) : super(key: key) {
-    tracker.onDeadlineReached = onChange ?? () {};
-  }
+  }) : super(key: key);
 
   bool get _selected => GoalTrackerController.selected.value == tracker.id;
 
@@ -51,7 +47,6 @@ class GoalTracker extends StatelessWidget {
           MaterialButton(
             onPressed: () {
               tracker.name.value = controller.text.trim();
-              onChange?.call();
               Navigator.pop(context);
             },
             child: Text(
@@ -138,7 +133,6 @@ class GoalTracker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         tracker.togglePlaying();
-        onChange?.call();
       },
       child: SizedBox(
         width: 50.0,
@@ -296,7 +290,6 @@ class GoalTracker extends StatelessWidget {
                       minutes: minutes,
                     );
                   });
-                  onChange?.call();
                 },
               ),
             );
@@ -337,7 +330,6 @@ class GoalTracker extends StatelessWidget {
                   onChanged: (value) {
                     if (value != null) {
                       tracker.deadline.value.active.value = value;
-                      onChange?.call();
                     }
                   },
                   activeColor: Theme.of(context).colorScheme.primary,
@@ -359,7 +351,6 @@ class GoalTracker extends StatelessWidget {
                       days: tracker.deadline.value.days,
                       onSubmit: (days) {
                         Deadline.modify(tracker.deadline, days: days);
-                        onChange?.call();
                       },
                     ),
                   );
@@ -376,7 +367,6 @@ class GoalTracker extends StatelessWidget {
                   ).then((time) {
                     if (time != null) {
                       Deadline.modify(tracker.deadline, time: time);
-                      onChange?.call();
                     }
                   });
                 },
@@ -418,7 +408,6 @@ class GoalTracker extends StatelessWidget {
           ? () {
               tracker.togglePlaying(playing: false);
               tracker.reset();
-              onChange?.call();
             }
           : null,
       icon: const Icon(Icons.restart_alt_rounded),
