@@ -7,13 +7,11 @@ import '../../controllers/goal_tracker_controller.dart';
 
 class GoalTracker extends StatelessWidget {
   final GoalTrackerController tracker;
-  final Animation<double> animation;
-  final Function(GoalTrackerController)? onRemove;
+  final Function onRemove;
 
   const GoalTracker({
     required this.tracker,
-    required this.animation,
-    this.onRemove,
+    required this.onRemove,
     Key? key,
   }) : super(key: key);
 
@@ -61,68 +59,56 @@ class GoalTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      key: ValueKey(tracker.id),
-      opacity: animation,
-      child: SizeTransition(
-        sizeFactor: CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeInOutQuad,
-        ),
-        child: GestureDetector(
-          onTap: () {
-            GoalTrackerController.setSelected(_selected ? null : tracker.id);
-          },
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              child: Column(
+    return GestureDetector(
+      onTap: () {
+        GoalTrackerController.setSelected(_selected ? null : tracker.id);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+        child: Container(
+          padding: const EdgeInsets.all(15.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      _playPauseIndicator(context),
-                      const SizedBox(width: 12.0),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  _playPauseIndicator(context),
+                  const SizedBox(width: 12.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Flexible(child: _label(context)),
-                                const SizedBox(width: 5),
-                                _precent(context),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Obx(
-                              () => Visibility(
-                                visible: !_selected,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _progressDuration(context),
-                                    _deadlineRemain(context, expanded: false),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            Flexible(child: _label(context)),
+                            const SizedBox(width: 5),
+                            _precent(context),
                           ],
                         ),
-                      ),
-                      _expandIcon(),
-                    ],
+                        const SizedBox(height: 4),
+                        Obx(
+                          () => Visibility(
+                            visible: !_selected,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _progressDuration(context),
+                                _deadlineRemain(context, expanded: false),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  _expandedSection(context)
+                  _expandIcon(),
                 ],
               ),
-            ),
+              _expandedSection(context)
+            ],
           ),
         ),
       ),
@@ -419,7 +405,7 @@ class GoalTracker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         GoalTrackerController.setSelected(null);
-        onRemove?.call(tracker);
+        onRemove.call();
       },
       child: Icon(
         Icons.delete_outline,
