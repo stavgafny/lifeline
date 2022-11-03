@@ -90,6 +90,8 @@ class GoalTrackerController extends GetxController {
   DateTime? keepTime;
   final List<StreamSubscription<void>> _listeners = [];
 
+  GoalTrackerTransitionController transitionController;
+
   GoalTrackerController({
     required String name,
     required Duration duration,
@@ -103,7 +105,8 @@ class GoalTrackerController extends GetxController {
             ? (DateTime.now().difference(keptTime)).obs
             : progress.obs,
         playing = playing.obs,
-        deadline = deadline.obs {
+        deadline = deadline.obs,
+        transitionController = GoalTrackerTransitionController() {
     _listeners.addAll([
       Deadline.onGlobalTimeChange().listen((event) => _updateDeadline()),
     ]);
@@ -265,5 +268,15 @@ String formatDuration(Duration value, DurationFormat format) {
             .padRight(1, " 0s")
             .trim();
       }
+  }
+}
+
+class GoalTrackerTransitionController {
+  AnimationController? controller;
+
+  Future<void> fade() async {
+    if (controller != null) {
+      await controller!.animateTo(0);
+    }
   }
 }

@@ -5,110 +5,118 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../tappable_text.dart';
 import '../../controllers/goal_tracker_controller.dart';
 
+void _showLabelDialog(BuildContext context, Rx<String> label) {
+  final controller = TextEditingController(text: label.value);
+  controller.selection = TextSelection(
+    baseOffset: 0,
+    extentOffset: label.value.length,
+  );
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      title: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Label',
+          )),
+      actions: [
+        MaterialButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            "Cancel",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
+        MaterialButton(
+          onPressed: () {
+            label.value = controller.text.trim();
+            Navigator.pop(context);
+          },
+          child: Text(
+            "OK",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class GoalTracker extends StatelessWidget {
   final GoalTrackerController tracker;
   final Function onRemove;
-
   const GoalTracker({
     required this.tracker,
     required this.onRemove,
     Key? key,
   }) : super(key: key);
 
-  bool get _selected => GoalTrackerController.selected.value == tracker.id;
-
-  void _labelTap(BuildContext context) {
-    final controller = TextEditingController(text: tracker.name.value);
-    controller.selection = TextSelection(
-      baseOffset: 0,
-      extentOffset: tracker.name.value.length,
-    );
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Label',
-            )),
-        actions: [
-          MaterialButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-          ),
-          MaterialButton(
-            onPressed: () {
-              tracker.name.value = controller.text.trim();
-              Navigator.pop(context);
-            },
-            child: Text(
-              "OK",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-          ),
-        ],
-      ),
-    );
+  void _remove() async {
+    await tracker.transitionController.fade();
+    onRemove.call();
   }
+
+  bool get _selected => GoalTrackerController.selected.value == tracker.id;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        GoalTrackerController.setSelected(_selected ? null : tracker.id);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-        child: Container(
-          padding: const EdgeInsets.all(15.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  _playPauseIndicator(context),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Flexible(child: _label(context)),
-                            const SizedBox(width: 5),
-                            _precent(context),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Obx(
-                          () => Visibility(
-                            visible: !_selected,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _progressDuration(context),
-                                _deadlineRemain(context, expanded: false),
-                              ],
+    return _GoalTrackerTransition(
+      transitionController: tracker.transitionController,
+      child: GestureDetector(
+        onTap: () {
+          GoalTrackerController.setSelected(_selected ? null : tracker.id);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+          child: Container(
+            padding: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    _playPauseIndicator(context),
+                    const SizedBox(width: 12.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(child: _label(context)),
+                              const SizedBox(width: 5),
+                              _precent(context),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Obx(
+                            () => Visibility(
+                              visible: !_selected,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _progressDuration(context),
+                                  _deadlineRemain(context, expanded: false),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  _expandIcon(),
-                ],
-              ),
-              _expandedSection(context)
-            ],
+                    _expandIcon(),
+                  ],
+                ),
+                _expandedSection(context)
+              ],
+            ),
           ),
         ),
       ),
@@ -151,7 +159,7 @@ class GoalTracker extends StatelessWidget {
   Widget _label(BuildContext context) {
     return Obx(
       () => GestureDetector(
-        onTap: () => _selected ? _labelTap(context) : null,
+        onTap: () => _selected ? _showLabelDialog(context, tracker.name) : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -404,8 +412,7 @@ class GoalTracker extends StatelessWidget {
   Widget _removeIcon(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        GoalTrackerController.setSelected(null);
-        onRemove.call();
+        _remove();
       },
       child: Icon(
         Icons.delete_outline,
@@ -416,9 +423,12 @@ class GoalTracker extends StatelessWidget {
 }
 
 class _ExpandedSection extends StatefulWidget {
-  final Widget? child;
   final bool expand;
-  const _ExpandedSection({this.expand = false, this.child});
+  final Widget? child;
+  const _ExpandedSection({
+    this.expand = false,
+    this.child,
+  });
 
   @override
   _ExpandedSectionState createState() => _ExpandedSectionState();
@@ -470,5 +480,61 @@ class _ExpandedSectionState extends State<_ExpandedSection>
   Widget build(BuildContext context) {
     return SizeTransition(
         axisAlignment: 1.0, sizeFactor: animation, child: widget.child);
+  }
+}
+
+class _GoalTrackerTransition extends StatefulWidget {
+  static Duration duration = const Duration(milliseconds: 250);
+
+  final Widget child;
+  final GoalTrackerTransitionController transitionController;
+  const _GoalTrackerTransition({
+    Key? key,
+    required this.child,
+    required this.transitionController,
+  }) : super(key: key);
+
+  @override
+  State<_GoalTrackerTransition> createState() => _GoalTrackerTransitionState();
+}
+
+class _GoalTrackerTransitionState extends State<_GoalTrackerTransition>
+    with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      value: 1,
+      duration: _GoalTrackerTransition.duration,
+    );
+    _animation = CurvedAnimation(
+      curve: Curves.easeInOutSine,
+      parent: _controller,
+    );
+
+    widget.transitionController.controller = _controller;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizeTransition(
+      sizeFactor: _animation,
+      axis: Axis.vertical,
+      axisAlignment: 0.0,
+      child: FadeTransition(
+        opacity: _animation,
+        child: widget.child,
+      ),
+    );
   }
 }

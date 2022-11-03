@@ -25,11 +25,42 @@ class _GoalTrackersState extends State<GoalTrackers>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _fetchTrackers();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _fetchTrackers();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_trackers.isNotEmpty) {
       return _buildTrackers(context);
     }
     return _buildEmptyTrackers(context);
+  }
+
+  Widget _buildGoalTracker(GoalTrackerController tracker) {
+    return GoalTracker(
+      key: ValueKey(tracker),
+      tracker: tracker,
+      onRemove: () {
+        GoalTrackerController.setSelected(null);
+        tracker.dispose();
+        _trackers.remove(tracker);
+        setState(() {});
+      },
+    );
   }
 
   Widget _buildTrackers(BuildContext context) {
@@ -47,16 +78,7 @@ class _GoalTrackersState extends State<GoalTrackers>
             setState(() {});
           },
           children: [
-            for (final tracker in _trackers)
-              GoalTracker(
-                key: ValueKey(tracker),
-                tracker: tracker,
-                onRemove: () {
-                  tracker.dispose();
-                  _trackers.remove(tracker);
-                  setState(() {});
-                },
-              ),
+            for (final tracker in _trackers) _buildGoalTracker(tracker)
           ],
         ),
       ),
@@ -75,24 +97,6 @@ class _GoalTrackersState extends State<GoalTrackers>
         ),
       ),
     );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _fetchTrackers();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _fetchTrackers();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 }
 
