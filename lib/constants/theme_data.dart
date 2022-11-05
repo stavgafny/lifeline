@@ -28,6 +28,11 @@ ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xFF78658C),
     indicatorColor: Color(0xFFE9DDF7),
   ),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Color(0xFF36323B),
+    contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
+    actionTextColor: Color(0xFFB895FF),
+  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -56,5 +61,10 @@ ThemeData darkTheme = ThemeData(
   navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Color(0xFF64476B),
     indicatorColor: Color(0xFFE9DDF7),
+  ),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Color(0xFF25212A),
+    contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
+    actionTextColor: Color(0xFFB895FF),
   ),
 );

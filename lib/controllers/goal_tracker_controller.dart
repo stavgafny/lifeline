@@ -272,9 +272,19 @@ String formatDuration(Duration value, DurationFormat format) {
 }
 
 class GoalTrackerTransitionController {
-  AnimationController? controller;
+  static Duration duration = const Duration(milliseconds: 325);
 
-  Future<void> fade() async {
+  AnimationController? controller;
+  final bool animateIn;
+  GoalTrackerTransitionController({this.animateIn = false});
+
+  Future<void> fadeIn() async {
+    if (controller != null) {
+      await controller!.forward(from: 0);
+    }
+  }
+
+  Future<void> fadeOut() async {
     if (controller != null) {
       await controller!.animateTo(0);
     }

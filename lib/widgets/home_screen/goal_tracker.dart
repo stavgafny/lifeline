@@ -54,11 +54,6 @@ class GoalTracker extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  void _remove() async {
-    await tracker.transitionController.fade();
-    onRemove.call();
-  }
-
   bool get _selected => GoalTrackerController.selected.value == tracker.id;
 
   @override
@@ -411,9 +406,7 @@ class GoalTracker extends StatelessWidget {
 
   Widget _removeIcon(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _remove();
-      },
+      onTap: () => onRemove.call(),
       child: Icon(
         Icons.delete_outline,
         color: Theme.of(context).colorScheme.onSurface,
@@ -484,8 +477,6 @@ class _ExpandedSectionState extends State<_ExpandedSection>
 }
 
 class _GoalTrackerTransition extends StatefulWidget {
-  static Duration duration = const Duration(milliseconds: 250);
-
   final Widget child;
   final GoalTrackerTransitionController transitionController;
   const _GoalTrackerTransition({
@@ -508,15 +499,17 @@ class _GoalTrackerTransitionState extends State<_GoalTrackerTransition>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      value: 1,
-      duration: _GoalTrackerTransition.duration,
+      value: widget.transitionController.animateIn ? 0 : 1,
+      duration: GoalTrackerTransitionController.duration,
     );
     _animation = CurvedAnimation(
       curve: Curves.easeInOutSine,
       parent: _controller,
     );
-
     widget.transitionController.controller = _controller;
+    if (widget.transitionController.animateIn) {
+      widget.transitionController.fadeIn();
+    }
   }
 
   @override
