@@ -43,6 +43,8 @@ class _GoalTrackersState extends State<GoalTrackers>
 
   @override
   void dispose() {
+    // Save stored trackers on dispose (switched screen)
+    GoalTrackerStorage.saveStoredTrackers();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
