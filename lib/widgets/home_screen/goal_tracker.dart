@@ -83,6 +83,7 @@ class GoalTracker extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Flexible(child: _label(context)),
                               const SizedBox(width: 5),

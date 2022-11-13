@@ -78,6 +78,18 @@ class GoalTrackerController extends GetxController {
     selected.value = id ?? -1;
   }
 
+  static GoalTrackerController createEmpty() => GoalTrackerController(
+        name: "",
+        duration: const Duration(),
+        progress: const Duration(),
+        playing: false,
+        deadline: Deadline(
+          days: 1,
+          time: const TimeOfDay(hour: 0, minute: 0),
+          active: false,
+        ),
+      );
+
   final int id = uniqueId;
   Rx<String> name;
   Rx<Duration> duration;

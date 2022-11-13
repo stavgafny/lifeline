@@ -13,6 +13,10 @@ const _trackerUndoDuration = Duration(milliseconds: 2500);
 ///
 /// Else(not fetched yet or empty), build empty trackers widget
 class GoalTrackers extends StatefulWidget {
+  // Static function mounted to current instance (on init state)
+  // Adds new empty goal tracker to that instance
+  static void Function()? add;
+
   const GoalTrackers({super.key});
 
   @override
@@ -27,26 +31,6 @@ class _GoalTrackersState extends State<GoalTrackers>
     _trackers = await GoalTrackerStorage.fetch();
     GoalTrackerStorage.storedTrackers = _trackers;
     setState(() {});
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _fetchTrackers();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _fetchTrackers();
-  }
-
-  @override
-  void dispose() {
-    // Save stored trackers on dispose (switched screen)
-    GoalTrackerStorage.saveStoredTrackers();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   void _onTrackerRemove(GoalTrackerController tracker) async {
@@ -97,12 +81,12 @@ class _GoalTrackersState extends State<GoalTrackers>
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_trackers.isNotEmpty) {
-      return _buildTrackers(context);
-    }
-    return _buildEmptyTrackers(context);
+  void _addNewTracker() {
+    final tracker = GoalTrackerController.createEmpty();
+    tracker.transitionController =
+        GoalTrackerTransitionController(animateIn: true);
+    _trackers.insert(0, tracker);
+    setState(() {});
   }
 
   Widget _buildGoalTracker(GoalTrackerController tracker) {
@@ -140,49 +124,39 @@ class _GoalTrackersState extends State<GoalTrackers>
     return Expanded(
       child: Center(
         child: ElevatedButton(
-          onPressed: () {
-            _trackers.addAll(resetTrackers);
-            setState(() {});
-          },
+          onPressed: _addNewTracker,
           child: const Text("Reset"),
         ),
       ),
     );
   }
-}
 
-final resetTrackers = [
-  GoalTrackerController(
-    name: "Read this is a very long as text",
-    duration: const Duration(hours: 3),
-    progress: const Duration(hours: 2, minutes: 13),
-    playing: false,
-    deadline: Deadline(
-      days: 1,
-      time: TimeOfDay.now(),
-      active: true,
-    ),
-  ),
-  GoalTrackerController(
-    name: "Code",
-    duration: const Duration(hours: 2, minutes: 30),
-    progress: const Duration(),
-    playing: false,
-    deadline: Deadline(
-      days: 2,
-      time: TimeOfDay.now(),
-      active: false,
-    ),
-  ),
-  GoalTrackerController(
-    name: "Play",
-    duration: const Duration(minutes: 30),
-    progress: const Duration(),
-    playing: false,
-    deadline: Deadline(
-      days: 3,
-      time: TimeOfDay.now(),
-      active: false,
-    ),
-  ),
-];
+  @override
+  Widget build(BuildContext context) {
+    if (_trackers.isNotEmpty) {
+      return _buildTrackers(context);
+    }
+    return _buildEmptyTrackers(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _fetchTrackers();
+    GoalTrackers.add = _addNewTracker;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _fetchTrackers();
+  }
+
+  @override
+  void dispose() {
+    // Save stored trackers on dispose (switched screen)
+    GoalTrackerStorage.saveStoredTrackers();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+}
