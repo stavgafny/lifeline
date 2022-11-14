@@ -28,7 +28,7 @@ class WheelInputController {
   int getReletive(int value) => value % range;
 
   void reset() {
-    // temporarily removes potential mount to not affect when resetting
+    // Temporarily removes potential mount to not affect when resetting
     final WheelInputController? temp = mount;
     mount = null;
     _controller.jumpToItem(_controller.initialItem);
@@ -45,10 +45,10 @@ class WheelInputController {
   }
 
   void update(int value) {
-    if (value ~/ range != _current ~/ range) {
-      mount?.modify(value ~/ range > _current ~/ range);
-    } else if (value < 0 && _current >= 0 || value >= 0 && _current < 0) {
-      mount?.modify(value > _current);
+    if (value % range == 0 && value > _current) {
+      mount?.modify(true);
+    } else if (_current % range == 0 && value < _current) {
+      mount?.modify(false);
     }
     _current = value;
   }
