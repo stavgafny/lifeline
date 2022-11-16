@@ -13,10 +13,6 @@ const _trackerUndoDuration = Duration(milliseconds: 2500);
 ///
 /// Else(not fetched yet or empty), build empty trackers widget
 class GoalTrackers extends StatefulWidget {
-  // Static function mounted to current instance (on init state)
-  // Adds new empty goal tracker to that instance
-  static void Function()? add;
-
   const GoalTrackers({super.key});
 
   @override
@@ -99,23 +95,40 @@ class _GoalTrackersState extends State<GoalTrackers>
 
   Widget _buildTrackers(BuildContext context) {
     return Expanded(
-      child: Theme(
-        //! Theme to remove highlight color onb reorder drag
-        data: Theme.of(context).copyWith(
-          canvasColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-        ),
-        child: ReorderableListView(
-          onReorder: (oldIndex, newIndex) {
-            if (newIndex > oldIndex) newIndex--;
-            final tracker = _trackers.removeAt(oldIndex);
-            _trackers.insert(newIndex, tracker);
-            setState(() {});
-          },
-          children: [
-            for (final tracker in _trackers) _buildGoalTracker(tracker)
-          ],
-        ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Theme(
+              //! Remove highlight color on reorder drag
+              data: Theme.of(context).copyWith(
+                canvasColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              child: ReorderableListView(
+                onReorder: (oldIndex, newIndex) {
+                  if (newIndex > oldIndex) newIndex--;
+                  final tracker = _trackers.removeAt(oldIndex);
+                  _trackers.insert(newIndex, tracker);
+                  setState(() {});
+                },
+                children: [
+                  for (final tracker in _trackers) _buildGoalTracker(tracker)
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: ElevatedButton(
+              onPressed: _addNewTracker,
+              child: const Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Icon(Icons.add),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+        ],
       ),
     );
   }
@@ -144,12 +157,6 @@ class _GoalTrackersState extends State<GoalTrackers>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _fetchTrackers();
-    GoalTrackers.add = _addNewTracker;
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _fetchTrackers();
   }
 
   @override
@@ -158,5 +165,10 @@ class _GoalTrackersState extends State<GoalTrackers>
     GoalTrackerStorage.saveStoredTrackers();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _fetchTrackers();
   }
 }
