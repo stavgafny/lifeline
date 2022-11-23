@@ -1,49 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'upcoming_event.dart';
+import '../../models/upcoming_event_model.dart';
+import './upcoming_event.dart';
 
 class UpcomingEvents extends StatefulWidget {
-  static const double defaultHeight = 150.0;
-  static const int defaultUpcomingEventsOnDisplay = 3;
-
-  final double height;
-  final int upcomingEventsOnDisplay;
-
-  const UpcomingEvents({
-    this.height = defaultHeight,
-    this.upcomingEventsOnDisplay = defaultUpcomingEventsOnDisplay,
-    Key? key,
-  }) : super(key: key);
+  const UpcomingEvents({super.key});
 
   @override
   State<UpcomingEvents> createState() => _UpcomingEventsState();
 }
 
-class _UpcomingEventsState extends State<UpcomingEvents>
-    with AutomaticKeepAliveClientMixin {
+class _UpcomingEventsState extends State<UpcomingEvents> {
+  final List<UpcomingEventModel> _upcomingEvents = [
+    UpcomingEventModel(
+      name: "AAA",
+      date: DateTime.now(),
+      type: UpcomingEventType.celebration,
+    ),
+    UpcomingEventModel(
+      name: "BBB",
+      date: DateTime.now(),
+      type: UpcomingEventType.grocery,
+    ),
+    UpcomingEventModel(
+      name: "CCC",
+      date: DateTime.now(),
+      type: UpcomingEventType.shopping,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    final screenSize = MediaQuery.of(context).size;
+
+    final height = screenSize.height / 5;
+    final width = screenSize.width / 3;
+
     return SizedBox(
       width: double.infinity,
-      height: widget.height,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemExtent: Get.width / widget.upcomingEventsOnDisplay,
-        itemBuilder: (context, index) {
-          return UpcomingEvent(
-            event: "event: $index",
-            days: "$index",
-            date:
-                "${1 + index % 31}/${(index / 30).floor() % 13}/${22 + (index / 365).floor()}",
-            type: UpcomingEventTypes
-                .values[index % UpcomingEventTypes.values.length],
-          );
-        },
+      height: height,
+      child: Theme(
+        //! Remove highlight color on reorder drag
+        data: Theme.of(context).copyWith(
+          canvasColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+        ),
+        child: ReorderableListView(
+          scrollDirection: Axis.horizontal,
+          onReorder: (oldIndex, newIndex) {
+            if (newIndex > oldIndex) newIndex--;
+            final upcomingEvent = _upcomingEvents.removeAt(oldIndex);
+            _upcomingEvents.insert(newIndex, upcomingEvent);
+            setState(() {});
+          },
+          footer: SizedBox(
+            width: width,
+            child: UpcomingEvent.addButton(context),
+          ),
+          children: [
+            for (final upcomingEvent in _upcomingEvents)
+              SizedBox(
+                key: ValueKey(upcomingEvent),
+                width: width,
+                child: UpcomingEvent(
+                  model: upcomingEvent,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

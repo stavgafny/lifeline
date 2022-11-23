@@ -1,110 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-const _celebration = AssetImage("assets/upcoming_events/celebration.png");
-const _vacation = AssetImage("assets/upcoming_events/vacation.png");
-const _education = AssetImage("assets/upcoming_events/education.png");
-const _movie = AssetImage("assets/upcoming_events/movie.png");
-const _grocery = AssetImage("assets/upcoming_events/grocery.png");
-const _shopping = AssetImage("assets/upcoming_events/shopping.png");
-const _trip = AssetImage("assets/upcoming_events/trip.png");
-const _workout = AssetImage("assets/upcoming_events/workout.png");
-const _yoga = AssetImage("assets/upcoming_events/yoga.png");
-
-enum UpcomingEventTypes {
-  celebration,
-  vacation,
-  education,
-  movie,
-  grocery,
-  shopping,
-  trip,
-  workout,
-  yoga,
-}
-
-AssetImage getUpcomingEventImage(UpcomingEventTypes type) {
-  switch (type) {
-    case UpcomingEventTypes.celebration:
-      return _celebration;
-    case UpcomingEventTypes.vacation:
-      return _vacation;
-    case UpcomingEventTypes.education:
-      return _education;
-    case UpcomingEventTypes.movie:
-      return _movie;
-    case UpcomingEventTypes.grocery:
-      return _grocery;
-    case UpcomingEventTypes.shopping:
-      return _shopping;
-    case UpcomingEventTypes.trip:
-      return _trip;
-    case UpcomingEventTypes.workout:
-      return _workout;
-    case UpcomingEventTypes.yoga:
-      return _yoga;
-  }
-}
+import '../../models/upcoming_event_model.dart';
 
 class UpcomingEvent extends StatelessWidget {
-  final String days;
-  final String event;
-  final String date;
-  final UpcomingEventTypes type;
+  static Widget addButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        shape: BoxShape.circle,
+      ),
+      child: Transform.scale(
+        scale: .5,
+        child: const FittedBox(
+          fit: BoxFit.contain,
+          child: Icon(
+            Icons.add,
+          ),
+        ),
+      ),
+    );
+  }
+
+  final UpcomingEventModel model;
 
   const UpcomingEvent({
-    required this.event,
-    required this.days,
-    required this.date,
-    required this.type,
+    required this.model,
     Key? key,
   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Flexible(
-          flex: 1,
-          child: Text(
-            date,
-            style: const TextStyle(fontSize: 12.0),
+  Widget _buildDate(BuildContext context) {
+    return const Text(
+      "12/1/2001",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 10.0,
+      ),
+    );
+  }
+
+  Widget _buildBlob(BuildContext context) {
+    return Flexible(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.contain,
+            image: model.type.value,
+            opacity: .65,
           ),
         ),
-        Flexible(
-          flex: 5,
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                fit: BoxFit.contain,
-                image: getUpcomingEventImage(type),
-                opacity: 0.5,
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Transform.scale(
+            scale: .75,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Text(
+                "13",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.pacifico(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
-            child: Text(
-              days,
-              style: GoogleFonts.pacifico(fontSize: 50.0, height: -(1 / 3.0)),
-            ),
           ),
         ),
-        Flexible(
-          flex: 2,
-          child: Text(
-            event,
-            style: const TextStyle(fontSize: 20.0),
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            textWidthBasis: TextWidthBasis.longestLine,
-          ),
-        ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildName(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Text(
+        model.name,
+        textAlign: TextAlign.center,
+        softWrap: true,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        textWidthBasis: TextWidthBasis.longestLine,
+        style: const TextStyle(fontSize: 18.0),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          _buildDate(context),
+          _buildBlob(context),
+          _buildName(context),
+        ],
+      ),
     );
   }
 }
