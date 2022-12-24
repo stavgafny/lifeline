@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lifeline/widgets/wheel_input.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../tappable_text.dart';
 import '../../controllers/goal_tracker_controller.dart';
+import '../tappable_text.dart';
+import '../wheel_input.dart';
 
 void _showLabelDialog(BuildContext context, Rx<String> label) {
   final controller = TextEditingController(text: label.value);
@@ -337,7 +337,7 @@ class GoalTracker extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => WheelInputDeadlineDialog(
+                    builder: (context) => WheelInputDaysDialog(
                       days: tracker.deadline.value.days,
                       onSubmit: (days) {
                         Deadline.modify(tracker.deadline, days: days);

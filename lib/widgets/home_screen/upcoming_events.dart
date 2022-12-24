@@ -18,12 +18,12 @@ class _UpcomingEventsState extends State<UpcomingEvents> {
     ),
     UpcomingEventModel(
       name: "BBB",
-      date: DateTime.now(),
+      date: DateTime.now().add(const Duration(days: 2)),
       type: UpcomingEventType.grocery,
     ),
     UpcomingEventModel(
       name: "CCC",
-      date: DateTime.now(),
+      date: DateTime.now().subtract(const Duration(days: 3)),
       type: UpcomingEventType.shopping,
     ),
   ];
@@ -77,6 +77,13 @@ class _UpcomingEventsState extends State<UpcomingEvents> {
                   width: size,
                   child: UpcomingEvent(
                     model: upcomingEvent,
+                    onChange: () {
+                      print("Changed");
+                      setState(() {});
+                    },
+                    onDelete: () {
+                      print("Deleted");
+                    },
                   ),
                 ),
             ],

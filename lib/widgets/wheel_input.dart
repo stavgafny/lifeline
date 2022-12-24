@@ -308,13 +308,15 @@ class WheelInputDurationDialog extends StatelessWidget {
   }
 }
 
-class WheelInputDeadlineDialog extends StatelessWidget {
+class WheelInputDaysDialog extends StatelessWidget {
   final int days;
   final Function(int) onSubmit;
+  final int range;
 
-  const WheelInputDeadlineDialog({
+  const WheelInputDaysDialog({
     required this.days,
     required this.onSubmit,
+    this.range = _daysRange,
     Key? key,
   }) : super(key: key);
 
@@ -338,7 +340,7 @@ class WheelInputDeadlineDialog extends StatelessWidget {
               height: 135,
               controller: controller,
               name: "Days",
-              items: List<int>.generate(_daysRange - 1, (i) => i + 1),
+              items: List<int>.generate(range - 1, (i) => i + 1),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

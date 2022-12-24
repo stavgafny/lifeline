@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/upcoming_event_model.dart';
+import '../../controllers/upcoming_event_controller.dart';
+import '../../widgets/wheel_input.dart';
 
 class UpcomingEvent extends StatelessWidget {
   static const double _dateFontSize = 14.0;
@@ -37,18 +40,22 @@ class UpcomingEvent extends StatelessWidget {
   }
 
   final UpcomingEventModel model;
+  final Function onChange;
+  final Function onDelete;
   const UpcomingEvent({
     required this.model,
+    required this.onChange,
+    required this.onDelete,
     Key? key,
   }) : super(key: key);
 
   Widget _date(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       height: _dateFontSize,
       child: FittedBox(
         fit: BoxFit.contain,
         child: Text(
-          "12/1/2001",
+          model.stringifiedDateDDMMYYYY(),
           textAlign: TextAlign.center,
         ),
       ),
@@ -62,7 +69,11 @@ class UpcomingEvent extends StatelessWidget {
         child: GestureDetector(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => _ExtendedUpcomingEvent(model: model),
+              builder: (context) => _ExtendedUpcomingEvent(
+                model: model,
+                onChange: onChange,
+                onDelete: onDelete,
+              ),
             ),
           ),
           //! Hero this container to expended (upcoming event type transition)
@@ -90,7 +101,7 @@ class UpcomingEvent extends StatelessWidget {
                     child: Transform.scale(
                       scale: .8,
                       child: Text(
-                        "13",
+                        model.daysRemain().toString(),
                         textAlign: TextAlign.center,
                         textHeightBehavior: const TextHeightBehavior(
                           applyHeightToFirstAscent: true,
@@ -138,17 +149,66 @@ class UpcomingEvent extends StatelessWidget {
   }
 }
 
-class _ExtendedUpcomingEvent extends StatelessWidget {
+class _ExtendedUpcomingEvent extends StatefulWidget {
   final UpcomingEventModel model;
+  final Function onChange;
+  final Function onDelete;
   const _ExtendedUpcomingEvent({
     required this.model,
+    required this.onChange,
+    required this.onDelete,
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<_ExtendedUpcomingEvent> createState() => _ExtendedUpcomingEventState();
+}
+
+class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
+  // Setting a controller on editable fields when widget is initialized
+  late final _controller = UpcomingEventController(model: widget.model);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _changeDate() async {
+    final now = DateTime.now();
+    final DateTime? newDate = await showDatePicker(
+      context: context,
+      initialDate: now.isAfter(_controller.editableModel.date)
+          ? now
+          : _controller.editableModel.date,
+      firstDate: now,
+      lastDate: now.add(const Duration(days: UpcomingEventModel.dateRange)),
+    );
+    if (newDate != null) {
+      _controller.setNewDate(newDate);
+      setState(() {});
+    }
+  }
+
+  void _changeDays() {
+    final daysRemain = _controller.editableModel.daysRemain();
+    showDialog(
+      context: context,
+      builder: (context) => WheelInputDaysDialog(
+        days: daysRemain <= 0 ? 1 : daysRemain,
+        onSubmit: (days) {
+          _controller.setNewDays(days);
+          setState(() {});
+        },
+        range: UpcomingEventModel.dateRange + 1,
+      ),
+    );
+  }
 
   Widget _type(BuildContext context) {
     //! Hero this container to folded (upcoming event type transition)
     return Hero(
-      tag: model,
+      tag: widget.model,
       transitionOnUserGestures: true,
       child: AspectRatio(
         aspectRatio: 1.5,
@@ -157,7 +217,7 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
             color: Theme.of(context).colorScheme.secondary,
             image: DecorationImage(
               fit: BoxFit.contain,
-              image: model.type.value,
+              image: widget.model.type.value,
             ),
           ),
           child: Container(
@@ -176,7 +236,7 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: TextField(
-        controller: TextEditingController(text: model.name),
+        controller: _controller.nameController,
         textAlign: TextAlign.left,
         style: const TextStyle(fontSize: 26.0),
         decoration: const InputDecoration(
@@ -193,12 +253,12 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: MaterialButton(
-          onPressed: () {},
+          onPressed: _changeDate,
           color: Theme.of(context).colorScheme.onPrimary,
           child: Column(
-            children: const [
-              SizedBox(height: 10.0),
-              Text("Date"),
+            children: [
+              const SizedBox(height: 10.0),
+              const Text("Date"),
               Expanded(
                 flex: 5,
                 child: SizedBox(
@@ -206,7 +266,7 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Text(
-                      "10 Jan 20",
+                      _controller.editableModel.stringifiedDateDDMONRR(),
                     ),
                   ),
                 ),
@@ -218,12 +278,12 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Text(
-                      "Thursday",
+                      _controller.editableModel.dateDayOfWeek(),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
             ],
           ),
         ),
@@ -236,12 +296,12 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(1.0),
         child: MaterialButton(
-          onPressed: () {},
+          onPressed: _changeDays,
           color: Theme.of(context).colorScheme.background,
           child: Column(
-            children: const [
-              SizedBox(height: 10.0),
-              Text("Days"),
+            children: [
+              const SizedBox(height: 10.0),
+              const Text("Days"),
               Expanded(
                 flex: 5,
                 child: SizedBox(
@@ -249,12 +309,12 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: Text(
-                      "13",
+                      _controller.editableModel.daysRemain().toString(),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
             ],
           ),
         ),
@@ -278,7 +338,7 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1.25,
       child: MaterialButton(
-        onPressed: () {},
+        onPressed: () => widget.onDelete(),
         color: Colors.red,
         padding: EdgeInsets.zero,
         elevation: 10.0,
@@ -303,20 +363,26 @@ class _ExtendedUpcomingEvent extends StatelessWidget {
   }
 
   Widget _apply(BuildContext context) {
-    return MaterialButton(
-      onPressed: () {},
-      height: double.infinity,
-      elevation: 10.0,
-      color: true
-          ? Theme.of(context).colorScheme.primary.withAlpha(200)
-          : Colors.grey[800],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: const Center(
-        child: Text(
-          "Apply",
-          style: TextStyle(fontSize: 28.0),
+    return Obx(
+      () => MaterialButton(
+        onPressed: _controller.edited.value
+            ? () {
+                _controller.saveChanges();
+                widget.onChange();
+              }
+            : null,
+        height: double.infinity,
+        elevation: 10.0,
+        color: Theme.of(context).colorScheme.primary.withAlpha(200),
+        disabledColor: Colors.grey[800],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: const Center(
+          child: Text(
+            "Apply",
+            style: TextStyle(fontSize: 28.0),
+          ),
         ),
       ),
     );
