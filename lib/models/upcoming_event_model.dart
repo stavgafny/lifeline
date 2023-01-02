@@ -84,4 +84,18 @@ class UpcomingEventModel {
 
     return difference.inDays + (round ? 1 : 0);
   }
+
+  static UpcomingEventModel fromJson(Map<String, dynamic> json) =>
+      UpcomingEventModel(
+        name: json["name"],
+        date: DateTime.fromMillisecondsSinceEpoch(int.parse(json["date"])),
+        type: UpcomingEventType.values.byName(json["type"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        // Returns json model (date as unix time)
+        "name": name,
+        "date": date.millisecondsSinceEpoch.toString(),
+        "type": type.name,
+      };
 }

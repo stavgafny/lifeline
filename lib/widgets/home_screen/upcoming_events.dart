@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/upcoming_event/upcoming_event_storage.dart';
 import '../../models/upcoming_event_model.dart';
 import './upcoming_event.dart';
 
@@ -9,27 +10,17 @@ class UpcomingEvents extends StatefulWidget {
   State<UpcomingEvents> createState() => _UpcomingEventsState();
 }
 
-class _UpcomingEventsState extends State<UpcomingEvents> {
-  final List<UpcomingEventModel> _upcomingEvents = [
-    UpcomingEventModel(
-      name: "AAAasasd asdasd asdasd",
-      date: DateTime.now(),
-      type: UpcomingEventType.celebration,
-    ),
-    UpcomingEventModel(
-      name: "BBB",
-      date: DateTime.now().add(const Duration(days: 2)),
-      type: UpcomingEventType.grocery,
-    ),
-    UpcomingEventModel(
-      name: "CCC",
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      type: UpcomingEventType.shopping,
-    ),
-  ];
+class _UpcomingEventsState extends State<UpcomingEvents>
+    with WidgetsBindingObserver {
+  List<UpcomingEventModel> _upcomingEvents = [];
 
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _fetchUpcomingEvents() async {
+    _upcomingEvents = await UpcomingEventStorage.fetch();
+    UpcomingEventStorage.storedUpcomingEvents = _upcomingEvents;
+    setState(() {});
+  }
+
+  Widget _buildUpcomingEvents(BuildContext context) {
     // Gets screen dimensions
     final screenSize = MediaQuery.of(context).size;
 
@@ -78,12 +69,9 @@ class _UpcomingEventsState extends State<UpcomingEvents> {
                   child: UpcomingEvent(
                     model: upcomingEvent,
                     onChange: () {
-                      print("Changed");
                       setState(() {});
                     },
-                    onDelete: () {
-                      print("Deleted");
-                    },
+                    onDelete: () {},
                   ),
                 ),
             ],
@@ -91,5 +79,42 @@ class _UpcomingEventsState extends State<UpcomingEvents> {
         ),
       ),
     );
+  }
+
+  Widget _buildEmptyUpcomingEvents(BuildContext context) {
+    return const Center(
+      child: Text("Empty"),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_upcomingEvents.isNotEmpty) {
+      return _buildUpcomingEvents(context);
+    }
+    return _buildEmptyUpcomingEvents(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _fetchUpcomingEvents();
+  }
+
+  @override
+  void dispose() {
+    // Save stored upcoming events on dispose (switched screen)
+    UpcomingEventStorage.saveStoredUpcomingEvents();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // If event isn't resume save stored upcoming events(inactive/paused/detached)
+    if (state != AppLifecycleState.resumed) {
+      UpcomingEventStorage.saveStoredUpcomingEvents();
+    }
   }
 }

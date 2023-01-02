@@ -167,6 +167,8 @@ class _GoalTrackersState extends State<GoalTrackers>
     super.dispose();
   }
 
+  /// On app resume fetch trackers to make sure no changes were made in
+  /// foreground notification (press stop and on resume is still playing)
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) _fetchTrackers();

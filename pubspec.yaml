@@ -34,6 +34,7 @@ dependencies:
   firebase_core: ^2.3.0
   firebase_auth: ^4.1.4
   google_sign_in: ^5.3.3
+  shared_preferences: ^2.0.15
   flutter_foreground_task: ^3.10.0
   google_fonts: ^3.0.1
   curved_navigation_bar: ^1.0.3
