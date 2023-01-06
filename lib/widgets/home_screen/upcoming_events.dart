@@ -16,7 +16,6 @@ class _UpcomingEventsState extends State<UpcomingEvents>
 
   Future<void> _fetchUpcomingEvents() async {
     _upcomingEvents = await UpcomingEventStorage.fetch();
-    UpcomingEventStorage.storedUpcomingEvents = _upcomingEvents;
     setState(() {});
   }
 
@@ -105,7 +104,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
   @override
   void dispose() {
     // Save stored upcoming events on dispose (switched screen)
-    UpcomingEventStorage.saveStoredUpcomingEvents();
+    UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -114,7 +113,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // If event isn't resume save stored upcoming events(inactive/paused/detached)
     if (state != AppLifecycleState.resumed) {
-      UpcomingEventStorage.saveStoredUpcomingEvents();
+      UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
     }
   }
 }
