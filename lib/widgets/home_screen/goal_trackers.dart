@@ -21,11 +21,10 @@ class GoalTrackers extends StatefulWidget {
 
 class _GoalTrackersState extends State<GoalTrackers>
     with WidgetsBindingObserver {
-  List<GoalTrackerController> _trackers = [];
+  List<GoalTrackerController> _goalTrackers = [];
 
   Future<void> _fetchTrackers() async {
-    _trackers = await GoalTrackerStorage.fetch();
-    GoalTrackerStorage.storedTrackers = _trackers;
+    _goalTrackers = await GoalTrackerStorage.fetch();
     setState(() {});
   }
 
@@ -35,7 +34,7 @@ class _GoalTrackersState extends State<GoalTrackers>
     // If undo was pressed, inserts removed tracker back in trackers list on its previous index
     // Else, If SnackBar closed without undo action being called then dispose removed tracker
 
-    int index = _trackers.indexOf(tracker);
+    int index = _goalTrackers.indexOf(tracker);
     if (index == -1) return;
     // Clear all previous SnackBars
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -57,7 +56,7 @@ class _GoalTrackersState extends State<GoalTrackers>
                 // If undo pressed: set tracker transition to animate in and insert back to trackers list
                 tracker.transitionController =
                     GoalTrackerTransitionController(animateIn: true);
-                _trackers.insert(index, tracker);
+                _goalTrackers.insert(index, tracker);
                 setState(() {});
               },
             ),
@@ -71,7 +70,7 @@ class _GoalTrackersState extends State<GoalTrackers>
         tracker.dispose();
       }
     });
-    _trackers.remove(tracker);
+    _goalTrackers.remove(tracker);
     await tracker.transitionController.fadeOut();
     GoalTrackerController.setSelected(null);
     setState(() {});
@@ -81,7 +80,7 @@ class _GoalTrackersState extends State<GoalTrackers>
     final tracker = GoalTrackerController.createEmpty();
     tracker.transitionController =
         GoalTrackerTransitionController(animateIn: true);
-    _trackers.insert(0, tracker);
+    _goalTrackers.insert(0, tracker);
     setState(() {});
   }
 
@@ -107,12 +106,13 @@ class _GoalTrackersState extends State<GoalTrackers>
               child: ReorderableListView(
                 onReorder: (oldIndex, newIndex) {
                   if (newIndex > oldIndex) newIndex--;
-                  final tracker = _trackers.removeAt(oldIndex);
-                  _trackers.insert(newIndex, tracker);
+                  final tracker = _goalTrackers.removeAt(oldIndex);
+                  _goalTrackers.insert(newIndex, tracker);
                   setState(() {});
                 },
                 children: [
-                  for (final tracker in _trackers) _buildGoalTracker(tracker)
+                  for (final tracker in _goalTrackers)
+                    _buildGoalTracker(tracker)
                 ],
               ),
             ),
@@ -146,7 +146,7 @@ class _GoalTrackersState extends State<GoalTrackers>
 
   @override
   Widget build(BuildContext context) {
-    if (_trackers.isNotEmpty) {
+    if (_goalTrackers.isNotEmpty) {
       return _buildTrackers(context);
     }
     return _buildEmptyTrackers(context);
@@ -162,7 +162,7 @@ class _GoalTrackersState extends State<GoalTrackers>
   @override
   void dispose() {
     // Save stored trackers on dispose (switched screen)
-    GoalTrackerStorage.saveStoredTrackers();
+    GoalTrackerStorage.saveStoredGoalTrackers();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

@@ -30,7 +30,7 @@ class GoalTrackerForegroundTask extends StatelessWidget {
     return WillStartForegroundTask(
       onWillStart: () async {
         // Save stored trackers on app every lifecycle change (resume/minimized/closed)
-        await GoalTrackerStorage.saveStoredTrackers();
+        await GoalTrackerStorage.saveStoredGoalTrackers();
 
         // Show notification if at least 1 tracker is currently playing
         final notificationInfo = await GoalTrackerStorage.getNotificationInfo();

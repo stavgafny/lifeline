@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+/// Returns as string with a zero before if only one digit
 String _leadingZero(int value) {
   return value.toString().padLeft(2, "0");
 }
 
 class Deadline extends GetxController {
+  /// Stream that yields on every system second
   static Stream<void> onGlobalTimeChange() async* {
     final time = DateTime.now();
     await Duration(
@@ -18,9 +21,10 @@ class Deadline extends GetxController {
     }
   }
 
+  /// Get the next date with given days and the time to reset
+  ///
+  /// If current time is before reset time then subtracts 1 day
   static DateTime _getDate(int days, TimeOfDay time) {
-    // Get the next date with given days and the time to reset
-    // If current time is before reset time then subtracts 1 day
     final current = DateTime.now();
     if (current.isBefore(DateTime(
         current.year, current.month, current.day, time.hour, time.minute))) {
@@ -30,9 +34,11 @@ class Deadline extends GetxController {
     return DateTime(value.year, value.month, value.day, time.hour, time.minute);
   }
 
+  /// Modifies deadline and updates date accourdingly after
+  ///
+  /// If no date given, get next one instead of old date
   static void modify(Rx<Deadline> deadline,
       {int? days, TimeOfDay? time, bool? active, DateTime? date}) {
-    // Modifies deadline and updates date accourdingly after (if no date given, get next one instead of old date)
     //! dispose's active and timeRemain observables
     deadline.value.dispose();
     deadline.value = Deadline(
@@ -49,6 +55,9 @@ class Deadline extends GetxController {
   final Rx<Duration> timeRemain;
   final DateTime date;
 
+  /// If not given date get next date form given days and time
+  ///
+  /// Set [timeRemain] accordingly to date, sets observables
   Deadline(
       {required this.days,
       required this.time,
@@ -59,25 +68,27 @@ class Deadline extends GetxController {
             (date ?? _getDate(days, time)).difference(DateTime.now()).obs,
         active = active.obs;
 
+  /// Check if deadline arrived by comparing to current [DateTime]
   bool get arrived => DateTime.now().isAfter(date);
 
+  /// Returns deadline as formatted string with leading zero
   String get stringifedTime =>
       "${_leadingZero(time.hour)}:${_leadingZero(time.minute)}";
 
+  /// Returns deadline's time remain until arrived
   void updateTimeRemain() => timeRemain.value = date.difference(DateTime.now());
 }
 
 class GoalTrackerController extends GetxController {
-  static int _uniqueId = 0;
-  static int get uniqueId => _uniqueId++;
+  /// Selected tracker from the list of trackers
+  static Rx<GoalTrackerController?> selected = Rx(null);
 
-  // Selected tracker from the list of trackers
-  static Rx<int> selected = (-1).obs;
-
-  static void setSelected(int? id) {
-    selected.value = id ?? -1;
+  /// Set new tracker to be selected, null means all trackers are deselected
+  static void setSelected(GoalTrackerController? tracker) {
+    selected.value = tracker;
   }
 
+  /// Creates a baseline instance with empty values
   static GoalTrackerController createEmpty() => GoalTrackerController(
         name: "",
         duration: const Duration(),
@@ -90,20 +101,41 @@ class GoalTrackerController extends GetxController {
         ),
       );
 
-  final int id = uniqueId;
+  //! Properties
   Rx<String> name;
   Rx<Duration> duration;
   Rx<Duration> progress;
   RxBool playing;
   Rx<Deadline> deadline;
-  Function onDeadlineReached = () {};
-
-  Timer? _timer;
-  DateTime? keepTime;
-  final List<StreamSubscription<void>> _listeners = [];
 
   GoalTrackerTransitionController transitionController;
 
+  /// [Timer] object when starting to tick each second to update progress
+  Timer? _timer;
+
+  /// [DateTime] keep track how much time has passed(progress)
+  DateTime? _keepTime;
+
+  /// [DateTime] to make sure that on [_initializeTimer] of playing controller
+  /// that the [_keepTime] stays the same as it was
+  final DateTime? _keptTime;
+
+  /// [DateTime] that holds the date of when played
+  DateTime? _keepDate;
+
+  /// [DateTime] so [_initializeTimer] won't remake [_keepDate] on constructor
+  final DateTime? _keptDate;
+
+  /// Global listener for every second to update deadline
+  StreamSubscription<void>? _globalTimeChangeListener;
+
+  /// Sets observables, and a new [GoalTrackerTransitionController] instance
+  ///
+  /// Sets listener to listen for every second change and update deadline
+  ///
+  /// Toggles playing in case that is true to call [_initializeTimer]
+  ///
+  /// Calls [_updateDeadline] to update tracker's deadline if arrived already
   GoalTrackerController({
     required String name,
     required Duration duration,
@@ -111,102 +143,121 @@ class GoalTrackerController extends GetxController {
     required bool playing,
     required Deadline deadline,
     DateTime? keptTime,
+    DateTime? keptDate,
   })  : name = name.obs,
         duration = duration.obs,
-        progress = keptTime != null
-            ? (DateTime.now().difference(keptTime)).obs
-            : progress.obs,
+        progress = progress.obs,
         playing = playing.obs,
         deadline = deadline.obs,
+        _keptTime = keptTime,
+        _keptDate = keptDate,
         transitionController = GoalTrackerTransitionController() {
-    _listeners.addAll([
-      Deadline.onGlobalTimeChange().listen((event) => _updateDeadline()),
-    ]);
+    _globalTimeChangeListener = Deadline.onGlobalTimeChange().listen(
+      (event) => _updateDeadline(),
+    );
     togglePlaying(playing: this.playing.value);
     _updateDeadline();
   }
 
+  /// Whether duration is empty(0)
   bool get _emptyDuration => duration.value.inSeconds == 0;
 
-  double get _toPrecent =>
+  /// Returns progress duration ratio
+  double get _getRatio =>
       _emptyDuration ? 0 : progress.value.inSeconds / duration.value.inSeconds;
 
-  double get toIndicator => _emptyDuration
-      ? 0
-      : progress.value.inSeconds > duration.value.inSeconds
-          ? 1
-          : _toPrecent;
+  /// Same as [_getRatio] only capped to maximum of 1
+  double get toIndicator => min(_getRatio, 1);
 
-  String get precentFormat => "${(_toPrecent * 100).floor()}%";
+  /// Stringified precent of progress duration ratio
+  String get precentFormat => "${(_getRatio * 100).floor()}%";
 
+  /// If progress is not an empty duration
   bool get hasProgress => progress.value.inSeconds > 0;
 
+  /// Stops [_timer] if exists
   void _clearTimer() => _timer != null ? _timer!.cancel() : null;
 
+  /// Set [_keepTime] to current time minus progress to track from that time
+  ///
+  /// Interval each second and update progress
+  ///
+  /// If [_keepTime] null and [_keptTime] not, first call, set to [_keptTime]
   void _initializeTimer() {
-    // Interval each second and updates progress
-
-    // Set new time to keep track of
-    keepTime = DateTime.now().subtract(progress.value);
+    if (_keepTime == null && _keptTime != null) {
+      _keepTime = _keptTime;
+      _keepDate = _keptDate ?? DateTime.now();
+    } else {
+      _keepDate = DateTime.now();
+      _keepTime = _keepDate!.subtract(progress.value);
+    }
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       // Ticks update to display, actual time is in keepTime
-      progress.value = DateTime.now().difference(keepTime!);
+      progress.value = DateTime.now().difference(_keepTime!);
     });
   }
 
+  /// Updates time remain, if arrived set to next date and reset progress
   void _updateDeadline() {
-    // Update time remain
     deadline.value.updateTimeRemain();
 
-    // If deadline arrived, reset progress, set new deadline based on days and save to local storage
+    // Check if deadline arrived
     if (deadline.value.arrived) {
       // Check if deadline is active to reset
       if (deadline.value.active.value) {
         reset();
       }
       Deadline.modify(deadline);
-      onDeadlineReached();
     }
   }
 
+  /// Stops potential timer, calls given callback, resumes if timer was playing
   void refreshTimer(Function callback) {
-    // Stops potential timer and after callback is called, resumes if timer was playing
     _clearTimer();
     callback();
     if (playing.value) _initializeTimer();
   }
 
+  /// Resets progress to empty duration
   void reset() {
-    // Resets progress
     refreshTimer(() => progress.value = const Duration());
   }
 
+  /// Set playing to given value, if null toggle to opposite of current playing
+  ///
+  /// Call inside [refreshTimer] to correspond with [_timer]
   void togglePlaying({bool? playing}) {
     refreshTimer(() => this.playing.value = playing ?? !this.playing.value);
   }
 
+  /// Dispose and Stop potential timer
   @override
   void dispose() {
-    //! emits to storage, dispose's observables, listeners(global time, storage update) and timer
     deadline.value.dispose();
-    for (var listener in _listeners) {
-      listener.cancel();
-    }
+    _globalTimeChangeListener?.cancel();
     _clearTimer();
     super.dispose();
   }
 
+  /// Stringified "progress / duration" as formatted detailed
   @override
   String toString() =>
       "${formatDuration(progress.value, DurationFormat.detailed)} / ${formatDuration(duration.value, DurationFormat.detailed)}";
 
+  /// Converts json to new [GoalTrackerController] instance
+  ///
+  /// If playing, json progress is [_keepTime]
   static GoalTrackerController fromJson(Map<String, dynamic> json) {
     bool isPlaynig = json["playing"] != "F";
     int timeOfDay = int.parse(json["deadline_time"]);
+
     final tracker = GoalTrackerController(
       name: json["name"],
       duration: Duration(milliseconds: int.parse(json["duration"])),
-      progress: Duration(milliseconds: int.parse(json["progress"])),
+      progress: isPlaynig
+          ? DateTime.now().difference(
+              DateTime.fromMillisecondsSinceEpoch(int.parse(json["progress"])))
+          : Duration(milliseconds: int.parse(json["progress"])),
       playing: isPlaynig,
       deadline: Deadline(
         date: DateTime.fromMillisecondsSinceEpoch(
@@ -219,27 +270,37 @@ class GoalTrackerController extends GetxController {
         active: json["deadline_active"] == "T",
       ),
       keptTime: isPlaynig
+          ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["progress"]))
+          : null,
+      keptDate: isPlaynig
           ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["playing"]))
           : null,
     );
     return tracker;
   }
 
-  Map<String, dynamic> toJson() => {
-        // Returns F if not playing, else, returns time kept when started (unix time)
-        "name": name.value,
-        "duration": duration.value.inMilliseconds.toString(),
-        "progress": progress.value.inMilliseconds.toString(),
-        "playing": (playing.value & (keepTime != null))
-            ? keepTime!.millisecondsSinceEpoch.toString()
-            : "F",
-        "deadline_date": deadline.value.date.millisecondsSinceEpoch.toString(),
-        "deadline_days": deadline.value.days.toString(),
-        "deadline_time": ((deadline.value.time.hour * Duration.minutesPerHour) +
-                deadline.value.time.minute)
-            .toString(),
-        "deadline_active": deadline.value.active.value ? "T" : "F",
-      };
+  /// Converts current [GoalTrackerController] to a json object
+  ///
+  /// If playing, set progress to [_keepTime] if not, set to it's progress value
+  Map<String, dynamic> toJson() {
+    final isPlaying = playing.value && _keepTime != null;
+    return {
+      "name": name.value,
+      "duration": duration.value.inMilliseconds.toString(),
+      "progress": isPlaying
+          ? _keepTime!.millisecondsSinceEpoch.toString()
+          : progress.value.inMilliseconds.toString(),
+      "playing": isPlaying
+          ? (_keepDate ?? DateTime.now()).millisecondsSinceEpoch.toString()
+          : "F",
+      "deadline_date": deadline.value.date.millisecondsSinceEpoch.toString(),
+      "deadline_days": deadline.value.days.toString(),
+      "deadline_time": ((deadline.value.time.hour * Duration.minutesPerHour) +
+              deadline.value.time.minute)
+          .toString(),
+      "deadline_active": deadline.value.active.value ? "T" : "F",
+    };
+  }
 }
 
 /// * [absolute] 3:12:59:25
@@ -249,6 +310,7 @@ class GoalTrackerController extends GetxController {
 /// * [detailed] |d? |h? (|m?|s?) > |m? |s? > 0s
 enum DurationFormat { absolute, shortened, detailed }
 
+/// Formats given [Duration] based on given [DurationFormat]
 String formatDuration(Duration value, DurationFormat format) {
   final days = value.inDays;
   final hours = value.inHours % Duration.hoursPerDay;
@@ -283,22 +345,18 @@ String formatDuration(Duration value, DurationFormat format) {
   }
 }
 
+/// Responsible to make a transition animation to goal the tracker widget
 class GoalTrackerTransitionController {
-  static Duration duration = const Duration(milliseconds: 325);
+  /// Transition animation duration constant
+  static const Duration duration = Duration(milliseconds: 325);
 
   AnimationController? controller;
   final bool animateIn;
+
+  /// [animateIn] is false on defualt
   GoalTrackerTransitionController({this.animateIn = false});
 
-  Future<void> fadeIn() async {
-    if (controller != null) {
-      await controller!.forward(from: 0);
-    }
-  }
+  Future<void> fadeIn() async => await controller?.forward(from: 0);
 
-  Future<void> fadeOut() async {
-    if (controller != null) {
-      await controller!.animateTo(0);
-    }
-  }
+  Future<void> fadeOut() async => await controller?.animateTo(0);
 }

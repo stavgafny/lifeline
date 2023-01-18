@@ -3,73 +3,93 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import '../../controllers/goal_tracker_controller.dart';
 import './goal_tracker_foreground_task.dart';
 
-// returns list of json goal trackers
-Future<List<dynamic>> _getJsonTrackers() async => jsonDecode(
-    await FlutterForegroundTask.getData<String>(key: "goal_trackers") ?? "[]");
-
-// returns timestamp when json tracker last played
-DateTime _getPlayedDate(Map<String, dynamic> jsonTracker) {
-  return DateTime.fromMillisecondsSinceEpoch(int.parse(jsonTracker["playing"]))
-      .add(Duration(milliseconds: int.parse(jsonTracker["progress"])));
+/// Returns goal trackers list as json
+String _encodeGoalTrackers(List<GoalTrackerController> goalTrackers) {
+  final jsonGoalTrackers = [];
+  for (final goalTracker in goalTrackers) {
+    jsonGoalTrackers.add(goalTracker.toJson());
+  }
+  return jsonEncode(jsonGoalTrackers);
 }
 
+/// Returns parsed goal tracker json
+List<GoalTrackerController> _decodeGoalTrackers(String jsonGoalTrackers) {
+  final goalTrackers = <GoalTrackerController>[];
+  for (final jsonUpcomingEventModel in jsonDecode(jsonGoalTrackers)) {
+    goalTrackers.add(GoalTrackerController.fromJson(jsonUpcomingEventModel));
+  }
+  return goalTrackers;
+}
+
+/// Returns json list of goal trackers
+Future<String> _getJsonGoalTrackers() async =>
+    await FlutterForegroundTask.getData<String>(key: "goal_trackers") ?? "[]";
+
+// Returns datetime when json tracker was played
+DateTime _getPlayedDateTime(Map<String, dynamic> jsonGoalTracker) =>
+    DateTime.fromMillisecondsSinceEpoch(int.parse(jsonGoalTracker["playing"]));
+
 class GoalTrackerStorage {
-  static List<GoalTrackerController>? storedTrackers;
+  /// Goal trackers to be later stored, gets assigned privately by fetch method
+  static List<GoalTrackerController> _storedGoalTrackers = [];
 
-  static Future<void> _save(List<GoalTrackerController> trackers) async {
-    // Stores given trackers
-    final jsonTrackers = [];
-    for (final tracker in trackers) {
-      jsonTrackers.add(tracker.toJson());
-    }
+  /// Holds the last fetched json to later check if modified
+  static String? _lastFetchedJson;
+
+  /// Saves given json goal trackers list and updates [_lastFetchedJson] to it
+  static Future<void> _save(String jsonGoalTrackers) async {
+    _lastFetchedJson = jsonGoalTrackers;
     await FlutterForegroundTask.saveData(
-        key: "goal_trackers", value: jsonEncode(jsonTrackers));
+      key: "goal_trackers",
+      value: jsonGoalTrackers,
+    );
   }
 
-  static Future<void> saveStoredTrackers() async {
-    // Save stored trackers only if has been assigned
-    if (storedTrackers != null) {
-      await _save(storedTrackers!);
-    }
+  /// Saves stored goal trackers if had previously fetched and modified since
+  static Future<void> saveStoredGoalTrackers() async {
+    if (_lastFetchedJson == null) return; //! If not previously fetched
+    final jsonGoalTrackers = _encodeGoalTrackers(_storedGoalTrackers);
+    if (jsonGoalTrackers == _lastFetchedJson) return; //! If not modified since
+    await _save(jsonGoalTrackers);
   }
 
+  /// Fetches goal trackers list json and sets to [_lastFetchedJson]
+  ///
+  /// parses fetched json and sets to [_storedGoalTrackers]
+  ///
+  /// Returns [_storedGoalTrackers] list reference to be assigned
   static Future<List<GoalTrackerController>> fetch() async {
-    // Returns future that contains list of loaded goal trackers
-    final List jsonTrackers = await _getJsonTrackers();
-    final trackers = <GoalTrackerController>[];
-    if (jsonTrackers.isNotEmpty) {
-      for (final jsonTracker in jsonTrackers) {
-        trackers.add(GoalTrackerController.fromJson(jsonTracker));
-      }
-    }
-    return trackers;
+    _lastFetchedJson = await _getJsonGoalTrackers();
+    _storedGoalTrackers = _decodeGoalTrackers(_lastFetchedJson!);
+    return _storedGoalTrackers;
   }
 
   static Future<GoalTrackerNotification?> getNotificationInfo() async {
-    // Returns the last played tracker and number of trackers to be displayed on the notification
-    // If none are playing, returns null
+    final List jsonGoalTrackersList = jsonDecode(await _getJsonGoalTrackers());
 
-    List jsonTrackers = (await _getJsonTrackers())
-        .where((jsonTracker) => jsonTracker["playing"] != "F")
+    final List playingJsonGoalTrackers = jsonGoalTrackersList
+        .where((jsonGoalTracker) => jsonGoalTracker["playing"] != "F")
         .toList();
 
-    if (jsonTrackers.isNotEmpty) {
-      int playingTrackers = jsonTrackers.length;
-      final dynamic jsonTracker = jsonTrackers.reduce((a, b) {
-        return _getPlayedDate(a).isAfter(_getPlayedDate(b)) ? a : b;
-      });
-      final tracker = GoalTrackerController.fromJson(jsonTracker);
+    if (playingJsonGoalTrackers.isEmpty) return null;
 
-      return GoalTrackerNotification(tracker, playingTrackers);
-    }
-    return null;
+    final playingGoalTrackersNumber = playingJsonGoalTrackers.length;
+
+    // Getting the latest played one out of all of them
+    final dynamic jsonGoalTracker = playingJsonGoalTrackers.reduce(
+        (a, b) => _getPlayedDateTime(a).isAfter(_getPlayedDateTime(b)) ? a : b);
+
+    final goalTracker = GoalTrackerController.fromJson(jsonGoalTracker);
+
+    return GoalTrackerNotification(goalTracker, playingGoalTrackersNumber);
   }
 
+  /// Stops all currently playing goal trackers and re-saves it
   static Future<void> stopAllTrackers() async {
-    List<GoalTrackerController> trackers = await fetch();
-    for (var tracker in trackers) {
+    List<GoalTrackerController> goalTrackers = await fetch();
+    for (final tracker in goalTrackers) {
       tracker.togglePlaying(playing: false);
     }
-    _save(trackers);
+    return await saveStoredGoalTrackers();
   }
 }

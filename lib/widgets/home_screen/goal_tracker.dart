@@ -54,7 +54,7 @@ class GoalTracker extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  bool get _selected => GoalTrackerController.selected.value == tracker.id;
+  bool get _selected => GoalTrackerController.selected.value == tracker;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class GoalTracker extends StatelessWidget {
       transitionController: tracker.transitionController,
       child: GestureDetector(
         onTap: () {
-          GoalTrackerController.setSelected(_selected ? null : tracker.id);
+          GoalTrackerController.setSelected(_selected ? null : tracker);
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
