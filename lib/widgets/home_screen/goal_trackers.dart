@@ -94,36 +94,46 @@ class _GoalTrackersState extends State<GoalTrackers>
 
   Widget _buildTrackers(BuildContext context) {
     return Expanded(
-      child: Column(
+      child: Stack(
         children: [
-          Expanded(
-            child: Theme(
-              //! Remove highlight color on reorder drag
-              data: Theme.of(context).copyWith(
-                canvasColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-              ),
-              child: ReorderableListView(
-                onReorder: (oldIndex, newIndex) {
-                  if (newIndex > oldIndex) newIndex--;
-                  final tracker = _goalTrackers.removeAt(oldIndex);
-                  _goalTrackers.insert(newIndex, tracker);
-                  setState(() {});
-                },
-                children: [
-                  for (final tracker in _goalTrackers)
-                    _buildGoalTracker(tracker)
-                ],
-              ),
+          Theme(
+            //! Remove highlight color on reorder drag
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
+            child: ReorderableListView(
+              onReorder: (oldIndex, newIndex) {
+                if (newIndex > oldIndex) newIndex--;
+                final tracker = _goalTrackers.removeAt(oldIndex);
+                _goalTrackers.insert(newIndex, tracker);
+                setState(() {});
+              },
+              children: [
+                for (final tracker in _goalTrackers) _buildGoalTracker(tracker)
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ElevatedButton(
-              onPressed: _addNewTracker,
-              child: const Padding(
-                padding: EdgeInsets.all(15.0),
-                child: Icon(Icons.add),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15.0),
+              child: ElevatedButton(
+                onPressed: _addNewTracker,
+                style: ElevatedButton.styleFrom(
+                  elevation: 5.0,
+                  backgroundColor: Theme.of(context).colorScheme.background,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 15.0,
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    size: 32.0,
+                  ),
+                ),
               ),
             ),
           ),
