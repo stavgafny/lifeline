@@ -6,15 +6,20 @@ const _assetsPath = "assets/upcoming_events/";
 
 /// All upcoming event types by their name with an AssetImage value
 enum UpcomingEventType {
+  event(AssetImage("$_assetsPath" "event.png")),
   celebration(AssetImage("$_assetsPath" "celebration.png")),
+  birthday(AssetImage("$_assetsPath" "birthday.png")),
+  wedding(AssetImage("$_assetsPath" "wedding.png")),
   vacation(AssetImage("$_assetsPath" "vacation.png")),
-  education(AssetImage("$_assetsPath" "education.png")),
-  movie(AssetImage("$_assetsPath" "movie.png")),
-  grocery(AssetImage("$_assetsPath" "grocery.png")),
-  shopping(AssetImage("$_assetsPath" "shopping.png")),
   trip(AssetImage("$_assetsPath" "trip.png")),
+  movie(AssetImage("$_assetsPath" "movie.png")),
+  shopping(AssetImage("$_assetsPath" "shopping.png")),
   workout(AssetImage("$_assetsPath" "workout.png")),
-  yoga(AssetImage("$_assetsPath" "yoga.png"));
+  yoga(AssetImage("$_assetsPath" "yoga.png")),
+  education(AssetImage("$_assetsPath" "education.png")),
+  groceries(AssetImage("$_assetsPath" "groceries.png"));
+
+  static const UpcomingEventType default_ = UpcomingEventType.event;
 
   const UpcomingEventType(this.value);
   final AssetImage value;
@@ -23,6 +28,12 @@ enum UpcomingEventType {
 class UpcomingEventModel {
   /// 10 years of range to set the date/days
   static const dateRange = 365 * 10;
+
+  static UpcomingEventModel createEmpty() => UpcomingEventModel(
+        name: "",
+        date: DateTime.now(),
+        type: UpcomingEventType.default_,
+      );
 
   String name;
   DateTime date;
@@ -44,7 +55,7 @@ class UpcomingEventModel {
 
   /// Sets all values to given model
   void setValuesFromModel(UpcomingEventModel other) {
-    name = other.name;
+    name = other.name.trim();
     date = other.date;
     type = other.type;
   }
@@ -60,7 +71,9 @@ class UpcomingEventModel {
 
   /// Checks if this current model values differs from given other model
   bool differsFrom(UpcomingEventModel other) {
-    return name != other.name || date != other.date || type != other.type;
+    return name.trim() != other.name.trim() ||
+        date != other.date ||
+        type != other.type;
   }
 
   /// Returns stringified date in DD-MM-YYYY format

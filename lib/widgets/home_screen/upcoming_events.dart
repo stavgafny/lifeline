@@ -58,7 +58,26 @@ class _UpcomingEventsState extends State<UpcomingEvents>
             },
             footer: SizedBox(
               width: size,
-              child: UpcomingEvent.addButton(context),
+              child: UpcomingEvent.addButton(
+                context,
+                onTap: () {
+                  final upcomingEvent = UpcomingEventModel.createEmpty();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => UpcomingEvent.editablePage(
+                        model: upcomingEvent,
+                        onChange: () => setState(() {
+                          _upcomingEvents.remove(upcomingEvent);
+                          _upcomingEvents.add(upcomingEvent);
+                        }),
+                        onDelete: () => setState(() {
+                          _upcomingEvents.remove(upcomingEvent);
+                        }),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             children: [
               for (final upcomingEvent in _upcomingEvents)
@@ -67,10 +86,19 @@ class _UpcomingEventsState extends State<UpcomingEvents>
                   width: size,
                   child: UpcomingEvent(
                     model: upcomingEvent,
-                    onChange: () {
-                      setState(() {});
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => UpcomingEvent.editablePage(
+                            model: upcomingEvent,
+                            onChange: () => setState(() {}),
+                            onDelete: () => setState(() {
+                              _upcomingEvents.remove(upcomingEvent);
+                            }),
+                          ),
+                        ),
+                      );
                     },
-                    onDelete: () {},
                   ),
                 ),
             ],

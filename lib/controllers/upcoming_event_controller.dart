@@ -28,19 +28,27 @@ class UpcomingEventController extends GetxController {
     edited.value = editableModel.differsFrom(_originalModel);
   }
 
-  void setNewDate(DateTime newDate) {
+  /// Sets given date to [editableModel]
+  void setDate(DateTime newDate) {
     editableModel.date = newDate;
     _checkIfEdited();
   }
 
-  void setNewDays(int days) {
+  /// Sets given days to [editableModel]
+  void setDays(int days) {
     final now = DateTime.now();
     editableModel.date = DateTime(now.year, now.month, now.day + days);
     _checkIfEdited();
   }
 
+  /// Sets given type to [editableModel]
+  void setType(UpcomingEventType type) {
+    editableModel.type = type;
+    _checkIfEdited();
+  }
+
+  /// Saves All edits by setting original model to them
   void saveChanges() {
-    // Saves All edits by setting original model to them
     _originalModel.setValuesFromModel(editableModel);
     _checkIfEdited();
   }

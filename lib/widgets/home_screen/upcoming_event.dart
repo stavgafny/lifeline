@@ -13,22 +13,25 @@ class UpcomingEvent extends StatelessWidget {
 
   static double get additionalTextSizes => _dateFontSize + _nameFontSize;
 
-  static Widget addButton(BuildContext context) {
+  static Widget addButton(BuildContext context, {required Function onTap}) {
     return Column(
       children: [
         const SizedBox(height: _dateFontSize),
         Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondary,
-              shape: BoxShape.circle,
-            ),
-            child: Transform.scale(
-              scale: .5,
-              child: const FittedBox(
-                fit: BoxFit.contain,
-                child: Icon(
-                  Icons.add,
+          child: GestureDetector(
+            onTap: () => onTap(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                shape: BoxShape.circle,
+              ),
+              child: Transform.scale(
+                scale: .5,
+                child: const FittedBox(
+                  fit: BoxFit.contain,
+                  child: Icon(
+                    Icons.add,
+                  ),
                 ),
               ),
             ),
@@ -39,13 +42,22 @@ class UpcomingEvent extends StatelessWidget {
     );
   }
 
+  static Widget editablePage({
+    required UpcomingEventModel model,
+    required Function onChange,
+    required Function onDelete,
+  }) =>
+      _EditableUpcomingEventPage(
+        model: model,
+        onChange: onChange,
+        onDelete: onDelete,
+      );
+
   final UpcomingEventModel model;
-  final Function onChange;
-  final Function onDelete;
+  final Function onTap;
   const UpcomingEvent({
     required this.model,
-    required this.onChange,
-    required this.onDelete,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
 
@@ -67,15 +79,7 @@ class UpcomingEvent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 2.0),
         child: GestureDetector(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => _ExtendedUpcomingEvent(
-                model: model,
-                onChange: onChange,
-                onDelete: onDelete,
-              ),
-            ),
-          ),
+          onTap: () => onTap(),
           //! Hero this container to expended (upcoming event type transition)
           child: Hero(
             tag: model,
@@ -149,11 +153,11 @@ class UpcomingEvent extends StatelessWidget {
   }
 }
 
-class _ExtendedUpcomingEvent extends StatefulWidget {
+class _EditableUpcomingEventPage extends StatefulWidget {
   final UpcomingEventModel model;
   final Function onChange;
   final Function onDelete;
-  const _ExtendedUpcomingEvent({
+  const _EditableUpcomingEventPage({
     required this.model,
     required this.onChange,
     required this.onDelete,
@@ -161,10 +165,12 @@ class _ExtendedUpcomingEvent extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_ExtendedUpcomingEvent> createState() => _ExtendedUpcomingEventState();
+  State<_EditableUpcomingEventPage> createState() =>
+      _EditableUpcomingEventPageState();
 }
 
-class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
+class _EditableUpcomingEventPageState
+    extends State<_EditableUpcomingEventPage> {
   // Setting a controller on editable fields when widget is initialized
   late final _controller = UpcomingEventController(model: widget.model);
 
@@ -185,7 +191,7 @@ class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
       lastDate: now.add(const Duration(days: UpcomingEventModel.dateRange)),
     );
     if (newDate != null) {
-      _controller.setNewDate(newDate);
+      _controller.setDate(newDate);
       setState(() {});
     }
   }
@@ -196,11 +202,24 @@ class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
       context: context,
       builder: (context) => WheelInputDaysDialog(
         days: daysRemain <= 0 ? 1 : daysRemain,
-        onSubmit: (days) {
-          _controller.setNewDays(days);
+        onSubmit: (int days) {
+          _controller.setDays(days);
           setState(() {});
         },
         range: UpcomingEventModel.dateRange + 1,
+      ),
+    );
+  }
+
+  void _changeType() {
+    showDialog(
+      context: context,
+      builder: (context) => _UpcomingEventTypeEditDialog(
+        onSubmit: (UpcomingEventType type) {
+          Navigator.of(context, rootNavigator: true).pop();
+          _controller.setType(type);
+          setState(() {});
+        },
       ),
     );
   }
@@ -217,13 +236,13 @@ class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
             color: Theme.of(context).colorScheme.secondary,
             image: DecorationImage(
               fit: BoxFit.contain,
-              image: widget.model.type.value,
+              image: _controller.editableModel.type.value,
             ),
           ),
           child: Container(
             alignment: Alignment.bottomRight,
             child: IconButton(
-              onPressed: () {},
+              onPressed: _changeType,
               icon: const Icon(Icons.edit),
             ),
           ),
@@ -338,7 +357,10 @@ class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
     return AspectRatio(
       aspectRatio: 1.25,
       child: MaterialButton(
-        onPressed: () => widget.onDelete(),
+        onPressed: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          widget.onDelete();
+        },
         color: Colors.red,
         padding: EdgeInsets.zero,
         elevation: 10.0,
@@ -427,6 +449,70 @@ class _ExtendedUpcomingEventState extends State<_ExtendedUpcomingEvent> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _UpcomingEventTypeEditDialog extends StatelessWidget {
+  final Function(UpcomingEventType type) onSubmit;
+
+  const _UpcomingEventTypeEditDialog({
+    required this.onSubmit,
+    Key? key,
+  }) : super(key: key);
+
+  Widget _buildType(BuildContext context, UpcomingEventType type) {
+    return Column(
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: () => onSubmit.call(type),
+            customBorder: const CircleBorder(),
+            child: Ink(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.contain,
+                  image: type.value,
+                  opacity: 1.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Text(
+          type.name,
+          style: const TextStyle(fontSize: 18.0),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTypesGrid(BuildContext context) {
+    final upcomingEventsTypes = UpcomingEventType.values.toList();
+    return GridView.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: 20.0,
+      crossAxisSpacing: 2.0,
+      shrinkWrap: true,
+      children: List.generate(upcomingEventsTypes.length, (index) {
+        return _buildType(context, upcomingEventsTypes[index]);
+      }),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
+        child: _buildTypesGrid(context),
       ),
     );
   }
