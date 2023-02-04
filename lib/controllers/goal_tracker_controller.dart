@@ -198,16 +198,27 @@ class GoalTrackerController extends GetxController {
   }
 
   /// Updates time remain, if arrived set to next date and reset progress
+  ///
+  /// If resets progress while is playing, sets the progress to the amount of
+  /// time passed since the previous deadline (after modifying to the new date)
+  ///
+  /// Uses previous deadline after modify as opposed to the current unmodified
+  /// deadline to avoid multiplying the value with the amout of resets (modulo)
   void _updateDeadline() {
     deadline.value.updateTimeRemain();
 
-    // Check if deadline arrived
-    if (deadline.value.arrived) {
-      // Check if deadline is active to reset
-      if (deadline.value.active.value) {
-        reset();
-      }
-      Deadline.modify(deadline);
+    if (!deadline.value.arrived) return;
+    Deadline.modify(deadline);
+
+    if (!deadline.value.active.value) return;
+    if (playing.value) {
+      refreshTimer(() {
+        final previousDeadline =
+            deadline.value.date.subtract(Duration(days: deadline.value.days));
+        progress.value = DateTime.now().difference(previousDeadline);
+      });
+    } else {
+      reset();
     }
   }
 
