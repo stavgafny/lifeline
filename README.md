@@ -1,16 +1,53 @@
-# lifeline
+# Lifeline
 
-A new Flutter project.
+## 🛠️ Prerequisites
+Before running the app, ensure that you have the following set up:
+* Flutter SDK installed. If not, follow the official [Flutter Installation Guide](https://flutter.dev/docs/get-started/install)
+* Firebase project with enabled authentication and database services: [Firebase Console](https://console.firebase.google.com/)
 
-## Getting Started
+Additionally, make sure to install a mobile emulator or use a physical device as the app doesn't currently support web.
 
-This project is a starting point for a Flutter application.
+## ⚙️ Setup
 
-A few resources to get you started if this is your first Flutter project:
+1. Clone this repository to your local machine:
+```bash
+git clone https://github.com/stavgafny/lifeline.git
+```
+2. Navigate to the project directory:
+```bash
+cd lifeline
+```
+3. Install the dependencies:
+```bash
+flutter pub get
+```
+4. Update the Firebase options:
+* Add `firebase_options.dart` file in ./lib/constants/
+* Replace the placeholder values with your Firebase configuration.
+```dart
+// TODO: Replace with your Firebase configuration
+final firebaseOptions = FirebaseOptions(
+  appId: 'your-app-id',
+  apiKey: 'your-api-key',
+  projectId: 'your-project-id',
+  // ...
+);
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🚀 Run
+```bash
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🎬 Usage
+* Open the app on your mobile device or emulator.
+* Sign up using your email and password or choose the Google Sign-In option.
+* Log in using your credentials.
+* Explore the app's features.
+* Enjoy the app!
+
+## 🤝 Contributing
+Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to share them.
+
+## 📧 Contact
+For any inquiries or support, you can reach out to stavgafny@gmail.com.
