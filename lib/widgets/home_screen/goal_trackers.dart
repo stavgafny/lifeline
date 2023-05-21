@@ -112,6 +112,8 @@ class _GoalTrackersState extends State<GoalTrackers>
               children: [
                 for (final tracker in _goalTrackers) _buildGoalTracker(tracker)
               ],
+              //! Remove default shadow elevation on reorder drag
+              proxyDecorator: (child, i, a) => Material(child: child),
             ),
           ),
           Align(

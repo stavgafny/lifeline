@@ -102,6 +102,8 @@ class _UpcomingEventsState extends State<UpcomingEvents>
                   ),
                 ),
             ],
+            //! Remove default shadow elevation on reorder drag
+            proxyDecorator: (child, i, a) => Material(child: child),
           ),
         ),
       ),
