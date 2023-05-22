@@ -48,6 +48,7 @@ class LoginPage extends StatelessWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -169,7 +170,6 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10.0),
               ],
             ),
           ),

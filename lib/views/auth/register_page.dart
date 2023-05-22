@@ -48,6 +48,7 @@ class RegisterPage extends StatelessWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
