@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/upcoming_event/upcoming_event_storage.dart';
 import '../../models/upcoming_event_model.dart';
+import '../../widgets/undo_snack_bar.dart';
 import './upcoming_event.dart';
 
 class UpcomingEvents extends StatefulWidget {
@@ -16,6 +17,34 @@ class _UpcomingEventsState extends State<UpcomingEvents>
 
   Future<void> _fetchUpcomingEvents() async {
     _upcomingEvents = await UpcomingEventStorage.fetch();
+    setState(() {});
+  }
+
+  void _addUpcomingEvent() {
+    final upcomingEvent = UpcomingEventModel.createEmpty();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UpcomingEvent.editablePage(
+          model: upcomingEvent,
+          onChange: () => setState(() {
+            _upcomingEvents.remove(upcomingEvent);
+            _upcomingEvents.add(upcomingEvent);
+          }),
+          onDelete: () => _removeUpcomingEvent(upcomingEvent),
+        ),
+      ),
+    );
+  }
+
+  void _removeUpcomingEvent(UpcomingEventModel upcomingEvent) {
+    UndoSnackBar(
+      text: "Removed ${upcomingEvent.name}",
+      onPressed: () {
+        _upcomingEvents.add(upcomingEvent);
+        setState(() {});
+      },
+    ).display(context);
+    _upcomingEvents.remove(upcomingEvent);
     setState(() {});
   }
 
@@ -60,23 +89,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
               width: size,
               child: UpcomingEvent.addButton(
                 context,
-                onTap: () {
-                  final upcomingEvent = UpcomingEventModel.createEmpty();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => UpcomingEvent.editablePage(
-                        model: upcomingEvent,
-                        onChange: () => setState(() {
-                          _upcomingEvents.remove(upcomingEvent);
-                          _upcomingEvents.add(upcomingEvent);
-                        }),
-                        onDelete: () => setState(() {
-                          _upcomingEvents.remove(upcomingEvent);
-                        }),
-                      ),
-                    ),
-                  );
-                },
+                onTap: _addUpcomingEvent,
               ),
             ),
             children: [
@@ -92,9 +105,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
                           builder: (context) => UpcomingEvent.editablePage(
                             model: upcomingEvent,
                             onChange: () => setState(() {}),
-                            onDelete: () => setState(() {
-                              _upcomingEvents.remove(upcomingEvent);
-                            }),
+                            onDelete: () => _removeUpcomingEvent(upcomingEvent),
                           ),
                         ),
                       );

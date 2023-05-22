@@ -65,6 +65,6 @@ ThemeData darkTheme = ThemeData(
   snackBarTheme: const SnackBarThemeData(
     backgroundColor: Color(0xFF25212A),
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
-    actionTextColor: Color(0xFFB895FF),
+    actionTextColor: Color(0xFFFFA7E6),
   ),
 );

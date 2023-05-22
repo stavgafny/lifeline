@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../controllers/goal_tracker_controller.dart';
 import '../../services/goal_tracker/goal_tracker_storage.dart';
+import '../../widgets/undo_snack_bar.dart';
 import './goal_tracker.dart';
 
 const _trackerUndoDuration = Duration(milliseconds: 2500);
@@ -30,46 +31,29 @@ class _GoalTrackersState extends State<GoalTrackers>
 
   void _onTrackerRemove(GoalTrackerController tracker) async {
     // Immediately removes the tracker from trackers list to update "storedTrackers"
-    // Shows SnackBar with undo action
+    // Shows undo snackbar
     // If undo was pressed, inserts removed tracker back in trackers list on its previous index
     // Else, If SnackBar closed without undo action being called then dispose removed tracker
 
     int index = _goalTrackers.indexOf(tracker);
     if (index == -1) return;
-    // Clear all previous SnackBars
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-          SnackBar(
-            content: Text(
-              "Removed ${tracker.name.value}",
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            duration: _trackerUndoDuration,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-            ),
-            action: SnackBarAction(
-              label: "Undo",
-              onPressed: () async {
-                // If undo pressed: set tracker transition to animate in and insert back to trackers list
-                tracker.transitionController =
-                    GoalTrackerTransitionController(animateIn: true);
-                _goalTrackers.insert(index, tracker);
-                setState(() {});
-              },
-            ),
-          ),
-        )
-        .closed
-        .then((SnackBarClosedReason reason) {
+    UndoSnackBar(
+      text: "Removed ${tracker.name.value}",
+      onPressed: () async {
+        // If undo pressed: set tracker transition to animate in and insert back to trackers list
+        tracker.transitionController =
+            GoalTrackerTransitionController(animateIn: true);
+        _goalTrackers.insert(index, tracker);
+        setState(() {});
+      },
+    ).display(context).closed.then((SnackBarClosedReason reason) {
       // On SnackBar closed check if reason is because action(undo was pressed)
       if (reason != SnackBarClosedReason.action) {
         // If SnackBar closed with any reason but action(undo pressed) then dispose removed tracker
         tracker.dispose();
       }
     });
+
     _goalTrackers.remove(tracker);
     await tracker.transitionController.fadeOut();
     GoalTrackerController.setSelected(null);
