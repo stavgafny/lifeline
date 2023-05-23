@@ -36,11 +36,17 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     );
   }
 
+  /// Remove upcoming event from upcoming events list and show undo snack bar
+  ///
+  /// If undo pressed, insert removed upcoming event back in list on its
+  /// previous index
   void _removeUpcomingEvent(UpcomingEventModel upcomingEvent) {
+    final index = _upcomingEvents.indexOf(upcomingEvent);
+    if (index == -1) return;
     UndoSnackBar(
       text: "Removed ${upcomingEvent.name}",
       onPressed: () {
-        _upcomingEvents.add(upcomingEvent);
+        _upcomingEvents.insert(index, upcomingEvent);
         setState(() {});
       },
     ).display(context);

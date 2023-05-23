@@ -4,8 +4,6 @@ import '../../services/goal_tracker/goal_tracker_storage.dart';
 import '../../widgets/undo_snack_bar.dart';
 import './goal_tracker.dart';
 
-const _trackerUndoDuration = Duration(milliseconds: 2500);
-
 /// Fetch trackers from local storage once on init and every time the app is resumed
 ///
 /// On each trackers fetch, assign them to "storedTrackers"
@@ -29,27 +27,27 @@ class _GoalTrackersState extends State<GoalTrackers>
     setState(() {});
   }
 
+  /// Remove tracker from trackers list and show undo snack bar
+  ///
+  /// If undo pressed, insert removed tracker back in list on its previous index
+  ///
+  /// Else, on snack bar closed, dispose removed tracker
   void _onTrackerRemove(GoalTrackerController tracker) async {
-    // Immediately removes the tracker from trackers list to update "storedTrackers"
-    // Shows undo snackbar
-    // If undo was pressed, inserts removed tracker back in trackers list on its previous index
-    // Else, If SnackBar closed without undo action being called then dispose removed tracker
-
-    int index = _goalTrackers.indexOf(tracker);
+    final index = _goalTrackers.indexOf(tracker);
     if (index == -1) return;
     UndoSnackBar(
       text: "Removed ${tracker.name.value}",
       onPressed: () async {
-        // If undo pressed: set tracker transition to animate in and insert back to trackers list
+        // If undo pressed: insert tracker back with transition
         tracker.transitionController =
             GoalTrackerTransitionController(animateIn: true);
         _goalTrackers.insert(index, tracker);
         setState(() {});
       },
     ).display(context).closed.then((SnackBarClosedReason reason) {
-      // On SnackBar closed check if reason is because action(undo was pressed)
+      // On snack bar closed check if reason is because action(undo was pressed)
       if (reason != SnackBarClosedReason.action) {
-        // If SnackBar closed with any reason but action(undo pressed) then dispose removed tracker
+        // If snack bar closed with any reason undo then dispose removed tracker
         tracker.dispose();
       }
     });
