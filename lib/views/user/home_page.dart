@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
 
     return GoalTrackerForegroundTask(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,

@@ -5,47 +5,129 @@ import '../../controllers/goal_tracker_controller.dart';
 import '../tappable_text.dart';
 import '../wheel_input.dart';
 
-void _showLabelDialog(BuildContext context, Rx<String> label) {
-  final controller = TextEditingController(text: label.value);
-  controller.selection = TextSelection(
-    baseOffset: 0,
-    extentOffset: label.value.length,
-  );
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
+/// Dialog for editing the goal tracker name
+///
+/// [name] -> the current goal tracker name
+///
+/// [onCancel] -> callback function when exiting the dialog with cancel
+///
+/// [onConfirm] -> callback function for confirm action
+/// callback has the modified name passed as an argument
+///
+/// [startSelected] -> select all name text at start
+///
+/// Defaults to true.
+///
+/// Note that confirm can only be called if current [modifiedName] is not empty
+class _NameEditDialog extends StatefulWidget {
+  final TextEditingController controller;
+  final void Function() onCancel;
+  final void Function(String modifiedName) onConfirm;
+
+  /// Create [TextEditingController] form given name and if [startSelected] is
+  /// true set the controller selection to select the whole name text
+  _NameEditDialog({
+    required String name,
+    required this.onCancel,
+    required this.onConfirm,
+    bool startSelected = true,
+  }) : controller = TextEditingController(text: name) {
+    if (startSelected) {
+      controller.selection =
+          TextSelection(baseOffset: 0, extentOffset: name.length);
+    }
+  }
+
+  @override
+  State<_NameEditDialog> createState() => _NameEditDialogState();
+}
+
+class _NameEditDialogState extends State<_NameEditDialog> {
+  /// Determines whether can be confirmed
+  ///
+  /// If false, [onConfirm] won't be called and the confirm button text color
+  /// will be set as disabled
+  bool enabled = false;
+
+  /// updates [enabled] value to the current controller text value
+  /// whether its empty or not.
+  ///
+  /// [enabled] = controller text not empty
+  ///
+  /// Only if the condition isn't the same as [enabled], then setState is called
+  /// to reduce unnecessary rebuilds
+  void _updateEnabled() {
+    final isNotEmpty = widget.controller.text.trim().isNotEmpty;
+    if (enabled == isNotEmpty) return;
+    setState(() => enabled = isNotEmpty);
+  }
+
+  @override
+  void initState() {
+    // Updates enabled on start once and then for every controller text change
+    _updateEnabled();
+    widget.controller.addListener(_updateEnabled);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the text controller when the dialog is dismissed
+    widget.controller.removeListener(_updateEnabled);
+    widget.controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  AlertDialog build(BuildContext context) {
+    return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
       title: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Label',
-          )),
+        controller: widget.controller,
+        autofocus: true,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Name',
+        ),
+      ),
       actions: [
         MaterialButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: widget.onCancel,
           child: Text(
             "Cancel",
             style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),
         MaterialButton(
-          onPressed: () {
-            label.value = controller.text.trim();
-            Navigator.pop(context);
-          },
-          child: Text(
-            "OK",
-            style: TextStyle(color: Theme.of(context).colorScheme.primary),
-          ),
+          onPressed: enabled
+              ? () => widget.onConfirm.call(widget.controller.text.trim())
+              : null,
+          textColor: enabled ? Theme.of(context).colorScheme.primary : null,
+          disabledTextColor: Theme.of(context).disabledColor,
+          child: const Text("OK"),
         ),
       ],
-    ),
-  );
+    );
+  }
 }
 
 class GoalTracker extends StatelessWidget {
+  static void showNameEditDialog(
+    BuildContext context, {
+    required String name,
+    required void Function() onCancel,
+    required void Function(String modifiedName) onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) => _NameEditDialog(
+        name: name,
+        onCancel: onCancel,
+        onConfirm: onConfirm,
+      ),
+    );
+  }
+
   final GoalTrackerController tracker;
   final Function onRemove;
   const GoalTracker({
@@ -85,7 +167,7 @@ class GoalTracker extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Flexible(child: _label(context)),
+                              Flexible(child: _name(context)),
                               const SizedBox(width: 5),
                               _precent(context),
                             ],
@@ -152,10 +234,20 @@ class GoalTracker extends StatelessWidget {
     );
   }
 
-  Widget _label(BuildContext context) {
+  Widget _name(BuildContext context) {
     return Obx(
       () => GestureDetector(
-        onTap: () => _selected ? _showLabelDialog(context, tracker.name) : null,
+        onTap: _selected
+            ? () => GoalTracker.showNameEditDialog(
+                  context,
+                  name: tracker.name.value,
+                  onCancel: () => Navigator.of(context).pop(),
+                  onConfirm: (modifiedName) {
+                    tracker.name.value = modifiedName;
+                    Navigator.of(context).pop();
+                  },
+                )
+            : null,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           padding: const EdgeInsets.symmetric(horizontal: 6),
