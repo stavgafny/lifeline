@@ -32,7 +32,7 @@ class _GoalTrackersState extends State<GoalTrackers>
   /// If undo pressed, insert removed tracker back in list on its previous index
   ///
   /// Else, on snack bar closed, dispose removed tracker
-  void _onTrackerRemove(GoalTrackerController tracker) async {
+  void _removeTracker(GoalTrackerController tracker) async {
     final index = _goalTrackers.indexOf(tracker);
     if (index == -1) return;
     UndoSnackBar(
@@ -58,19 +58,32 @@ class _GoalTrackersState extends State<GoalTrackers>
     setState(() {});
   }
 
+  /// Creates a [GoalTracker] name edit dialog
+  ///
+  /// After confirming, create an empty tracker with modified name and a new
+  /// transition controller with `animateIn` set to true
   void _addNewTracker() {
-    final tracker = GoalTrackerController.createEmpty();
-    tracker.transitionController =
-        GoalTrackerTransitionController(animateIn: true);
-    _goalTrackers.insert(0, tracker);
-    setState(() {});
+    GoalTracker.showNameEditDialog(
+      context,
+      name: "",
+      onCancel: () => Navigator.of(context).pop(),
+      onConfirm: (modifiedName) {
+        final tracker = GoalTrackerController.createEmpty()
+          ..name.value = modifiedName
+          ..transitionController =
+              GoalTrackerTransitionController(animateIn: true);
+
+        Navigator.of(context).pop();
+        setState(() => _goalTrackers.insert(0, tracker));
+      },
+    );
   }
 
   Widget _buildGoalTracker(GoalTrackerController tracker) {
     return GoalTracker(
       key: ValueKey(tracker),
       tracker: tracker,
-      onRemove: () => _onTrackerRemove(tracker),
+      onRemove: () => _removeTracker(tracker),
     );
   }
 
