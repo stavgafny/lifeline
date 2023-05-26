@@ -6,9 +6,9 @@ import '../../routes/route_pages.dart';
 import '../../services/auth/user_auth.dart';
 import '../../services/goal_tracker/goal_tracker_foreground_task.dart';
 
-import './swipeables_screens/dashboard_screen.dart';
-import './swipeables_screens/home_screen.dart';
-import './swipeables_screens/timeline_screen.dart';
+import './swipeable_screens/dashboard_screen/dashboard_screen.dart';
+import './swipeable_screens/home_screen/home_screen.dart';
+import './swipeable_screens/timeline_screen/timeline_screen.dart';
 
 const int _screenChangeAnimationDuration = 250;
 const int _defaultScreenIndex = 1;
