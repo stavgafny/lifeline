@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../../controllers/goal_tracker_controller.dart';
-import '../tappable_text.dart';
-import '../wheel_input.dart';
+import '../../../../../controllers/goal_tracker_controller.dart';
+import '../../../../../widgets/tappable_text.dart';
+import '../../../../../widgets/wheel_input.dart';
 
 /// Dialog for editing the goal tracker name
 ///

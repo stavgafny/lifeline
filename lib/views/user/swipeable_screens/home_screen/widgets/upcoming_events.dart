@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../services/upcoming_event/upcoming_event_storage.dart';
-import '../../models/upcoming_event_model.dart';
-import '../../widgets/undo_snack_bar.dart';
+import '../../../../../services/upcoming_event/upcoming_event_storage.dart';
+import '../../../../../models/upcoming_event_model.dart';
+import '../../../../../widgets/undo_snack_bar.dart';
+import './editable_upcoming_event_page.dart';
 import './upcoming_event.dart';
 
 class UpcomingEvents extends StatefulWidget {
@@ -24,7 +25,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     final upcomingEvent = UpcomingEventModel.createEmpty();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => UpcomingEvent.editablePage(
+        builder: (context) => EditableUpcomingEventPage(
           model: upcomingEvent,
           onChange: () => setState(() {
             _upcomingEvents.remove(upcomingEvent);
@@ -108,7 +109,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => UpcomingEvent.editablePage(
+                          builder: (context) => EditableUpcomingEventPage(
                             model: upcomingEvent,
                             onChange: () => setState(() {}),
                             onDelete: () => _removeUpcomingEvent(upcomingEvent),

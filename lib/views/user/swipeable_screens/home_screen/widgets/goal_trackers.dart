@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../controllers/goal_tracker_controller.dart';
-import '../../services/goal_tracker/goal_tracker_storage.dart';
-import '../../widgets/undo_snack_bar.dart';
+import '../../../../../controllers/goal_tracker_controller.dart';
+import '../../../../../services/goal_tracker/goal_tracker_storage.dart';
+import '../../../../../widgets/undo_snack_bar.dart';
 import './goal_tracker.dart';
 
 /// Fetch trackers from local storage once on init and every time the app is resumed
