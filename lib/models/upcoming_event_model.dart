@@ -27,31 +27,38 @@ enum UpcomingEventType {
 
 class UpcomingEventModel {
   /// 10 years of range to set the date/days
-  static const dateRange = 365 * 10;
+  static const int dateRange = 365 * 10;
 
-  static UpcomingEventModel createEmpty() => UpcomingEventModel(
-        name: "",
-        date: DateTime.now(),
-        type: UpcomingEventType.default_,
-      );
+  /// Normalize to a fixed date with the optional hours and minutes
+  ///
+  /// Default: hours=0, minutes=0
+  static DateTime normalizeDate(DateTime date, {int hour = 0, int minute = 0}) {
+    return DateTime(date.year, date.month, date.day, hour, minute);
+  }
+
+  /// Creates a new empty model with empty name, default type and current date
+  /// with time set to midnight
+  static UpcomingEventModel createEmpty() {
+    return UpcomingEventModel(
+      name: "",
+      date: normalizeDate(DateTime.now()),
+      type: UpcomingEventType.default_,
+    );
+  }
 
   String name;
   DateTime date;
   UpcomingEventType type;
 
-  /// Fixed time so smaller time units won't have an affect
-  ///
-  /// For example: using an unfixed time and then picking a new time which is on
-  /// the same date will resolve in a time diffrences because the new
-  /// picked time is fixed (has no hours, minutes, seconds and etc...)
-  ///
-  /// This results in a misbehavior with two times having the same dates and
-  /// days remain while still being different
   UpcomingEventModel({
     required this.name,
     required DateTime date,
     required this.type,
-  }) : date = DateTime(date.year, date.month, date.day); //! Fixed time (Y|M|D)
+  }) : date = normalizeDate(
+          date,
+          hour: date.hour,
+          minute: date.minute,
+        ); //! Normalized date time (Y|M|D|h|m)
 
   /// Sets all values to given model
   void setValuesFromModel(UpcomingEventModel other) {
@@ -86,16 +93,14 @@ class UpcomingEventModel {
   /// Returns the date day of week name
   String dateDayOfWeek() => DateFormat('EEEE').format(date);
 
+  /// Returns the date time of day
+  String timeOfDay() => DateFormat.Hm().format(date);
+
   /// Returns the number of remaining days
   int daysRemain() {
-    // Get the difference bewteen date and current date
-    final difference = date.difference(DateTime.now());
-
-    // Round date days by checking if the difference without its days is still bigger then an empty duration
-    final round =
-        difference - Duration(days: difference.inDays) > const Duration();
-
-    return difference.inDays + (round ? 1 : 0);
+    final normalizedNow = normalizeDate(DateTime.now());
+    final normalizedDate = normalizeDate(date);
+    return normalizedDate.difference(normalizedNow).inDays;
   }
 
   static UpcomingEventModel fromJson(Map<String, dynamic> json) =>

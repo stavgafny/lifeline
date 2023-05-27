@@ -4,7 +4,13 @@ import '../../../../../models/upcoming_event_model.dart';
 import '../../../../../controllers/upcoming_event_controller.dart';
 import '../../../../../widgets/wheel_input.dart';
 
+const _dateContainer = Color(0xFF3C2B37);
+const _daysContainer = Color(0xFF523547);
+const _timeContainer = Color(0xFF9B608A);
+
 class EditableUpcomingEventPage extends StatefulWidget {
+  static const _dateDaysTimeEditHeight = 100.0;
+
   final UpcomingEventModel model;
   final Function onChange;
   final Function onDelete;
@@ -30,6 +36,19 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     super.dispose();
   }
 
+  void _changeType() {
+    showDialog(
+      context: context,
+      builder: (context) => _UpcomingEventTypeEditDialog(
+        onSubmit: (UpcomingEventType type) {
+          Navigator.of(context, rootNavigator: true).pop();
+          _controller.setType(type);
+          setState(() {});
+        },
+      ),
+    );
+  }
+
   void _changeDate() async {
     final now = DateTime.now();
     final DateTime? newDate = await showDatePicker(
@@ -51,7 +70,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     showDialog(
       context: context,
       builder: (context) => WheelInputDaysDialog(
-        days: daysRemain <= 0 ? 1 : daysRemain,
+        days: daysRemain.isNegative ? 0 : daysRemain,
         onSubmit: (int days) {
           _controller.setDays(days);
           setState(() {});
@@ -61,17 +80,16 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     );
   }
 
-  void _changeType() {
-    showDialog(
+  void _changeTime() async {
+    final time = await showTimePicker(
       context: context,
-      builder: (context) => _UpcomingEventTypeEditDialog(
-        onSubmit: (UpcomingEventType type) {
-          Navigator.of(context, rootNavigator: true).pop();
-          _controller.setType(type);
-          setState(() {});
-        },
-      ),
+      initialTime: TimeOfDay.fromDateTime(_controller.editableModel.date),
+      initialEntryMode: TimePickerEntryMode.dial,
     );
+    if (time != null) {
+      _controller.setTime(time);
+      setState(() {});
+    }
   }
 
   Widget _type(BuildContext context) {
@@ -79,22 +97,19 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     return Hero(
       tag: widget.model,
       transitionOnUserGestures: true,
-      child: AspectRatio(
-        aspectRatio: 1.5,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary,
-            image: DecorationImage(
-              fit: BoxFit.contain,
-              image: _controller.editableModel.type.value,
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          image: DecorationImage(
+            fit: BoxFit.contain,
+            image: _controller.editableModel.type.value,
           ),
-          child: Container(
-            alignment: Alignment.bottomRight,
-            child: IconButton(
-              onPressed: _changeType,
-              icon: const Icon(Icons.edit),
-            ),
+        ),
+        child: Container(
+          alignment: Alignment.bottomRight,
+          child: IconButton(
+            onPressed: _changeType,
+            icon: const Icon(Icons.edit),
           ),
         ),
       ),
@@ -117,87 +132,82 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     );
   }
 
-  Widget _date(BuildContext context) {
+  Widget _fittedText(String text) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: MaterialButton(
-          onPressed: _changeDate,
-          color: Theme.of(context).colorScheme.onPrimary,
-          child: Column(
-            children: [
-              const SizedBox(height: 10.0),
-              const Text("Date"),
-              Expanded(
-                flex: 5,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      _controller.editableModel.stringifiedDateDDMONRR(),
-                    ),
-                  ),
-                ),
-              ),
-              Flexible(
-                flex: 1,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      _controller.editableModel.dateDayOfWeek(),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10.0),
-            ],
-          ),
+      child: SizedBox(
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Text(text),
         ),
+      ),
+    );
+  }
+
+  Widget _date(BuildContext context) {
+    return MaterialButton(
+      height: double.infinity,
+      onPressed: _changeDate,
+      color: _dateContainer,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text("Date"),
+          const SizedBox(height: 10.0),
+          _fittedText(_controller.editableModel.stringifiedDateDDMONRR()),
+          const SizedBox(height: 10.0),
+          _fittedText(_controller.editableModel.dateDayOfWeek()),
+        ],
       ),
     );
   }
 
   Widget _days(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: MaterialButton(
-          onPressed: _changeDays,
-          color: Theme.of(context).colorScheme.background,
-          child: Column(
-            children: [
-              const SizedBox(height: 10.0),
-              const Text("Days"),
-              Expanded(
-                flex: 5,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      _controller.editableModel.daysRemain().toString(),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10.0),
-            ],
-          ),
-        ),
+    return MaterialButton(
+      height: double.infinity,
+      onPressed: _changeDays,
+      color: _daysContainer,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text("Days"),
+          _fittedText(_controller.editableModel.daysRemain().toString()),
+        ],
       ),
     );
   }
 
-  Widget _dateDaysButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 50.0),
+  Widget _time(BuildContext context) {
+    return MaterialButton(
+      height: double.infinity,
+      onPressed: _changeTime,
+      color: _timeContainer,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text("Time"),
+          _fittedText(_controller.editableModel.timeOfDay()),
+        ],
+      ),
+    );
+  }
+
+  Widget _dateDaysTimeButtons(BuildContext context) {
+    return SizedBox(
+      height: EditableUpcomingEventPage._dateDaysTimeEditHeight,
       child: Row(
         children: [
-          _date(context),
-          _days(context),
+          Expanded(
+            flex: 5,
+            child: _date(context),
+          ),
+          Expanded(
+            flex: 3,
+            child: _days(context),
+          ),
+          Expanded(
+            flex: 3,
+            child: _time(context),
+          ),
         ],
       ),
     );
@@ -262,7 +272,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   Widget _deleteApplyButtons(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(30.0, 0, 30.0, 50.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50.0),
       child: SizedBox(
         height: 55.0,
         child: Row(
@@ -292,10 +302,18 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
           type: MaterialType.transparency,
           child: Column(
             children: [
-              _type(context),
+              AspectRatio(
+                aspectRatio: 1.5,
+                child: _type(context),
+              ),
               _name(context),
-              Expanded(child: _dateDaysButtons(context)),
-              _deleteApplyButtons(context),
+              _dateDaysTimeButtons(context),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: _deleteApplyButtons(context),
+                ),
+              ),
             ],
           ),
         ),
