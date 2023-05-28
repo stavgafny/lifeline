@@ -27,7 +27,7 @@ Future<String> _getJsonGoalTrackers() async =>
 
 // Returns datetime when json tracker was played
 DateTime _getPlayedDateTime(Map<String, dynamic> jsonGoalTracker) =>
-    DateTime.fromMillisecondsSinceEpoch(int.parse(jsonGoalTracker["playing"]));
+    DateTime.fromMillisecondsSinceEpoch(jsonGoalTracker["playing"]);
 
 class GoalTrackerStorage {
   /// Goal trackers to be later stored, gets assigned privately by fetch method
@@ -68,7 +68,7 @@ class GoalTrackerStorage {
     final List jsonGoalTrackersList = jsonDecode(await _getJsonGoalTrackers());
 
     final List playingJsonGoalTrackers = jsonGoalTrackersList
-        .where((jsonGoalTracker) => jsonGoalTracker["playing"] != "F")
+        .where((jsonGoalTracker) => jsonGoalTracker["playing"] != -1)
         .toList();
 
     if (playingJsonGoalTrackers.isEmpty) return null;

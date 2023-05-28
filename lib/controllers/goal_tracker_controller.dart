@@ -259,32 +259,31 @@ class GoalTrackerController extends GetxController {
   ///
   /// If playing, json progress is [_keepTime]
   static GoalTrackerController fromJson(Map<String, dynamic> json) {
-    bool isPlaynig = json["playing"] != "F";
-    int timeOfDay = int.parse(json["deadline_time"]);
+    bool isPlaynig = json["playing"] != -1;
+    int timeOfDay = json["deadline_time"];
 
     final tracker = GoalTrackerController(
       name: json["name"],
-      duration: Duration(milliseconds: int.parse(json["duration"])),
+      duration: Duration(milliseconds: json["duration"]),
       progress: isPlaynig
-          ? DateTime.now().difference(
-              DateTime.fromMillisecondsSinceEpoch(int.parse(json["progress"])))
-          : Duration(milliseconds: int.parse(json["progress"])),
+          ? DateTime.now()
+              .difference(DateTime.fromMillisecondsSinceEpoch(json["progress"]))
+          : Duration(milliseconds: json["progress"]),
       playing: isPlaynig,
       deadline: Deadline(
-        date: DateTime.fromMillisecondsSinceEpoch(
-            int.parse(json["deadline_date"])),
-        days: int.parse(json["deadline_days"]),
+        date: DateTime.fromMillisecondsSinceEpoch(json["deadline_date"]),
+        days: json["deadline_days"],
         time: TimeOfDay(
           hour: timeOfDay ~/ Duration.minutesPerHour,
           minute: timeOfDay % Duration.minutesPerHour,
         ),
-        active: json["deadline_active"] == "T",
+        active: json["deadline_active"],
       ),
       keptTime: isPlaynig
-          ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["progress"]))
+          ? DateTime.fromMillisecondsSinceEpoch(json["progress"])
           : null,
       keptDate: isPlaynig
-          ? DateTime.fromMillisecondsSinceEpoch(int.parse(json["playing"]))
+          ? DateTime.fromMillisecondsSinceEpoch(json["playing"])
           : null,
     );
     return tracker;
@@ -297,19 +296,17 @@ class GoalTrackerController extends GetxController {
     final isPlaying = playing.value && _keepTime != null;
     return {
       "name": name.value,
-      "duration": duration.value.inMilliseconds.toString(),
+      "duration": duration.value.inMilliseconds,
       "progress": isPlaying
-          ? _keepTime!.millisecondsSinceEpoch.toString()
-          : progress.value.inMilliseconds.toString(),
-      "playing": isPlaying
-          ? (_keepDate ?? DateTime.now()).millisecondsSinceEpoch.toString()
-          : "F",
-      "deadline_date": deadline.value.date.millisecondsSinceEpoch.toString(),
-      "deadline_days": deadline.value.days.toString(),
-      "deadline_time": ((deadline.value.time.hour * Duration.minutesPerHour) +
-              deadline.value.time.minute)
-          .toString(),
-      "deadline_active": deadline.value.active.value ? "T" : "F",
+          ? _keepTime!.millisecondsSinceEpoch
+          : progress.value.inMilliseconds,
+      "playing":
+          isPlaying ? (_keepDate ?? DateTime.now()).millisecondsSinceEpoch : -1,
+      "deadline_date": deadline.value.date.millisecondsSinceEpoch,
+      "deadline_days": deadline.value.days,
+      "deadline_time": (deadline.value.time.hour * Duration.minutesPerHour) +
+          deadline.value.time.minute,
+      "deadline_active": deadline.value.active.value,
     };
   }
 }
