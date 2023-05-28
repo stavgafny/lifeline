@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../../services/upcoming_event/upcoming_event_storage.dart';
 import '../../../../../models/upcoming_event_model.dart';
 import '../../../../../widgets/undo_snack_bar.dart';
@@ -16,9 +17,52 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     with WidgetsBindingObserver {
   List<UpcomingEventModel> _upcomingEvents = [];
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _fetchUpcomingEvents();
+    _atMidnight().listen((_) => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_upcomingEvents.isNotEmpty) {
+      return _buildUpcomingEvents(context);
+    }
+    return _buildEmptyUpcomingEvents(context);
+  }
+
+  @override
+  void dispose() {
+    // Save stored upcoming events on dispose (switched screen)
+    UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // If event isn't resume save stored upcoming events(inactive/paused/detached)
+    if (state != AppLifecycleState.resumed) {
+      UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
+    }
+  }
+
   Future<void> _fetchUpcomingEvents() async {
     _upcomingEvents = await UpcomingEventStorage.fetch();
     setState(() {});
+  }
+
+  /// yields every time the clock strikes at midnight
+  Stream<void> _atMidnight() async* {
+    while (true) {
+      final now = DateTime.now();
+      final midnight =
+          DateTime(now.year, now.month, now.day + 1).difference(now);
+      await midnight.delay();
+      yield null;
+    }
   }
 
   void _addUpcomingEvent() {
@@ -132,36 +176,5 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     return const Center(
       child: Text("Empty"),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_upcomingEvents.isNotEmpty) {
-      return _buildUpcomingEvents(context);
-    }
-    return _buildEmptyUpcomingEvents(context);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _fetchUpcomingEvents();
-  }
-
-  @override
-  void dispose() {
-    // Save stored upcoming events on dispose (switched screen)
-    UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // If event isn't resume save stored upcoming events(inactive/paused/detached)
-    if (state != AppLifecycleState.resumed) {
-      UpcomingEventStorage.saveUpcomingEvents(_upcomingEvents);
-    }
   }
 }
