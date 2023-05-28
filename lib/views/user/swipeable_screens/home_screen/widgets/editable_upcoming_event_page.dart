@@ -36,7 +36,11 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     super.dispose();
   }
 
+  /// Unfocuses all focus node widgets
+  void _unfocus() => FocusScope.of(context).requestFocus(FocusNode());
+
   void _changeType() {
+    _unfocus();
     showDialog(
       context: context,
       builder: (context) => _UpcomingEventTypeEditDialog(
@@ -50,6 +54,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 
   void _changeDate() async {
+    _unfocus();
     final now = DateTime.now();
     final DateTime? newDate = await showDatePicker(
       context: context,
@@ -66,6 +71,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 
   void _changeDays() {
+    _unfocus();
     final daysRemain = _controller.editableModel.daysRemain();
     showDialog(
       context: context,
@@ -81,6 +87,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 
   void _changeTime() async {
+    _unfocus();
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_controller.editableModel.date),
@@ -94,22 +101,25 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   Widget _type(BuildContext context) {
     //! Hero this container to folded (upcoming event type transition)
-    return Hero(
-      tag: widget.model,
-      transitionOnUserGestures: true,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          image: DecorationImage(
-            fit: BoxFit.contain,
-            image: _controller.editableModel.type.value,
-          ),
-        ),
+    return AspectRatio(
+      aspectRatio: 1.5,
+      child: Hero(
+        tag: widget.model,
+        transitionOnUserGestures: true,
         child: Container(
-          alignment: Alignment.bottomRight,
-          child: IconButton(
-            onPressed: _changeType,
-            icon: const Icon(Icons.edit),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            image: DecorationImage(
+              fit: BoxFit.contain,
+              image: _controller.editableModel.type.value,
+            ),
+          ),
+          child: Container(
+            alignment: Alignment.bottomRight,
+            child: IconButton(
+              onPressed: _changeType,
+              icon: const Icon(Icons.edit),
+            ),
           ),
         ),
       ),
@@ -196,18 +206,9 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
       height: EditableUpcomingEventPage._dateDaysTimeEditHeight,
       child: Row(
         children: [
-          Expanded(
-            flex: 5,
-            child: _date(context),
-          ),
-          Expanded(
-            flex: 3,
-            child: _days(context),
-          ),
-          Expanded(
-            flex: 3,
-            child: _time(context),
-          ),
+          Expanded(flex: 5, child: _date(context)),
+          Expanded(flex: 3, child: _days(context)),
+          Expanded(flex: 3, child: _time(context)),
         ],
       ),
     );
@@ -272,7 +273,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   Widget _deleteApplyButtons(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50.0),
+      padding: const EdgeInsets.all(30.0),
       child: SizedBox(
         height: 55.0,
         child: Row(
@@ -290,7 +291,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       //! If focused on textfield and touched anywhere else then unfocus
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      onTap: _unfocus,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
@@ -302,21 +303,14 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
           type: MaterialType.transparency,
           child: Column(
             children: [
-              AspectRatio(
-                aspectRatio: 1.5,
-                child: _type(context),
-              ),
+              _type(context),
               _name(context),
               _dateDaysTimeButtons(context),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _deleteApplyButtons(context),
-                ),
-              ),
             ],
           ),
         ),
+        floatingActionButton: _deleteApplyButtons(context),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
