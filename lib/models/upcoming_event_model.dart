@@ -43,6 +43,7 @@ class UpcomingEventModel {
       name: "",
       date: normalizeDate(DateTime.now()),
       type: UpcomingEventType.default_,
+      details: "",
     );
   }
 
@@ -108,18 +109,23 @@ class UpcomingEventModel {
     return normalizedDate.difference(normalizedNow).inDays;
   }
 
-  static UpcomingEventModel fromJson(Map<String, dynamic> json) =>
-      UpcomingEventModel(
-        name: json["name"],
-        date: DateTime.fromMillisecondsSinceEpoch(int.parse(json["date"])),
-        type: UpcomingEventType.values.byName(json["type"]),
-        details: json["details"],
-      );
+  /// Creates an [UpcomingEventModel] instance from `json` with default values
+  /// for null properties
+  static UpcomingEventModel fromJson(Map<String, dynamic> json) {
+    final def = UpcomingEventModel.createEmpty();
+    return UpcomingEventModel(
+      name: json["name"] ?? def.name,
+      date: DateTime.fromMillisecondsSinceEpoch(
+          json["date"] ?? def.date.millisecondsSinceEpoch),
+      type: UpcomingEventType.values.byName(json["type"] ?? def.type.name),
+      details: json["details"] ?? def.details,
+    );
+  }
 
+  /// Returns `json` model (date as unix time)
   Map<String, dynamic> toJson() => {
-        // Returns json model (date as unix time)
         "name": name,
-        "date": date.millisecondsSinceEpoch.toString(),
+        "date": date.millisecondsSinceEpoch,
         "type": type.name,
         "details": details,
       };
