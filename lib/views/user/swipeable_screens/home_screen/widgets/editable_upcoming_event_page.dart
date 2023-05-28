@@ -37,7 +37,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 
   /// Unfocuses all focus node widgets
-  void _unfocus() => FocusScope.of(context).requestFocus(FocusNode());
+  void _unfocus() => FocusScope.of(context).unfocus();
 
   void _changeType() {
     _unfocus();
@@ -214,6 +214,27 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     );
   }
 
+  Widget _details(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) =>
+                    _DetailsEditPage(_controller.detailsController),
+              ),
+            );
+          },
+          child: _DetailsTextField(
+            controller: _controller.detailsController,
+            enabled: false,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _delete(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.25,
@@ -289,28 +310,25 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      //! If focused on textfield and touched anywhere else then unfocus
-      onTap: _unfocus,
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(0.0),
-          child: AppBar(automaticallyImplyLeading: false),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(0.0),
+        child: AppBar(automaticallyImplyLeading: false),
+      ),
+      body: GestureDetector(
+        //! If focused on textfield and touched anywhere else then unfocus
+        onTap: _unfocus,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _type(context),
+            _name(context),
+            _dateDaysTimeButtons(context),
+            _details(context),
+            _deleteApplyButtons(context),
+          ],
         ),
-        //! Material ancestor to the widgets below (transperent)
-        body: Material(
-          type: MaterialType.transparency,
-          child: Column(
-            children: [
-              _type(context),
-              _name(context),
-              _dateDaysTimeButtons(context),
-            ],
-          ),
-        ),
-        floatingActionButton: _deleteApplyButtons(context),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
@@ -376,6 +394,56 @@ class _UpcomingEventTypeEditDialog extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         child: _buildTypesGrid(context),
       ),
+    );
+  }
+}
+
+class _DetailsTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final bool enabled;
+  const _DetailsTextField({required this.controller, required this.enabled});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: TextField(
+        maxLines: null,
+        style: TextStyle(
+          fontSize: 18.0,
+          color: Theme.of(context).textTheme.bodyMedium?.color,
+        ),
+        decoration: const InputDecoration.collapsed(hintText: "Event details"),
+        controller: controller,
+        enabled: enabled,
+        autofocus: enabled,
+      ),
+    );
+  }
+}
+
+class _DetailsEditPage extends StatelessWidget {
+  final TextEditingController controller;
+  const _DetailsEditPage(this.controller);
+
+  @override
+  Widget build(BuildContext context) {
+    // Ensures controller modification happens after setState & Obx changes
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        controller.selection =
+            TextSelection.collapsed(offset: controller.text.length);
+      },
+    );
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        scrolledUnderElevation: 0.0,
+        automaticallyImplyLeading: true,
+      ),
+      body: _DetailsTextField(controller: controller, enabled: true),
     );
   }
 }

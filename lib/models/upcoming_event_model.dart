@@ -49,11 +49,13 @@ class UpcomingEventModel {
   String name;
   DateTime date;
   UpcomingEventType type;
+  String details;
 
   UpcomingEventModel({
     required this.name,
     required DateTime date,
     required this.type,
+    this.details = "",
   }) : date = normalizeDate(
           date,
           hour: date.hour,
@@ -65,6 +67,7 @@ class UpcomingEventModel {
     name = other.name.trim();
     date = other.date;
     type = other.type;
+    details = other.details;
   }
 
   /// Copies and creates a new UpcomingEventModel instance from its values
@@ -73,6 +76,7 @@ class UpcomingEventModel {
       name: name,
       date: date,
       type: type,
+      details: details,
     );
   }
 
@@ -80,7 +84,8 @@ class UpcomingEventModel {
   bool differsFrom(UpcomingEventModel other) {
     return name.trim() != other.name.trim() ||
         date != other.date ||
-        type != other.type;
+        type != other.type ||
+        details != other.details;
   }
 
   /// Returns stringified date in DD-MM-YYYY format
@@ -108,6 +113,7 @@ class UpcomingEventModel {
         name: json["name"],
         date: DateTime.fromMillisecondsSinceEpoch(int.parse(json["date"])),
         type: UpcomingEventType.values.byName(json["type"]),
+        details: json["details"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -115,5 +121,6 @@ class UpcomingEventModel {
         "name": name,
         "date": date.millisecondsSinceEpoch.toString(),
         "type": type.name,
+        "details": details,
       };
 }

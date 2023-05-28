@@ -10,15 +10,23 @@ class UpcomingEventController extends GetxController {
 
   // Editable fields
   final nameController = TextEditingController();
+  final detailsController = TextEditingController();
   // Observable if edited
   RxBool edited = false.obs;
 
   UpcomingEventController({required UpcomingEventModel model})
       : _originalModel = model,
         editableModel = model.copy() {
+    // Name
     nameController.text = model.name;
     nameController.addListener(() {
       editableModel.name = nameController.text;
+      _checkIfEdited();
+    });
+    // Details
+    detailsController.text = model.details;
+    detailsController.addListener(() {
+      editableModel.details = detailsController.text;
       _checkIfEdited();
     });
   }
