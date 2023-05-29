@@ -216,20 +216,19 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   Widget _details(BuildContext context) {
     return Expanded(
-      child: SingleChildScrollView(
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) =>
-                    _DetailsEditPage(_controller.detailsController),
-              ),
-            );
-          },
-          child: _DetailsTextField(
-            controller: _controller.detailsController,
-            enabled: false,
-          ),
+      child: GestureDetector(
+        onTap: () {
+          _unfocus();
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>
+                  _DetailsEditPage(_controller.detailsController),
+            ),
+          );
+        },
+        child: _DetailsTextField(
+          controller: _controller.detailsController,
+          enabled: false,
         ),
       ),
     );
@@ -405,18 +404,23 @@ class _DetailsTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: TextField(
-        maxLines: null,
-        style: TextStyle(
-          fontSize: 18.0,
-          color: Theme.of(context).textTheme.bodyMedium?.color,
+    return Scrollbar(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: TextField(
+            maxLines: null,
+            style: TextStyle(
+              fontSize: 18.0,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+            decoration:
+                const InputDecoration.collapsed(hintText: "Event details"),
+            controller: controller,
+            enabled: enabled,
+            autofocus: enabled,
+          ),
         ),
-        decoration: const InputDecoration.collapsed(hintText: "Event details"),
-        controller: controller,
-        enabled: enabled,
-        autofocus: enabled,
       ),
     );
   }
