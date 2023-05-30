@@ -65,16 +65,40 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     }
   }
 
-  void _addUpcomingEvent() {
-    final upcomingEvent = UpcomingEventModel.createEmpty();
+  /// Returns the index at which to insert the given [upcomingEvent] into
+  /// [_upcomingEvents] list based on the event's date using a binary search.
+  int _getInsertIndex(UpcomingEventModel upcomingEvent) {
+    final date = upcomingEvent.date;
+    final dates = _upcomingEvents.map((event) => event.date).toList();
+    int left = 0, right = dates.length;
+    while (left < right) {
+      final mid = (left + right) ~/ 2;
+      if (date.isAfter(dates[mid])) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
+    return left;
+  }
+
+  /// Removes previous [upcomingEvent] in [_upcomingEvents] if exists in list,
+  /// and reinsers it back with applied changes at the appropriate position
+  ///
+  /// Used for both creation and for reinserting it back based on updated date.
+  void _reinsertUpcomingEvent(UpcomingEventModel upcomingEvent) {
+    _upcomingEvents.remove(upcomingEvent);
+    _upcomingEvents.insert(_getInsertIndex(upcomingEvent), upcomingEvent);
+    setState(() {});
+  }
+
+  /// Pushes [EditableUpcomingEventPage] for given [upcomingEvent]
+  void _editUpcomingEvent(UpcomingEventModel upcomingEvent) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditableUpcomingEventPage(
           model: upcomingEvent,
-          onChange: () => setState(() {
-            _upcomingEvents.remove(upcomingEvent);
-            _upcomingEvents.add(upcomingEvent);
-          }),
+          onChange: () => _reinsertUpcomingEvent(upcomingEvent),
           onDelete: () => _removeUpcomingEvent(upcomingEvent),
         ),
       ),
@@ -140,7 +164,8 @@ class _UpcomingEventsState extends State<UpcomingEvents>
               width: size,
               child: UpcomingEvent.addButton(
                 context,
-                onTap: _addUpcomingEvent,
+                onTap: () =>
+                    _editUpcomingEvent(UpcomingEventModel.createEmpty()),
               ),
             ),
             children: [
@@ -150,17 +175,7 @@ class _UpcomingEventsState extends State<UpcomingEvents>
                   width: size,
                   child: UpcomingEvent(
                     model: upcomingEvent,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => EditableUpcomingEventPage(
-                            model: upcomingEvent,
-                            onChange: () => setState(() {}),
-                            onDelete: () => _removeUpcomingEvent(upcomingEvent),
-                          ),
-                        ),
-                      );
-                    },
+                    onTap: () => _editUpcomingEvent(upcomingEvent),
                   ),
                 ),
             ],
