@@ -102,7 +102,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   Widget _type(BuildContext context) {
     //! Hero this container to folded (upcoming event type transition)
     return AspectRatio(
-      aspectRatio: 1.5,
+      aspectRatio: 1.75,
       child: Hero(
         tag: widget.model,
         transitionOnUserGestures: true,
@@ -215,22 +215,18 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 
   Widget _details(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _unfocus();
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) =>
-                  _DetailsEditPage(_controller.detailsController),
-            ),
-          );
-        },
-        child: _DetailsTextField(
-          controller: _controller.detailsController,
-          enabled: false,
-        ),
-      ),
+    return _DetailsTextField(
+      controller: _controller.detailsController,
+      editable: false,
+      onTap: () {
+        _unfocus();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) =>
+                _DetailsTextField.page(_controller.detailsController),
+          ),
+        );
+      },
     );
   }
 
@@ -313,7 +309,10 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(0.0),
-        child: AppBar(automaticallyImplyLeading: false),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          scrolledUnderElevation: 0.0,
+        ),
       ),
       body: GestureDetector(
         //! If focused on textfield and touched anywhere else then unfocus
@@ -399,46 +398,15 @@ class _UpcomingEventTypeEditDialog extends StatelessWidget {
 
 class _DetailsTextField extends StatelessWidget {
   final TextEditingController controller;
-  final bool enabled;
-  const _DetailsTextField({required this.controller, required this.enabled});
+  final bool editable;
+  final void Function()? onTap;
+  const _DetailsTextField({
+    required this.controller,
+    required this.editable,
+    this.onTap,
+  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Scrollbar(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: TextField(
-            maxLines: null,
-            style: TextStyle(
-              fontSize: 18.0,
-              color: Theme.of(context).textTheme.bodyMedium?.color,
-            ),
-            decoration:
-                const InputDecoration.collapsed(hintText: "Event details"),
-            controller: controller,
-            enabled: enabled,
-            autofocus: enabled,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailsEditPage extends StatelessWidget {
-  final TextEditingController controller;
-  const _DetailsEditPage(this.controller);
-
-  @override
-  Widget build(BuildContext context) {
-    // Ensures controller modification happens after setState & Obx changes
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        controller.selection =
-            TextSelection.collapsed(offset: controller.text.length);
-      },
-    );
+  static Scaffold page(TextEditingController controller) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -447,7 +415,35 @@ class _DetailsEditPage extends StatelessWidget {
         scrolledUnderElevation: 0.0,
         automaticallyImplyLeading: true,
       ),
-      body: _DetailsTextField(controller: controller, enabled: true),
+      body: Column(
+        children: [
+          _DetailsTextField(controller: controller, editable: true),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: Scrollbar(
+        child: TextField(
+          maxLines: null,
+          expands: true,
+          controller: controller,
+          readOnly: !editable,
+          style: TextStyle(
+            fontSize: 16.0,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
+          decoration: const InputDecoration(
+            hintText: 'Event details',
+            contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+            border: InputBorder.none,
+          ),
+          onTap: !editable ? onTap : null,
+        ),
+      ),
     );
   }
 }
