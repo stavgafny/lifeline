@@ -4,7 +4,7 @@ import '../../../../../services/upcoming_event/upcoming_event_storage.dart';
 import '../../../../../models/upcoming_event_model.dart';
 import '../../../../../widgets/undo_snack_bar.dart';
 import './upcoming_event/upcoming_event.dart';
-import './upcoming_event/editable_upcoming_event_page.dart';
+import './upcoming_event/upcoming_event_edit_page.dart';
 
 class UpcomingEvents extends StatefulWidget {
   const UpcomingEvents({super.key});
@@ -92,11 +92,11 @@ class _UpcomingEventsState extends State<UpcomingEvents>
     setState(() {});
   }
 
-  /// Pushes [EditableUpcomingEventPage] for given [upcomingEvent]
+  /// Pushes [UpcomingEventEditPage] for given [upcomingEvent]
   void _editUpcomingEvent(UpcomingEventModel upcomingEvent) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => EditableUpcomingEventPage(
+        builder: (context) => UpcomingEventEditPage(
           model: upcomingEvent,
           onChange: () => _reinsertUpcomingEvent(upcomingEvent),
           onDelete: () => _removeUpcomingEvent(upcomingEvent),

@@ -8,13 +8,13 @@ const _dateContainer = Color(0xFF3C2B37);
 const _daysContainer = Color(0xFF523547);
 const _timeContainer = Color(0xFF9B608A);
 
-class EditableUpcomingEventPage extends StatefulWidget {
+class UpcomingEventEditPage extends StatefulWidget {
   static const _dateDaysTimeEditHeight = 100.0;
 
   final UpcomingEventModel model;
   final Function onChange;
   final Function onDelete;
-  const EditableUpcomingEventPage({
+  const UpcomingEventEditPage({
     required this.model,
     required this.onChange,
     required this.onDelete,
@@ -22,11 +22,10 @@ class EditableUpcomingEventPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<EditableUpcomingEventPage> createState() =>
-      _EditableUpcomingEventPageState();
+  State<UpcomingEventEditPage> createState() => _UpcomingEventEditPageState();
 }
 
-class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
+class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
   // Setting a controller on editable fields when widget is initialized
   late final _controller = UpcomingEventController(model: widget.model);
 
@@ -203,7 +202,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
 
   Widget _dateDaysTimeButtons(BuildContext context) {
     return SizedBox(
-      height: EditableUpcomingEventPage._dateDaysTimeEditHeight,
+      height: UpcomingEventEditPage._dateDaysTimeEditHeight,
       child: Row(
         children: [
           Expanded(flex: 5, child: _date(context)),
