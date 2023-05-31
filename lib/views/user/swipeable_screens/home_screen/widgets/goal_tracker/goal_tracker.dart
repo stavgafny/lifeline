@@ -1,133 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../../../../../controllers/goal_tracker_controller.dart';
-import '../../../../../widgets/tappable_text.dart';
-import '../../../../../widgets/wheel_input.dart';
-
-/// Dialog for editing the goal tracker name
-///
-/// [name] -> the current goal tracker name
-///
-/// [onCancel] -> callback function when exiting the dialog with cancel
-///
-/// [onConfirm] -> callback function for confirm action
-/// callback has the modified name passed as an argument
-///
-/// [startSelected] -> select all name text at start
-///
-/// Defaults to true.
-///
-/// Note that confirm can only be called if current [modifiedName] is not empty
-class _NameEditDialog extends StatefulWidget {
-  final TextEditingController controller;
-  final void Function() onCancel;
-  final void Function(String modifiedName) onConfirm;
-
-  /// Create [TextEditingController] form given name and if [startSelected] is
-  /// true set the controller selection to select the whole name text
-  _NameEditDialog({
-    required String name,
-    required this.onCancel,
-    required this.onConfirm,
-    bool startSelected = true,
-  }) : controller = TextEditingController(text: name) {
-    if (startSelected) {
-      controller.selection =
-          TextSelection(baseOffset: 0, extentOffset: name.length);
-    }
-  }
-
-  @override
-  State<_NameEditDialog> createState() => _NameEditDialogState();
-}
-
-class _NameEditDialogState extends State<_NameEditDialog> {
-  /// Determines whether can be confirmed
-  ///
-  /// If false, [onConfirm] won't be called and the confirm button text color
-  /// will be set as disabled
-  bool enabled = false;
-
-  /// updates [enabled] value to the current controller text value
-  /// whether its empty or not.
-  ///
-  /// [enabled] = controller text not empty
-  ///
-  /// Only if the condition isn't the same as [enabled], then setState is called
-  /// to reduce unnecessary rebuilds
-  void _updateEnabled() {
-    final isNotEmpty = widget.controller.text.trim().isNotEmpty;
-    if (enabled == isNotEmpty) return;
-    setState(() => enabled = isNotEmpty);
-  }
-
-  @override
-  void initState() {
-    // Updates enabled on start once and then for every controller text change
-    _updateEnabled();
-    widget.controller.addListener(_updateEnabled);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // Clean up the text controller when the dialog is dismissed
-    widget.controller.removeListener(_updateEnabled);
-    widget.controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  AlertDialog build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      title: TextField(
-        controller: widget.controller,
-        autofocus: true,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Name',
-        ),
-      ),
-      actions: [
-        MaterialButton(
-          onPressed: widget.onCancel,
-          child: Text(
-            "Cancel",
-            style: TextStyle(color: Theme.of(context).colorScheme.primary),
-          ),
-        ),
-        MaterialButton(
-          onPressed: enabled
-              ? () => widget.onConfirm.call(widget.controller.text.trim())
-              : null,
-          textColor: enabled ? Theme.of(context).colorScheme.primary : null,
-          disabledTextColor: Theme.of(context).disabledColor,
-          child: const Text("OK"),
-        ),
-      ],
-    );
-  }
-}
+import '../../../../../../controllers/goal_tracker_controller.dart';
+import '../../../../../../widgets/tappable_text.dart';
+import '../../../../../../widgets/wheel_input.dart';
+import './name_edit_dialog.dart';
+import './_expanded_section.dart';
+import './_goal_tracker_transition.dart';
 
 class GoalTracker extends StatelessWidget {
-  static void showNameEditDialog(
-    BuildContext context, {
-    required String name,
-    required void Function() onCancel,
-    required void Function(String modifiedName) onConfirm,
-  }) {
-    showDialog(
-      context: context,
-      builder: (context) => _NameEditDialog(
-        name: name,
-        onCancel: onCancel,
-        onConfirm: onConfirm,
-      ),
-    );
-  }
-
   final GoalTrackerController tracker;
   final Function onRemove;
   const GoalTracker({
@@ -140,7 +21,7 @@ class GoalTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GoalTrackerTransition(
+    return GoalTrackerTransition(
       transitionController: tracker.transitionController,
       child: GestureDetector(
         onTap: () {
@@ -238,14 +119,16 @@ class GoalTracker extends StatelessWidget {
     return Obx(
       () => GestureDetector(
         onTap: _selected
-            ? () => GoalTracker.showNameEditDialog(
-                  context,
-                  name: tracker.name.value,
-                  onCancel: () => Navigator.of(context).pop(),
-                  onConfirm: (modifiedName) {
-                    tracker.name.value = modifiedName;
-                    Navigator.of(context).pop();
-                  },
+            ? () => showDialog(
+                  context: context,
+                  builder: (context) => NameEditDialog(
+                    name: tracker.name.value,
+                    onCancel: () => Navigator.of(context).pop(),
+                    onConfirm: (modifiedName) {
+                      tracker.name.value = modifiedName;
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 )
             : null,
         child: AnimatedContainer(
@@ -315,7 +198,7 @@ class GoalTracker extends StatelessWidget {
 
   Widget _expandedSection(BuildContext context) {
     return Obx(
-      () => _ExpandedSection(
+      () => ExpandedSection(
         expand: _selected,
         child: Center(
           child: Column(
@@ -503,123 +386,6 @@ class GoalTracker extends StatelessWidget {
       child: Icon(
         Icons.delete_outline,
         color: Theme.of(context).colorScheme.onSurface,
-      ),
-    );
-  }
-}
-
-class _ExpandedSection extends StatefulWidget {
-  final bool expand;
-  final Widget? child;
-  const _ExpandedSection({
-    this.expand = false,
-    this.child,
-  });
-
-  @override
-  _ExpandedSectionState createState() => _ExpandedSectionState();
-}
-
-class _ExpandedSectionState extends State<_ExpandedSection>
-    with SingleTickerProviderStateMixin {
-  late AnimationController expandController;
-  late Animation<double> animation;
-
-  @override
-  void initState() {
-    super.initState();
-    prepareAnimations();
-    _runExpandCheck();
-  }
-
-  /// Setting up the animation
-  void prepareAnimations() {
-    expandController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
-    animation = CurvedAnimation(
-      parent: expandController,
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void _runExpandCheck() {
-    if (widget.expand) {
-      expandController.forward();
-    } else {
-      expandController.reverse();
-    }
-  }
-
-  @override
-  void didUpdateWidget(_ExpandedSection oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _runExpandCheck();
-  }
-
-  @override
-  void dispose() {
-    expandController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizeTransition(
-        axisAlignment: 1.0, sizeFactor: animation, child: widget.child);
-  }
-}
-
-class _GoalTrackerTransition extends StatefulWidget {
-  final Widget child;
-  final GoalTrackerTransitionController transitionController;
-  const _GoalTrackerTransition({
-    Key? key,
-    required this.child,
-    required this.transitionController,
-  }) : super(key: key);
-
-  @override
-  State<_GoalTrackerTransition> createState() => _GoalTrackerTransitionState();
-}
-
-class _GoalTrackerTransitionState extends State<_GoalTrackerTransition>
-    with TickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      value: widget.transitionController.animateIn ? 0 : 1,
-      duration: GoalTrackerTransitionController.duration,
-    );
-    _animation = CurvedAnimation(
-      curve: Curves.easeInOutSine,
-      parent: _controller,
-    );
-    widget.transitionController.controller = _controller;
-    if (widget.transitionController.animateIn) {
-      widget.transitionController.fadeIn();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizeTransition(
-      sizeFactor: _animation,
-      axis: Axis.vertical,
-      axisAlignment: 0.0,
-      child: FadeTransition(
-        opacity: _animation,
-        child: widget.child,
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../../models/upcoming_event_model.dart';
+import '../../../../../../models/upcoming_event_model.dart';
 
 class UpcomingEvent extends StatelessWidget {
   static const double _dateFontSize = 14.0;

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../../controllers/goal_tracker_controller.dart';
 import '../../../../../services/goal_tracker/goal_tracker_storage.dart';
 import '../../../../../widgets/undo_snack_bar.dart';
-import './goal_tracker.dart';
+import './goal_tracker/goal_tracker.dart';
+import './goal_tracker/name_edit_dialog.dart';
 
 /// Fetch trackers from local storage once on init and every time the app is resumed
 ///
@@ -63,19 +64,21 @@ class _GoalTrackersState extends State<GoalTrackers>
   /// After confirming, create an empty tracker with modified name and a new
   /// transition controller with `animateIn` set to true
   void _addNewTracker() {
-    GoalTracker.showNameEditDialog(
-      context,
-      name: "",
-      onCancel: () => Navigator.of(context).pop(),
-      onConfirm: (modifiedName) {
-        final tracker = GoalTrackerController.createEmpty()
-          ..name.value = modifiedName
-          ..transitionController =
-              GoalTrackerTransitionController(animateIn: true);
+    showDialog(
+      context: context,
+      builder: (context) => NameEditDialog(
+        name: "",
+        onCancel: () => Navigator.of(context).pop(),
+        onConfirm: (modifiedName) {
+          final tracker = GoalTrackerController.createEmpty()
+            ..name.value = modifiedName
+            ..transitionController =
+                GoalTrackerTransitionController(animateIn: true);
 
-        Navigator.of(context).pop();
-        setState(() => _goalTrackers.insert(0, tracker));
-      },
+          Navigator.of(context).pop();
+          setState(() => _goalTrackers.insert(0, tracker));
+        },
+      ),
     );
   }
 

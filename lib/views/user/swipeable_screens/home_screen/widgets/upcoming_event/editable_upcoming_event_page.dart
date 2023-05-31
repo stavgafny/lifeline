@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../models/upcoming_event_model.dart';
-import '../../../../../controllers/upcoming_event_controller.dart';
-import '../../../../../widgets/wheel_input.dart';
+import '../../../../../../models/upcoming_event_model.dart';
+import '../../../../../../controllers/upcoming_event_controller.dart';
+import '../../../../../../widgets/wheel_input.dart';
 
 const _dateContainer = Color(0xFF3C2B37);
 const _daysContainer = Color(0xFF523547);
@@ -43,7 +43,7 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
     _unfocus();
     showDialog(
       context: context,
-      builder: (context) => _UpcomingEventTypeEditDialog(
+      builder: (context) => _TypeEditDialog(
         onSubmit: (UpcomingEventType type) {
           Navigator.of(context, rootNavigator: true).pop();
           _controller.setType(type);
@@ -332,10 +332,10 @@ class _EditableUpcomingEventPageState extends State<EditableUpcomingEventPage> {
   }
 }
 
-class _UpcomingEventTypeEditDialog extends StatelessWidget {
+class _TypeEditDialog extends StatelessWidget {
   final Function(UpcomingEventType type) onSubmit;
 
-  const _UpcomingEventTypeEditDialog({
+  const _TypeEditDialog({
     required this.onSubmit,
     Key? key,
   }) : super(key: key);

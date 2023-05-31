@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import '../../../../../services/upcoming_event/upcoming_event_storage.dart';
 import '../../../../../models/upcoming_event_model.dart';
 import '../../../../../widgets/undo_snack_bar.dart';
-import './editable_upcoming_event_page.dart';
-import './upcoming_event.dart';
+import './upcoming_event/upcoming_event.dart';
+import './upcoming_event/editable_upcoming_event_page.dart';
 
 class UpcomingEvents extends StatefulWidget {
   const UpcomingEvents({super.key});
