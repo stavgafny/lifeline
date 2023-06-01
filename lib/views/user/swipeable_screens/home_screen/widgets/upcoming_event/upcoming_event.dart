@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../../models/upcoming_event_model.dart';
 
 class UpcomingEvent extends StatelessWidget {
-  static const double _dateFontSize = 14.0;
+  static const double _dateFontSize = 18.0;
   static const double _nameFontSize = 20.0;
 
   static const int defaultMinimumSize = 125;

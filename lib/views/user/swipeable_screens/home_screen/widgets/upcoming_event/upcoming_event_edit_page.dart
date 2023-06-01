@@ -274,7 +274,7 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
         height: double.infinity,
         elevation: 10.0,
         color: Theme.of(context).colorScheme.primary.withAlpha(200),
-        disabledColor: Colors.grey[800],
+        disabledColor: Theme.of(context).colorScheme.secondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
