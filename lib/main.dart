@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../constants/firebase_options.dart';
-import '../constants/theme_data.dart';
+import './constants/theme/theme.dart' as theme;
 import './routes/route_pages.dart';
 
 Future<void> main() async {
@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: title,
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: theme.lightTheme,
+      darkTheme: theme.darkTheme,
       themeMode: ThemeMode.system,
       getPages: routePages,
       initialRoute: RoutePage.initial,

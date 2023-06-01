@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../../../constants/theme/extensions/upcoming_event_edit_page_colors.dart';
 import '../../../../../../models/upcoming_event_model.dart';
 import '../../../../../../controllers/upcoming_event_controller.dart';
 import '../../../../../../widgets/wheel_input.dart';
@@ -152,11 +153,11 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
     );
   }
 
-  Widget _date(BuildContext context) {
+  Widget _date(BuildContext context, Color? color) {
     return MaterialButton(
       height: double.infinity,
       onPressed: _changeDate,
-      color: _dateContainer,
+      color: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -170,11 +171,11 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
     );
   }
 
-  Widget _days(BuildContext context) {
+  Widget _days(BuildContext context, Color? color) {
     return MaterialButton(
       height: double.infinity,
       onPressed: _changeDays,
-      color: _daysContainer,
+      color: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -185,11 +186,11 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
     );
   }
 
-  Widget _time(BuildContext context) {
+  Widget _time(BuildContext context, Color? color) {
     return MaterialButton(
       height: double.infinity,
       onPressed: _changeTime,
-      color: _timeContainer,
+      color: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -200,14 +201,15 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
     );
   }
 
-  Widget _dateDaysTimeButtons(BuildContext context) {
+  Widget _dateDaysTimeButtons(
+      BuildContext context, UpcomingEventEditPageColors colors) {
     return SizedBox(
       height: UpcomingEventEditPage._dateDaysTimeEditHeight,
       child: Row(
         children: [
-          Expanded(flex: 5, child: _date(context)),
-          Expanded(flex: 3, child: _days(context)),
-          Expanded(flex: 3, child: _time(context)),
+          Expanded(flex: 5, child: _date(context, colors.date)),
+          Expanded(flex: 3, child: _days(context, colors.days)),
+          Expanded(flex: 3, child: _time(context, colors.time)),
         ],
       ),
     );
@@ -304,6 +306,7 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<UpcomingEventEditPageColors>()!;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: PreferredSize(
@@ -321,7 +324,7 @@ class _UpcomingEventEditPageState extends State<UpcomingEventEditPage> {
           children: [
             _type(context),
             _name(context),
-            _dateDaysTimeButtons(context),
+            _dateDaysTimeButtons(context, colors),
             _details(context),
             _deleteApplyButtons(context),
           ],

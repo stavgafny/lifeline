@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import './extensions/upcoming_event_edit_page_colors.dart';
 
-ThemeData lightTheme = ThemeData(
+final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
-    primary: Color(0xFFC2A8F7),
+    primary: Color(0xFFD396CC),
     onPrimary: Color(0xFF34304B),
-    secondary: Color(0xFFD6CCE3),
+    secondary: Color(0xFFD1C6DE),
     onSecondary: Color(0xFF726C7B),
     error: Colors.red,
     onError: Colors.red,
-    background: Color(0xFF6B6496),
+    background: Color(0xFF7F5C76),
     onBackground: Colors.black,
-    surface: Color(0xFF726187),
+    surface: Color(0xFFEDD8FB),
     onSurface: Color(0xFF3B343D),
   ),
   textTheme: GoogleFonts.montserratTextTheme().apply(
@@ -25,7 +26,7 @@ ThemeData lightTheme = ThemeData(
     backgroundColor: Color(0xFF8E74AB),
   ),
   navigationBarTheme: const NavigationBarThemeData(
-    backgroundColor: Color(0xFF78658C),
+    backgroundColor: Color(0xFF8C6583),
     indicatorColor: Color(0xFFE9DDF7),
   ),
   snackBarTheme: const SnackBarThemeData(
@@ -33,9 +34,10 @@ ThemeData lightTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFB895FF),
   ),
+  extensions: extensions.light,
 );
 
-ThemeData darkTheme = ThemeData(
+final ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
@@ -67,4 +69,28 @@ ThemeData darkTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFFFA7E6),
   ),
+  extensions: extensions.dark,
 );
+
+const extensions = _Extensions(
+  light: [
+    UpcomingEventEditPageColors(
+      date: Color(0xFFDBAEE9),
+      days: Color(0xFFE8AAF5),
+      time: Color(0xFFF49AF5),
+    ),
+  ],
+  dark: [
+    UpcomingEventEditPageColors(
+      date: Color(0xFF3C2B37),
+      days: Color(0xFF523547),
+      time: Color(0xFF9B608A),
+    ),
+  ],
+);
+
+class _Extensions {
+  final List<ThemeExtension<dynamic>> light;
+  final List<ThemeExtension<dynamic>> dark;
+  const _Extensions({required this.light, required this.dark});
+}
