@@ -46,5 +46,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# My ignores
-lib/constants/firebase_options.dart
+# Ignores
+lib/src/constants/firebase_options.dart
