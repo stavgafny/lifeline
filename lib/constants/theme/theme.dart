@@ -22,11 +22,11 @@ final ThemeData lightTheme = ThemeData(
   ),
   scaffoldBackgroundColor: const Color(0xFFDDD8EB),
   appBarTheme: const AppBarTheme(
-    foregroundColor: Color(0xFF1E1924),
-    backgroundColor: Color(0xFF8E74AB),
+    foregroundColor: Color(0xFF462D3E),
+    backgroundColor: Color(0xFFD4A1D4),
   ),
   navigationBarTheme: const NavigationBarThemeData(
-    backgroundColor: Color(0xFF8C6583),
+    backgroundColor: Color(0xFF926E95),
     indicatorColor: Color(0xFFE9DDF7),
   ),
   snackBarTheme: const SnackBarThemeData(
@@ -41,13 +41,13 @@ final ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
-    primary: Color(0xFFFDB2E8),
+    primary: Color(0xFFECAFDB),
     onPrimary: Color(0xFF33242F),
     secondary: Color(0xFF221B23),
     onSecondary: Color(0xFF655E6A),
     error: Colors.red,
     onError: Colors.red,
-    background: Color(0xFF472D3D),
+    background: Color(0xFF5F4156),
     onBackground: Colors.black,
     surface: Color(0xFF362932),
     onSurface: Color(0xFFDDCDEE),
@@ -57,11 +57,11 @@ final ThemeData darkTheme = ThemeData(
   ),
   scaffoldBackgroundColor: const Color(0xFF1C171D),
   appBarTheme: const AppBarTheme(
-    foregroundColor: Color(0xFFE9DDF7),
-    backgroundColor: Color(0xFF553B54),
+    foregroundColor: Color(0xFFF0D4F0),
+    backgroundColor: Color(0xFF2D212A),
   ),
   navigationBarTheme: const NavigationBarThemeData(
-    backgroundColor: Color(0xFF6B4765),
+    backgroundColor: Color(0xFF704C68),
     indicatorColor: Color(0xFFE9DDF7),
   ),
   snackBarTheme: const SnackBarThemeData(
@@ -77,7 +77,7 @@ const extensions = _Extensions(
     UpcomingEventEditPageColors(
       date: Color(0xFFDBAEE9),
       days: Color(0xFFE8AAF5),
-      time: Color(0xFFF49AF5),
+      time: Color(0xFFEEAAEF),
     ),
   ],
   dark: [

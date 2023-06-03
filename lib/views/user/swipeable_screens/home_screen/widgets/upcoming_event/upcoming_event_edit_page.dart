@@ -5,10 +5,6 @@ import '../../../../../../models/upcoming_event_model.dart';
 import '../../../../../../controllers/upcoming_event_controller.dart';
 import '../../../../../../widgets/wheel_input.dart';
 
-const _dateContainer = Color(0xFF3C2B37);
-const _daysContainer = Color(0xFF523547);
-const _timeContainer = Color(0xFF9B608A);
-
 class UpcomingEventEditPage extends StatefulWidget {
   static const _dateDaysTimeEditHeight = 100.0;
 
