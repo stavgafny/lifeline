@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import './constants/theme/theme.dart' as app_theme;
-import './router/routes.dart';
+import './router/providers/router_provider.dart';
 
 class MainApp extends ConsumerWidget {
   static const title = "Lifeline";
@@ -17,9 +17,7 @@ class MainApp extends ConsumerWidget {
       theme: app_theme.lightTheme,
       darkTheme: app_theme.darkTheme,
       themeMode: ThemeMode.system,
-      routeInformationParser: router.routeInformationParser,
-      routerDelegate: router.routerDelegate,
-      routeInformationProvider: router.routeInformationProvider,
+      routerConfig: router,
     );
   }
 }

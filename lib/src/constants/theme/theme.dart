@@ -35,7 +35,7 @@ final ThemeData lightTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFB895FF),
   ),
-  extensions: extensions.light,
+  extensions: _extensions.light,
 );
 
 final ThemeData darkTheme = ThemeData(
@@ -71,10 +71,17 @@ final ThemeData darkTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFFFA7E6),
   ),
-  extensions: extensions.dark,
+  extensions: _extensions.dark,
 );
 
-const extensions = _Extensions(
+final _pageTransitionsTheme = PageTransitionsTheme(
+  builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
+    TargetPlatform.values,
+    value: (dynamic _) => const FadeUpwardsPageTransitionsBuilder(),
+  ),
+);
+
+const _extensions = _Extensions(
   light: [
     UpcomingEventEditPageColors(
       date: Color(0xFFDBAEE9),
@@ -96,10 +103,3 @@ class _Extensions {
   final List<ThemeExtension<dynamic>> dark;
   const _Extensions({required this.light, required this.dark});
 }
-
-final _pageTransitionsTheme = PageTransitionsTheme(
-  builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
-    TargetPlatform.values,
-    value: (dynamic _) => const FadeUpwardsPageTransitionsBuilder(),
-  ),
-);

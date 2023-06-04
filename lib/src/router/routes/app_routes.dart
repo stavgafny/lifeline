@@ -1,35 +1,34 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../providers/auth_provider.dart';
 
-final _navigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+/*
+  ! __OLD v1.0 APP ROUTES__
+  static const String initial = "/";
+  static const String error = "/error";
+  static const String emailVerification = "/email_verification";
+  static const String login = "/login";
+  static const String register = "/register";
+  static const String forgotPassword = "/forgot_password";
+  static const String home = "/home";
+*/
 
-final routerProvider = Provider.autoDispose<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
-  return GoRouter(
-    navigatorKey: _navigatorKey,
-    debugLogDiagnostics: true,
-    initialLocation: "/splash",
-    routes: [
-      GoRoute(path: "/", builder: (context, state) => const Home()),
-      GoRoute(path: "/login", builder: (context, state) => const Login()),
-      GoRoute(path: "/splash", builder: (context, state) => const Splash()),
-    ],
-    redirect: (context, state) {
-      if (authState.asData == null) {
-        return null;
-      }
-      final user = authState.value;
-      return user != null ? "/" : "/login";
-    },
-  );
-});
+class AppRoutes {
+  static const String initial = "/";
+  static const String error = "/error";
+  static const String login = "/login";
+  static const String home = "/home";
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+  static List<RouteBase> routes = [
+    GoRoute(path: initial, builder: (context, state) => const _Splash()),
+    GoRoute(path: login, builder: (context, state) => const _Login()),
+    GoRoute(path: home, builder: (context, state) => const _Home()),
+  ];
+}
+
+class _Home extends StatelessWidget {
+  const _Home();
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +45,8 @@ class Home extends StatelessWidget {
   }
 }
 
-class Login extends StatelessWidget {
-  const Login({super.key});
+class _Login extends StatelessWidget {
+  const _Login();
 
   @override
   Widget build(BuildContext context) {
@@ -74,14 +73,14 @@ class Login extends StatelessWidget {
   }
 }
 
-class Splash extends StatelessWidget {
-  const Splash({super.key});
+class _Splash extends StatelessWidget {
+  const _Splash();
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text("Splash"),
+        child: CircularProgressIndicator(),
       ),
     );
   }
