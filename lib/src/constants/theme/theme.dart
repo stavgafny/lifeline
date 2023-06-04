@@ -4,6 +4,7 @@ import './extensions/upcoming_event_edit_page_colors.dart';
 
 final ThemeData lightTheme = ThemeData(
   useMaterial3: true,
+  pageTransitionsTheme: _pageTransitionsTheme,
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
     primary: Color(0xFFD396CC),
@@ -39,6 +40,7 @@ final ThemeData lightTheme = ThemeData(
 
 final ThemeData darkTheme = ThemeData(
   useMaterial3: true,
+  pageTransitionsTheme: _pageTransitionsTheme,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
     primary: Color(0xFFECAFDB),
@@ -94,3 +96,10 @@ class _Extensions {
   final List<ThemeExtension<dynamic>> dark;
   const _Extensions({required this.light, required this.dark});
 }
+
+final _pageTransitionsTheme = PageTransitionsTheme(
+  builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
+    TargetPlatform.values,
+    value: (dynamic _) => const FadeUpwardsPageTransitionsBuilder(),
+  ),
+);
