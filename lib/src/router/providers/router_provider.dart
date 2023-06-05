@@ -15,12 +15,12 @@ final routerProvider = Provider.autoDispose<GoRouter>((ref) {
     initialLocation: AppRoutes.initial,
     routes: AppRoutes.routes,
     redirect: (context, state) {
-      // Still loading user auth state
-      if (authState.asData == null) {
-        return null;
+      if (authState.asData != null) {
+        final user = authState.value!;
+        if (user.verified) return AppRoutes.home;
+        return user.exist ? AppRoutes.initial : AppRoutes.login;
       }
-      final user = authState.value;
-      return user == null ? AppRoutes.login : AppRoutes.home;
+      return null;
     },
   );
 });

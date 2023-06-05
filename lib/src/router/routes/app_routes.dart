@@ -3,21 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-/*
-  ! __OLD v1.0 APP ROUTES__
-  static const String initial = "/";
-  static const String error = "/error";
-  static const String emailVerification = "/email_verification";
-  static const String login = "/login";
-  static const String register = "/register";
-  static const String forgotPassword = "/forgot_password";
-  static const String home = "/home";
-*/
-
 class AppRoutes {
   static const String initial = "/";
   static const String error = "/error";
   static const String login = "/login";
+  static const String register = "/register";
+  static const String emailVerification = "/email-verification";
+  static const String forgotPassword = "/forgot-password";
   static const String home = "/home";
 
   static List<RouteBase> routes = [
