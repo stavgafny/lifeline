@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-class TextDivider extends StatelessWidget {
-  final Color color;
-  const TextDivider({
+class OrTextDivider extends StatelessWidget {
+  const OrTextDivider({
     super.key,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSecondary;
     final divider = Expanded(child: Divider(color: color));
 
     return Row(

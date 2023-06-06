@@ -38,22 +38,3 @@ class GoogleSignButton extends StatelessWidget {
     );
   }
 }
-
-
-// Wrap(
-//           crossAxisAlignment: WrapCrossAlignment.center,
-//           children: [
-//             Image.asset(
-//               "assets/google_logo.png",
-//               fit: BoxFit.scaleDown,
-//               width: 25,
-//             ),
-//             const SizedBox(width: 12),
-//             const Text(
-//               'Sign in with Google',
-//               style: TextStyle(
-//                 color: Color(0xFFD2CAF3),
-//               ),
-//             ),
-//           ],
-//         ),

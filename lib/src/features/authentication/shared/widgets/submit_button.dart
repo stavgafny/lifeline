@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class SignButton extends StatelessWidget {
+class SubmitButton extends StatelessWidget {
   final String text;
   final void Function()? onPressed;
-  const SignButton({
+  const SubmitButton({
     Key? key,
     required this.text,
     required this.onPressed,
