@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../features/authentication/screens/login_screen.dart';
 
 class AppRoutes {
   static const String initial = "/";
@@ -14,7 +15,7 @@ class AppRoutes {
 
   static List<RouteBase> routes = [
     GoRoute(path: initial, builder: (context, state) => const _Splash()),
-    GoRoute(path: login, builder: (context, state) => const _Login()),
+    GoRoute(path: login, builder: (context, state) => const LoginScreen()),
     GoRoute(path: home, builder: (context, state) => const _Home()),
   ];
 }
