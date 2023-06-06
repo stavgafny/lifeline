@@ -18,7 +18,9 @@ final routerProvider = Provider.autoDispose<GoRouter>((ref) {
       if (authState.asData != null) {
         final user = authState.value!;
         if (user.verified) return AppRoutes.home;
-        return user.exist ? AppRoutes.initial : AppRoutes.login;
+        if (user.exist) return AppRoutes.initial;
+        if (AppRoutes.isNonAuthAllowed(state.location)) return state.location;
+        return AppRoutes.login;
       }
       return null;
     },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../shared/widgets/header.dart';
 import '../shared/widgets/text_input.dart';
 import '../shared/widgets/submit_button.dart';
@@ -33,7 +34,9 @@ class LoginScreen extends ConsumerWidget {
                 const SizedBox(height: 25.0),
                 SubmitButton(
                   text: "Sign In",
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go("/forgot-password");
+                  },
                 ),
                 const SizedBox(height: 10.0),
                 const OrTextDivider(),

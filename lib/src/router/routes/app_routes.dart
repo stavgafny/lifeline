@@ -13,6 +13,15 @@ class AppRoutes {
   static const String forgotPassword = "/forgot-password";
   static const String home = "/home";
 
+  static const _nonAuthAllowed = <String>[
+    login,
+    register,
+    emailVerification,
+    forgotPassword,
+  ];
+
+  static isNonAuthAllowed(String route) => _nonAuthAllowed.contains(route);
+
   static List<RouteBase> routes = [
     GoRoute(path: initial, builder: (context, state) => const _Splash()),
     GoRoute(path: login, builder: (context, state) => const LoginScreen()),

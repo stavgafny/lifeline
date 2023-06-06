@@ -14,7 +14,7 @@ class SubmitButton extends StatelessWidget {
     return SizedBox(
       height: 50.0,
       child: GestureDetector(
-        onTap: () {},
+        onTap: onPressed,
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
