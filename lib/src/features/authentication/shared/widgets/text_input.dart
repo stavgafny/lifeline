@@ -20,29 +20,39 @@ class TextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50.0,
-      child: TextField(
-        controller: controller,
-        textInputAction: TextInputAction.next,
-        autofillHints: autofillHints,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        enableSuggestions: false,
-        autocorrect: false,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-        textAlignVertical: TextAlignVertical.center,
-        decoration: InputDecoration(
-          isCollapsed: true,
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.tertiary,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide.none,
-          ),
-          hintText: hintText,
-          prefixIcon: prefixIcon,
-        ),
+    String? errorText = hintText == "Email" ? "Invalid Email" : null;
+
+    final mainBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(20.0),
+      borderSide: BorderSide.none,
+    );
+    final errorBorder = mainBorder.copyWith(
+      borderSide: const BorderSide(width: 2, color: Colors.red),
+    );
+
+    return TextField(
+      controller: controller,
+      textInputAction: TextInputAction.next,
+      autofillHints: autofillHints,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      enableSuggestions: false,
+      autocorrect: false,
+      style: const TextStyle(fontWeight: FontWeight.bold),
+      textAlignVertical: TextAlignVertical.center,
+      decoration: InputDecoration(
+        isCollapsed: true,
+        filled: true,
+        fillColor: Theme.of(context).colorScheme.tertiary,
+        hintText: hintText,
+        prefixIcon: prefixIcon,
+        border: mainBorder,
+        enabledBorder: errorText != null ? errorBorder : null,
+        focusedBorder: errorText != null ? errorBorder : null,
+        labelText: errorText,
+        labelStyle: TextStyle(color: errorBorder.borderSide.color),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 22.0),
       ),
     );
   }

@@ -7,7 +7,7 @@ class GoogleSignButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 50.0,
+      height: 55.0,
       child: GestureDetector(
         onTap: () {},
         child: Container(
@@ -28,9 +28,10 @@ class GoogleSignButton extends StatelessWidget {
               ),
               const Center(
                 child: Text(
-                  'Sign in with Google',
+                  'Sign In With Google',
                   style: TextStyle(
                     color: Color(0xFFD2CAF3),
+                    fontSize: 15.0,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),

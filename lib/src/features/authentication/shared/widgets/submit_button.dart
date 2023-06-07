@@ -12,7 +12,7 @@ class SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50.0,
+      height: 55.0,
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
@@ -30,6 +30,7 @@ class SubmitButton extends StatelessWidget {
               text,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
+                fontSize: 15.0,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
               ),
