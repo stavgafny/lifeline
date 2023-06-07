@@ -4,12 +4,12 @@ import '../shared/widgets/header.dart';
 import '../shared/widgets/text_input.dart';
 import '../shared/widgets/submit_button.dart';
 import './widgets/forgot_password.dart';
-import './widgets/or_text_divider.dart';
-import './widgets/google_sign_button.dart';
-import './widgets/no_account_sign_up.dart';
+import './widgets/or_divider.dart';
+import './widgets/google_signin_button.dart';
+import './widgets/no_account_signup.dart';
 
-class LoginScreen extends ConsumerWidget {
-  const LoginScreen({super.key});
+class SigninScreen extends ConsumerWidget {
+  const SigninScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +23,7 @@ class LoginScreen extends ConsumerWidget {
               children: [
                 const Header(
                   title: "Hi There!",
-                  info: "Looks like you aren't logged in",
+                  info: "Looks like you aren't signed in",
                 ),
                 const SizedBox(height: 30.0),
                 TextInput.email(),
@@ -35,9 +35,9 @@ class LoginScreen extends ConsumerWidget {
                   text: "Sign In",
                   onPressed: () {},
                 ),
-                const OrTextDivider(),
-                const GoogleSignButton(),
-                const NoAccountSignUp(),
+                const OrDivider(),
+                const GoogleSigninButton(),
+                const NoAccountSignup(),
               ],
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GoogleSignButton extends StatelessWidget {
-  const GoogleSignButton({super.key});
+class GoogleSigninButton extends StatelessWidget {
+  const GoogleSigninButton({super.key});
 
   @override
   Widget build(BuildContext context) {

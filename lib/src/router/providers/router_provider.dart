@@ -20,7 +20,7 @@ final routerProvider = Provider.autoDispose<GoRouter>((ref) {
         if (user.verified) return AppRoutes.home;
         if (user.exist) return AppRoutes.initial;
         if (AppRoutes.isNonAuthAllowed(state.location)) return state.location;
-        return AppRoutes.login;
+        return AppRoutes.signin;
       }
       return null;
     },

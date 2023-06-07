@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class OrTextDivider extends StatelessWidget {
-  const OrTextDivider({
+class OrDivider extends StatelessWidget {
+  const OrDivider({
     super.key,
   });
 

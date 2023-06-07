@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../../shared/widgets/text_link.dart';
 
-class NoAccountSignUp extends StatelessWidget {
-  const NoAccountSignUp({super.key});
+class NoAccountSignup extends StatelessWidget {
+  const NoAccountSignup({super.key});
 
   @override
   Widget build(BuildContext context) {
