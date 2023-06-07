@@ -50,9 +50,9 @@ class TextInput extends StatelessWidget {
     return TextInput(
       controller: controller,
       hintText: "Email",
-      autofillHints: const [AutofillHints.email],
-      keyboardType: TextInputType.emailAddress,
       prefixIcon: const Icon(Icons.email_outlined),
+      keyboardType: TextInputType.emailAddress,
+      autofillHints: const [AutofillHints.email],
     );
   }
 
@@ -63,10 +63,10 @@ class TextInput extends StatelessWidget {
     return TextInput(
       controller: controller,
       hintText: "${confirm ? 'Confirm ' : ''}Password",
-      autofillHints: const [AutofillHints.password],
-      keyboardType: TextInputType.visiblePassword,
       prefixIcon: const Icon(Icons.lock_outline_rounded),
       obscureText: true,
+      keyboardType: TextInputType.visiblePassword,
+      autofillHints: const [AutofillHints.password],
     );
   }
 }

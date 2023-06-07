@@ -22,10 +22,7 @@ class Header extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        Text(
-          title,
-          style: GoogleFonts.pacifico(fontSize: 42.0),
-        ),
+        Text(title, style: GoogleFonts.pacifico(fontSize: 42.0)),
         Text(info),
       ],
     );

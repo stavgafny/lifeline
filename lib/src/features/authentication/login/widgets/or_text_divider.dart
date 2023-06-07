@@ -10,17 +10,20 @@ class OrTextDivider extends StatelessWidget {
     final color = Theme.of(context).colorScheme.onSecondary;
     final divider = Expanded(child: Divider(color: color));
 
-    return Row(
-      children: <Widget>[
-        divider,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Text(
-            "OR",
-            style: TextStyle(color: color),
-          ),
+    return Column(
+      children: [
+        const SizedBox(height: 10.0),
+        Row(
+          children: [
+            divider,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text("OR", style: TextStyle(color: color)),
+            ),
+            divider,
+          ],
         ),
-        divider,
+        const SizedBox(height: 10.0),
       ],
     );
   }

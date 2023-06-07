@@ -6,6 +6,7 @@ class GoogleSignButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
       height: 50.0,
       child: GestureDetector(
         onTap: () {},
@@ -14,21 +15,25 @@ class GoogleSignButton extends StatelessWidget {
             color: Theme.of(context).colorScheme.background,
             borderRadius: BorderRadius.circular(15.0),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
+            alignment: Alignment.centerLeft,
             children: [
-              Image.asset(
-                "assets/google_logo.png",
-                fit: BoxFit.scaleDown,
-                width: 25,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 0, 0, 0),
+                child: Image.asset(
+                  "assets/google_logo.png",
+                  fit: BoxFit.scaleDown,
+                  width: 25,
+                ),
               ),
-              const SizedBox(width: 14),
-              const Text(
-                'Sign in with Google',
-                style: TextStyle(
-                  color: Color(0xFFD2CAF3),
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+              const Center(
+                child: Text(
+                  'Sign in with Google',
+                  style: TextStyle(
+                    color: Color(0xFFD2CAF3),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
             ],
