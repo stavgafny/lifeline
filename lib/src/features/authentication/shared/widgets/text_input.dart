@@ -20,27 +20,28 @@ class TextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.tertiary,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0),
-        child: TextField(
-          controller: controller,
-          textInputAction: TextInputAction.next,
-          autofillHints: autofillHints,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          enableSuggestions: false,
-          autocorrect: false,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hintText,
-            prefixIcon: prefixIcon,
+    return SizedBox(
+      height: 50.0,
+      child: TextField(
+        controller: controller,
+        textInputAction: TextInputAction.next,
+        autofillHints: autofillHints,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        enableSuggestions: false,
+        autocorrect: false,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+        textAlignVertical: TextAlignVertical.center,
+        decoration: InputDecoration(
+          isCollapsed: true,
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.tertiary,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide.none,
           ),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          hintText: hintText,
+          prefixIcon: prefixIcon,
         ),
       ),
     );
