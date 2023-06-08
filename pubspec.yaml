@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_foreground_task: ^3.10.0
   google_fonts: ^4.0.4
+  loading_animation_widget: ^1.2.0+4
   curved_navigation_bar: ^1.0.3
   percent_indicator: ^4.2.2
   intl: ^0.17.0

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../shared/widgets/loading_sheet.dart';
 import '../shared/widgets/header.dart';
 import '../shared/widgets/text_input.dart';
 import '../shared/widgets/submit_button.dart';
@@ -33,7 +34,9 @@ class SigninScreen extends ConsumerWidget {
                 const SizedBox(height: 25.0),
                 SubmitButton(
                   text: "Sign In",
-                  onPressed: () {},
+                  onPressed: () {
+                    LoadingSheet.show(context);
+                  },
                 ),
                 const OrDivider(),
                 const GoogleSigninButton(),
