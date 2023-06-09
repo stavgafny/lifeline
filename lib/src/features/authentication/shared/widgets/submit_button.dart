@@ -11,11 +11,12 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.primary;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
+          color: color,
           width: 1.0,
         ),
         shape: RoundedRectangleBorder(
@@ -28,7 +29,7 @@ class SubmitButton extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
+              color: color,
               fontSize: 15.0,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../shared/widgets/header.dart';
-import '../shared/widgets/text_input.dart';
+import './widgets/name_field.dart';
+import './widgets/email_field.dart';
+import './widgets/password_field.dart';
 import './widgets/signup_button.dart';
 import './widgets/has_account_signin.dart';
 
@@ -23,11 +25,11 @@ class SignupScreen extends ConsumerWidget {
                   info: "Let the adventure begin!",
                 ),
                 SizedBox(height: 30.0),
-                TextInput.name(),
+                NameField(),
                 SizedBox(height: 10.0),
-                TextInput.email(),
+                EmailField(),
                 SizedBox(height: 10.0),
-                TextInput.password(autofillHints: [AutofillHints.newPassword]),
+                PasswordField(),
                 SizedBox(height: 25.0),
                 SignupButton(),
                 HasAccountSignin(),
