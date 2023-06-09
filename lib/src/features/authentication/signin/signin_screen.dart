@@ -27,9 +27,9 @@ class SigninScreen extends ConsumerWidget {
                   info: "Looks like you aren't signed in",
                 ),
                 const SizedBox(height: 30.0),
-                TextInput.email(),
+                const TextInput.email(),
                 const SizedBox(height: 10.0),
-                TextInput.password(),
+                const TextInput.password(),
                 const ForgotPassword(),
                 const SizedBox(height: 25.0),
                 SubmitButton(

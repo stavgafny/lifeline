@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TextInput extends StatelessWidget {
-  final TextEditingController? controller;
+  final void Function(String value)? onChanged;
   final String? hintText;
+  final String? errorText;
   final Widget? prefixIcon;
   final bool obscureText;
   final TextInputType? keyboardType;
@@ -10,8 +11,9 @@ class TextInput extends StatelessWidget {
 
   const TextInput({
     super.key,
-    this.controller,
-    this.hintText = "",
+    this.onChanged,
+    this.hintText,
+    this.errorText,
     this.prefixIcon,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
@@ -20,8 +22,6 @@ class TextInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? errorText = hintText == "Email" ? "Invalid Email" : null;
-
     final mainBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(20.0),
       borderSide: BorderSide.none,
@@ -31,7 +31,7 @@ class TextInput extends StatelessWidget {
     );
 
     return TextField(
-      controller: controller,
+      onChanged: onChanged,
       textInputAction: TextInputAction.next,
       autofillHints: autofillHints,
       keyboardType: keyboardType,
@@ -41,7 +41,6 @@ class TextInput extends StatelessWidget {
       style: const TextStyle(fontWeight: FontWeight.bold),
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        isCollapsed: true,
         filled: true,
         fillColor: Theme.of(context).colorScheme.tertiary,
         hintText: hintText,
@@ -57,27 +56,25 @@ class TextInput extends StatelessWidget {
     );
   }
 
-  static TextInput email({TextEditingController? controller}) {
-    return TextInput(
-      controller: controller,
-      hintText: "Email",
-      prefixIcon: const Icon(Icons.email_outlined),
-      keyboardType: TextInputType.emailAddress,
-      autofillHints: const [AutofillHints.email],
-    );
-  }
+  const TextInput.email({
+    super.key,
+    this.onChanged,
+    this.hintText = "Email",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.email_outlined),
+    this.obscureText = false,
+    this.keyboardType = TextInputType.emailAddress,
+    this.autofillHints = const [AutofillHints.email],
+  }) : super();
 
-  static TextInput password({
-    TextEditingController? controller,
-    bool confirm = false,
-  }) {
-    return TextInput(
-      controller: controller,
-      hintText: "${confirm ? 'Confirm ' : ''}Password",
-      prefixIcon: const Icon(Icons.lock_outline_rounded),
-      obscureText: true,
-      keyboardType: TextInputType.visiblePassword,
-      autofillHints: const [AutofillHints.password],
-    );
-  }
+  const TextInput.password({
+    super.key,
+    this.onChanged,
+    this.hintText = "Password",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.lock_outline_rounded),
+    this.obscureText = true,
+    this.keyboardType = TextInputType.visiblePassword,
+    this.autofillHints = const [AutofillHints.password],
+  }) : super();
 }
