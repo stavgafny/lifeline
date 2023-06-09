@@ -43,6 +43,9 @@ dependencies:
   percent_indicator: ^4.2.2
   intl: ^0.17.0
 
+  form_validators:
+    path: packages/form_validators
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
