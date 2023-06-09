@@ -56,6 +56,17 @@ class TextInput extends StatelessWidget {
     );
   }
 
+  const TextInput.name({
+    super.key,
+    this.onChanged,
+    this.hintText = "Name",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.person),
+    this.obscureText = false,
+    this.keyboardType = TextInputType.name,
+    this.autofillHints = const [AutofillHints.name],
+  });
+
   const TextInput.email({
     super.key,
     this.onChanged,
@@ -65,7 +76,7 @@ class TextInput extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType = TextInputType.emailAddress,
     this.autofillHints = const [AutofillHints.email],
-  }) : super();
+  });
 
   const TextInput.password({
     super.key,
@@ -76,5 +87,5 @@ class TextInput extends StatelessWidget {
     this.obscureText = true,
     this.keyboardType = TextInputType.visiblePassword,
     this.autofillHints = const [AutofillHints.password],
-  }) : super();
+  });
 }

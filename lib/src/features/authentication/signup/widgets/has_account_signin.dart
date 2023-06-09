@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../router/routes/app_routes.dart';
 import '../../shared/widgets/text_link.dart';
 
-class NoAccountSignup extends StatelessWidget {
-  const NoAccountSignup({super.key});
+class HasAccountSignin extends StatelessWidget {
+  const HasAccountSignin({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,15 +14,15 @@ class NoAccountSignup extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            "Don't have account? ",
+            "Already have account? ",
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
             ),
           ),
           TextLink(
-            text: "Sign Up",
+            text: "Sign In",
             fontWeight: FontWeight.bold,
-            onTap: () => context.go(AppRoutes.signup),
+            onTap: () => context.go(AppRoutes.signin),
           ),
         ],
       ),
