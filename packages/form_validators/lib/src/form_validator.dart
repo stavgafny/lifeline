@@ -1,10 +1,11 @@
 abstract class FormValidator<T, E extends Enum> {
   final T value;
-  final bool needsValidation;
+  final bool _needsToValidate;
 
-  const FormValidator(this.value, [this.needsValidation = false]);
+  const FormValidator.pure(this.value) : _needsToValidate = false;
+  const FormValidator.dirty(this.value) : _needsToValidate = true;
 
-  E? get error => needsValidation ? validate() : null;
+  E? get error => _needsToValidate ? validate() : null;
 
   E? validate();
 

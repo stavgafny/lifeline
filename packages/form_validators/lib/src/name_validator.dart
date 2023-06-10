@@ -3,8 +3,8 @@ import './form_validator.dart';
 enum NameValidationError { empty, short, long, invalid }
 
 class NameValidator extends FormValidator<String, NameValidationError> {
-  const NameValidator([String value = "", bool needsValidation = false])
-      : super(value, needsValidation);
+  const NameValidator.pure([String value = ""]) : super.pure(value);
+  const NameValidator.dirty([String value = ""]) : super.dirty(value);
 
   @override
   NameValidationError? validate() {

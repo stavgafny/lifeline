@@ -3,8 +3,8 @@ import './form_validator.dart';
 enum PasswordValidationError { empty, short }
 
 class PasswordValidator extends FormValidator<String, PasswordValidationError> {
-  const PasswordValidator([String value = "", bool needsValidation = false])
-      : super(value, needsValidation);
+  const PasswordValidator.pure([String value = ""]) : super.pure(value);
+  const PasswordValidator.dirty([String value = ""]) : super.dirty(value);
 
   @override
   PasswordValidationError? validate() {

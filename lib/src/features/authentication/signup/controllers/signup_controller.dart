@@ -18,28 +18,16 @@ class _SignupController extends StateNotifier<SignupState> {
     state = state.copyWith(name: name, email: email, password: password);
   }
 
-  void onNameChange(String value) {
-    _update(name: NameValidator(value));
+  void validateName(String value) {
+    _update(name: NameValidator.dirty(value));
   }
 
-  void onEmailChange(String value) {
-    _update(email: EmailValidator(value));
+  void validateEmail(String value) {
+    _update(email: EmailValidator.dirty(value));
   }
 
-  void onPasswordChange(String value) {
-    _update(password: PasswordValidator(value));
-  }
-
-  void validateName() {
-    _update(name: NameValidator(state.name.value, true));
-  }
-
-  void validateEmail() {
-    _update(email: EmailValidator(state.email.value, true));
-  }
-
-  void validatePassword() {
-    _update(password: PasswordValidator(state.password.value, true));
+  void validatePassword(String value) {
+    _update(password: PasswordValidator.dirty(value));
   }
 
   void signupWithEmailAndPassword() async {

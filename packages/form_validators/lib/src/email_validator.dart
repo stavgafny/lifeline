@@ -3,8 +3,8 @@ import './form_validator.dart';
 enum EmailValidationError { empty, invalid }
 
 class EmailValidator extends FormValidator<String, EmailValidationError> {
-  const EmailValidator([String value = "", bool needsValidation = false])
-      : super(value, needsValidation);
+  const EmailValidator.pure([String value = ""]) : super.pure(value);
+  const EmailValidator.dirty([String value = ""]) : super.dirty(value);
 
   @override
   EmailValidationError? validate() {

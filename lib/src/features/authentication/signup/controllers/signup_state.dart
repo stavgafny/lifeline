@@ -6,9 +6,9 @@ class SignupState {
   final PasswordValidator password;
 
   const SignupState({
-    this.name = const NameValidator(),
-    this.email = const EmailValidator(),
-    this.password = const PasswordValidator(),
+    this.name = const NameValidator.pure(),
+    this.email = const EmailValidator.pure(),
+    this.password = const PasswordValidator.pure(),
   });
 
   bool get isValidated => FormValidator.validateAll([name, email, password]);

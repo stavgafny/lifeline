@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TextInput extends StatefulWidget {
   final void Function(String value)? onChanged;
-  final void Function()? onBlur;
+  final void Function(String value)? onBlur;
   final String? hintText;
   final String? errorText;
   final Widget? prefixIcon;
@@ -63,7 +63,8 @@ class TextInput extends StatefulWidget {
 }
 
 class _TextInputState extends State<TextInput> {
-  final FocusNode _focusNode = FocusNode();
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -71,7 +72,7 @@ class _TextInputState extends State<TextInput> {
     if (widget.onBlur != null) {
       _focusNode.addListener(() {
         if (!_focusNode.hasFocus) {
-          widget.onBlur?.call();
+          widget.onBlur?.call(_controller.text);
         }
       });
     }
@@ -88,6 +89,7 @@ class _TextInputState extends State<TextInput> {
     );
 
     return TextField(
+      controller: _controller,
       onChanged: widget.onChanged,
       focusNode: _focusNode,
       textInputAction: TextInputAction.next,
@@ -116,6 +118,7 @@ class _TextInputState extends State<TextInput> {
 
   @override
   void dispose() {
+    _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }

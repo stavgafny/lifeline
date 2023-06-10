@@ -14,8 +14,8 @@ class NameField extends ConsumerWidget {
 
     return TextInput.name(
       errorText: NameValidator.getErrorMessage(signupState.name.error),
-      onChanged: (value) => controller.onNameChange(value),
-      onBlur: () => controller.validateName(),
+      // onChanged: (value) => controller.onNameChange(value),
+      onBlur: (value) => controller.validateName(value),
     );
   }
 }
