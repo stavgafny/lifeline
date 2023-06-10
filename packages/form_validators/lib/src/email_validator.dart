@@ -1,6 +1,6 @@
 import './form_validator.dart';
 
-enum EmailValidationError { empty, invalid }
+enum EmailValidationError { empty, missingAt, missingDot, invalid }
 
 class EmailValidator extends FormValidator<String, EmailValidationError> {
   const EmailValidator.pure([String value = ""]) : super.pure(value);
@@ -8,21 +8,27 @@ class EmailValidator extends FormValidator<String, EmailValidationError> {
 
   @override
   EmailValidationError? validate() {
-    if (value.isEmpty) {
-      return EmailValidationError.empty;
-    } else if (!_regex.hasMatch(value)) {
-      return EmailValidationError.invalid;
-    }
+    if (value.isEmpty) return EmailValidationError.empty;
+    if (!value.contains('@')) return EmailValidationError.missingAt;
+    if (!value.contains('.')) return EmailValidationError.missingDot;
+    if (!_regex.hasMatch(value)) return EmailValidationError.invalid;
+
     return null;
   }
 
   static String? getErrorMessage(EmailValidationError? error) {
-    if (error == EmailValidationError.empty) {
-      return 'Empty email';
-    } else if (error == EmailValidationError.invalid) {
-      return 'Invalid email';
+    switch (error) {
+      case null:
+        return null;
+      case EmailValidationError.empty:
+        return "Empty email";
+      case EmailValidationError.missingAt:
+        return "Missing '@'";
+      case EmailValidationError.missingDot:
+        return "Missing dot";
+      case EmailValidationError.invalid:
+        return "Invalid email";
     }
-    return null;
   }
 }
 

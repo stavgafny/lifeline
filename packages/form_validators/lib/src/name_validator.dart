@@ -8,29 +8,27 @@ class NameValidator extends FormValidator<String, NameValidationError> {
 
   @override
   NameValidationError? validate() {
-    if (value.isEmpty) {
-      return NameValidationError.empty;
-    } else if (value.length < _minLength) {
-      return NameValidationError.short;
-    } else if (value.length > _maxLength) {
-      return NameValidationError.long;
-    } else if (!_regex.hasMatch(value)) {
-      return NameValidationError.invalid;
-    }
+    if (value.isEmpty) return NameValidationError.empty;
+    if (value.length < _minLength) return NameValidationError.short;
+    if (value.length > _maxLength) return NameValidationError.long;
+    if (!_regex.hasMatch(value)) return NameValidationError.invalid;
+
     return null;
   }
 
   static String? getErrorMessage(NameValidationError? error) {
-    if (error == NameValidationError.empty) {
-      return 'Empty name';
-    } else if (error == NameValidationError.short) {
-      return 'Name too short';
-    } else if (error == NameValidationError.long) {
-      return 'Name too long';
-    } else if (error == NameValidationError.invalid) {
-      return 'Invalid name';
+    switch (error) {
+      case null:
+        return null;
+      case NameValidationError.empty:
+        return 'Empty name';
+      case NameValidationError.short:
+        return 'Name too short';
+      case NameValidationError.long:
+        return 'Name too long';
+      case NameValidationError.invalid:
+        return 'Invalid name';
     }
-    return null;
   }
 }
 

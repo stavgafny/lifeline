@@ -8,21 +8,20 @@ class PasswordValidator extends FormValidator<String, PasswordValidationError> {
 
   @override
   PasswordValidationError? validate() {
-    if (value.isEmpty) {
-      return PasswordValidationError.empty;
-    } else if (value.length < _minLength) {
-      return PasswordValidationError.short;
-    }
+    if (value.isEmpty) return PasswordValidationError.empty;
+    if (value.length < _minLength) return PasswordValidationError.short;
     return null;
   }
 
   static String? getErrorMessage(PasswordValidationError? error) {
-    if (error == PasswordValidationError.empty) {
-      return 'Empty password';
-    } else if (error == PasswordValidationError.short) {
-      return 'Password too short';
+    switch (error) {
+      case null:
+        return null;
+      case PasswordValidationError.empty:
+        return 'Empty password';
+      case PasswordValidationError.short:
+        return 'Password too short';
     }
-    return null;
   }
 }
 
