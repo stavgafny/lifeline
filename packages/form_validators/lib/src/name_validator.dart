@@ -1,6 +1,6 @@
 import 'package:form_validators/form_validators.dart';
 
-enum NameValidationError { empty, short, invalid }
+enum NameValidationError { empty, short, long, invalid }
 
 class NameValidator extends FormzInput<String, NameValidationError> {
   const NameValidator.pure() : super.pure('');
@@ -12,6 +12,8 @@ class NameValidator extends FormzInput<String, NameValidationError> {
       return NameValidationError.empty;
     } else if (value.length < _minLength) {
       return NameValidationError.short;
+    } else if (value.length > _maxLength) {
+      return NameValidationError.long;
     } else if (!_regex.hasMatch(value)) {
       return NameValidationError.invalid;
     }
@@ -23,6 +25,8 @@ class NameValidator extends FormzInput<String, NameValidationError> {
       return 'Empty name';
     } else if (error == NameValidationError.short) {
       return 'Name too short';
+    } else if (error == NameValidationError.long) {
+      return 'Name too long';
     } else if (error == NameValidationError.invalid) {
       return 'Invalid name';
     }
@@ -31,4 +35,5 @@ class NameValidator extends FormzInput<String, NameValidationError> {
 }
 
 const _minLength = 3;
-final _regex = RegExp(r'^[A-Za-z]+$');
+const _maxLength = 20;
+final _regex = RegExp(r'^[A-Za-z]+( [A-Za-z]+)?$');
