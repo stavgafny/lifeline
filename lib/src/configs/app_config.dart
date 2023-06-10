@@ -7,9 +7,13 @@ class _AppConfig {
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Sets phone status bar transparant
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    // Hides top and bottom status bars, display overlay on screen tap
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack, overlays: []);
+
+    // Sets phone status bar and navigation bar color to transparant
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.transparent));
 
     // Disabling http fetching for fonts, uses assets instead
     GoogleFonts.config.allowRuntimeFetching = false;
