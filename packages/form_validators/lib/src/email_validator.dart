@@ -1,13 +1,13 @@
-import 'package:form_validators/form_validators.dart';
+import './form_validator.dart';
 
 enum EmailValidationError { empty, invalid }
 
-class EmailValidator extends FormzInput<String, EmailValidationError> {
-  const EmailValidator.pure() : super.pure('');
-  const EmailValidator.dirty([String value = '']) : super.dirty(value);
+class EmailValidator extends FormValidator<String, EmailValidationError> {
+  const EmailValidator([String value = "", bool needsValidation = false])
+      : super(value, needsValidation);
 
   @override
-  EmailValidationError? validator(String value) {
+  EmailValidationError? validate() {
     if (value.isEmpty) {
       return EmailValidationError.empty;
     } else if (!_regex.hasMatch(value)) {

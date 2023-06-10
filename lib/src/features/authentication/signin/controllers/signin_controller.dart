@@ -11,26 +11,27 @@ class _SigninController extends StateNotifier<SigninState> {
   _SigninController() : super(const SigninState());
 
   void _update({EmailValidator? email, PasswordValidator? password}) {
-    state = state.copyWith(
-      email: email,
-      password: password,
-      status: Formz.validate([
-        email ?? state.email,
-        password ?? state.password,
-      ]),
-    );
+    state = state.copyWith(email: email, password: password);
   }
 
   void onEmailChange(String value) {
-    _update(email: EmailValidator.dirty(value));
+    _update(email: EmailValidator(value));
   }
 
   void onPasswordChange(String value) {
-    _update(password: PasswordValidator.dirty(value));
+    _update(password: PasswordValidator(value));
+  }
+
+  void validateEmail() {
+    _update(email: EmailValidator(state.email.value, true));
+  }
+
+  void validatePassword() {
+    _update(password: PasswordValidator(state.password.value, true));
   }
 
   void signinWithEmailAndPassword() async {
-    if (!state.status.isValidated) return;
+    if (!state.isValidated) return;
     print("Sign In");
   }
 }

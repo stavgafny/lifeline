@@ -1,13 +1,13 @@
-import 'package:form_validators/form_validators.dart';
+import './form_validator.dart';
 
 enum NameValidationError { empty, short, long, invalid }
 
-class NameValidator extends FormzInput<String, NameValidationError> {
-  const NameValidator.pure() : super.pure('');
-  const NameValidator.dirty([String value = '']) : super.dirty(value);
+class NameValidator extends FormValidator<String, NameValidationError> {
+  const NameValidator([String value = "", bool needsValidation = false])
+      : super(value, needsValidation);
 
   @override
-  NameValidationError? validator(String value) {
+  NameValidationError? validate() {
     if (value.isEmpty) {
       return NameValidationError.empty;
     } else if (value.length < _minLength) {

@@ -6,6 +6,3 @@ environment:
 
 dev_dependencies:
   flutter_lints: ^2.0.0
-
-dependencies:
-  formz: ^0.4.1

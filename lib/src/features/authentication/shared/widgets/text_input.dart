@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-class TextInput extends StatelessWidget {
+class TextInput extends StatefulWidget {
   final void Function(String value)? onChanged;
+  final void Function()? onBlur;
   final String? hintText;
   final String? errorText;
   final Widget? prefixIcon;
@@ -12,6 +13,7 @@ class TextInput extends StatelessWidget {
   const TextInput({
     super.key,
     this.onChanged,
+    this.onBlur,
     this.hintText,
     this.errorText,
     this.prefixIcon,
@@ -19,6 +21,61 @@ class TextInput extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.autofillHints,
   });
+
+  const TextInput.name({
+    super.key,
+    this.onChanged,
+    this.onBlur,
+    this.hintText = "Name",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.person),
+    this.obscureText = false,
+    this.keyboardType = TextInputType.name,
+    this.autofillHints = const [AutofillHints.name],
+  });
+
+  const TextInput.email({
+    super.key,
+    this.onChanged,
+    this.onBlur,
+    this.hintText = "Email",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.email_outlined),
+    this.obscureText = false,
+    this.keyboardType = TextInputType.emailAddress,
+    this.autofillHints = const [AutofillHints.email],
+  });
+
+  const TextInput.password({
+    super.key,
+    this.onChanged,
+    this.onBlur,
+    this.hintText = "Password",
+    this.errorText,
+    this.prefixIcon = const Icon(Icons.lock_outline_rounded),
+    this.obscureText = true,
+    this.keyboardType = TextInputType.visiblePassword,
+    this.autofillHints = const [AutofillHints.password],
+  });
+
+  @override
+  State<TextInput> createState() => _TextInputState();
+}
+
+class _TextInputState extends State<TextInput> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.onBlur != null) {
+      _focusNode.addListener(() {
+        if (!_focusNode.hasFocus) {
+          widget.onBlur?.call();
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +88,12 @@ class TextInput extends StatelessWidget {
     );
 
     return TextField(
-      onChanged: onChanged,
+      onChanged: widget.onChanged,
+      focusNode: _focusNode,
       textInputAction: TextInputAction.next,
-      autofillHints: autofillHints,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
+      autofillHints: widget.autofillHints,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.obscureText,
       enableSuggestions: false,
       autocorrect: false,
       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -43,12 +101,12 @@ class TextInput extends StatelessWidget {
       decoration: InputDecoration(
         filled: true,
         fillColor: Theme.of(context).colorScheme.tertiary,
-        hintText: hintText,
-        prefixIcon: prefixIcon,
+        hintText: widget.hintText,
+        prefixIcon: widget.prefixIcon,
         border: mainBorder,
-        enabledBorder: errorText != null ? errorBorder : null,
-        focusedBorder: errorText != null ? errorBorder : null,
-        labelText: errorText,
+        enabledBorder: widget.errorText != null ? errorBorder : null,
+        focusedBorder: widget.errorText != null ? errorBorder : null,
+        labelText: widget.errorText,
         labelStyle: TextStyle(color: errorBorder.borderSide.color),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.symmetric(horizontal: 22.0),
@@ -56,36 +114,9 @@ class TextInput extends StatelessWidget {
     );
   }
 
-  const TextInput.name({
-    super.key,
-    this.onChanged,
-    this.hintText = "Name",
-    this.errorText,
-    this.prefixIcon = const Icon(Icons.person),
-    this.obscureText = false,
-    this.keyboardType = TextInputType.name,
-    this.autofillHints = const [AutofillHints.name],
-  });
-
-  const TextInput.email({
-    super.key,
-    this.onChanged,
-    this.hintText = "Email",
-    this.errorText,
-    this.prefixIcon = const Icon(Icons.email_outlined),
-    this.obscureText = false,
-    this.keyboardType = TextInputType.emailAddress,
-    this.autofillHints = const [AutofillHints.email],
-  });
-
-  const TextInput.password({
-    super.key,
-    this.onChanged,
-    this.hintText = "Password",
-    this.errorText,
-    this.prefixIcon = const Icon(Icons.lock_outline_rounded),
-    this.obscureText = true,
-    this.keyboardType = TextInputType.visiblePassword,
-    this.autofillHints = const [AutofillHints.password],
-  });
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 }

@@ -10,14 +10,12 @@ class NameField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signupState = ref.watch(signupProvider);
-    final hasError = signupState.name.invalid;
     final controller = ref.read(signupProvider.notifier);
 
     return TextInput.name(
-      errorText: hasError
-          ? NameValidator.getErrorMessage(signupState.name.error)
-          : null,
+      errorText: NameValidator.getErrorMessage(signupState.name.error),
       onChanged: (value) => controller.onNameChange(value),
+      onBlur: () => controller.validateName(),
     );
   }
 }

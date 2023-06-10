@@ -1,13 +1,13 @@
-import 'package:form_validators/form_validators.dart';
+import './form_validator.dart';
 
 enum PasswordValidationError { empty, short }
 
-class PasswordValidator extends FormzInput<String, PasswordValidationError> {
-  const PasswordValidator.pure() : super.pure('');
-  const PasswordValidator.dirty([String value = '']) : super.dirty(value);
+class PasswordValidator extends FormValidator<String, PasswordValidationError> {
+  const PasswordValidator([String value = "", bool needsValidation = false])
+      : super(value, needsValidation);
 
   @override
-  PasswordValidationError? validator(String value) {
+  PasswordValidationError? validate() {
     if (value.isEmpty) {
       return PasswordValidationError.empty;
     } else if (value.length < _minLength) {
