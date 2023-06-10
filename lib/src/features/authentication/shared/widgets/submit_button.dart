@@ -11,7 +11,10 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
+    final enabled = onPressed != null;
+    final color = enabled
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.background;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
