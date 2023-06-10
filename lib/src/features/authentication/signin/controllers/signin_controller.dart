@@ -14,6 +14,14 @@ class _SigninController extends StateNotifier<SigninState> {
     state = state.copyWith(email: email, password: password);
   }
 
+  void onEmailChange(String value) {
+    _update(email: EmailValidator.pure(value));
+  }
+
+  void onPasswordChange(String value) {
+    _update(password: PasswordValidator.pure(value));
+  }
+
   void validateEmail(String value) {
     _update(email: EmailValidator.dirty(value));
   }
