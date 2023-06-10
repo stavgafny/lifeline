@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../shared/widgets/header.dart';
-import '../shared/widgets/text_input.dart';
+import './widgets/email_field.dart';
+import './widgets/password_field.dart';
 import './widgets/forgot_password.dart';
 import './widgets/or_divider.dart';
 import './widgets/signin_button.dart';
@@ -26,9 +27,9 @@ class SigninScreen extends ConsumerWidget {
                   info: "Looks like you aren't signed in",
                 ),
                 SizedBox(height: 30.0),
-                TextInput.email(),
+                EmailField(),
                 SizedBox(height: 10.0),
-                TextInput.password(),
+                PasswordField(),
                 ForgotPassword(),
                 SizedBox(height: 25.0),
                 SigninButton(),

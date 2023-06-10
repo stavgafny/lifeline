@@ -3,8 +3,6 @@ import 'package:form_validators/form_validators.dart';
 enum NameValidationError { empty, short, invalid }
 
 class NameValidator extends FormzInput<String, NameValidationError> {
-  static const _minLength = 3;
-
   const NameValidator.pure() : super.pure('');
   const NameValidator.dirty([String value = '']) : super.dirty(value);
 
@@ -32,4 +30,5 @@ class NameValidator extends FormzInput<String, NameValidationError> {
   }
 }
 
+const _minLength = 3;
 final _regex = RegExp(r'^[A-Za-z]+$');
