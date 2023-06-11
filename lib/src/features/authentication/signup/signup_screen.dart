@@ -11,28 +11,27 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(40.0),
-          child: Column(
-            children: [
-              Header(
-                title: "Get Onboard!",
-                info: "Let the adventure begin!",
-              ),
-              SizedBox(height: 30.0),
-              NameField(),
-              SizedBox(height: 10.0),
-              EmailField(),
-              SizedBox(height: 10.0),
-              PasswordField(),
-              SizedBox(height: 25.0),
-              SignupButton(),
-              HasAccountSignin(),
-            ],
-          ),
+      appBar: AppBar(backgroundColor: Colors.transparent),
+      body: const Padding(
+        padding: EdgeInsets.all(40.0),
+        child: Column(
+          children: [
+            Header(
+              title: "Get Onboard!",
+              info: "Let the adventure begin!",
+            ),
+            SizedBox(height: 30.0),
+            NameField(),
+            SizedBox(height: 10.0),
+            EmailField(),
+            SizedBox(height: 10.0),
+            PasswordField(),
+            SizedBox(height: 25.0),
+            SignupButton(),
+            HasAccountSignin(),
+          ],
         ),
       ),
     );

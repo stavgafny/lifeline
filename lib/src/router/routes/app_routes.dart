@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/authentication/signin/signin_screen.dart';
 import '../../features/authentication/signup/signup_screen.dart';
+import '../../features/authentication/forgot_password/forgot_password_screen.dart';
 
 class AppRoutes {
   static const String initial = "/";
@@ -23,10 +24,26 @@ class AppRoutes {
   static isNonAuthAllowed(String route) => _nonAuthAllowed.contains(route);
 
   static List<RouteBase> routes = [
-    GoRoute(path: initial, builder: (context, state) => const _Splash()),
-    GoRoute(path: signin, builder: (context, state) => const SigninScreen()),
-    GoRoute(path: signup, builder: (context, state) => const SignupScreen()),
-    GoRoute(path: home, builder: (context, state) => const _Home()),
+    GoRoute(
+      path: initial,
+      builder: (context, state) => const _Splash(),
+    ),
+    GoRoute(
+      path: signin,
+      builder: (context, state) => const SigninScreen(),
+    ),
+    GoRoute(
+      path: signup,
+      builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: forgotPassword,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: home,
+      builder: (context, state) => const _Home(),
+    ),
   ];
 }
 
