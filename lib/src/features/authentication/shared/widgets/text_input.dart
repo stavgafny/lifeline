@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class TextInput extends StatefulWidget {
   final void Function(String value)? onChanged;
   final void Function(String value)? onBlur;
+  final void Function(String value)? onSubmit;
   final String? hintText;
   final String? errorText;
   final Widget? prefixIcon;
@@ -14,6 +15,7 @@ class TextInput extends StatefulWidget {
     super.key,
     this.onChanged,
     this.onBlur,
+    this.onSubmit,
     this.hintText,
     this.errorText,
     this.prefixIcon,
@@ -26,6 +28,7 @@ class TextInput extends StatefulWidget {
     super.key,
     this.onChanged,
     this.onBlur,
+    this.onSubmit,
     this.hintText = "Name",
     this.errorText,
     this.prefixIcon = const Icon(Icons.person),
@@ -38,6 +41,7 @@ class TextInput extends StatefulWidget {
     super.key,
     this.onChanged,
     this.onBlur,
+    this.onSubmit,
     this.hintText = "Email",
     this.errorText,
     this.prefixIcon = const Icon(Icons.email_outlined),
@@ -50,6 +54,7 @@ class TextInput extends StatefulWidget {
     super.key,
     this.onChanged,
     this.onBlur,
+    this.onSubmit,
     this.hintText = "Password",
     this.errorText,
     this.prefixIcon = const Icon(Icons.lock_outline_rounded),
@@ -90,8 +95,9 @@ class _TextInputState extends State<TextInput> {
 
     return TextField(
       controller: _controller,
-      onChanged: widget.onChanged,
       focusNode: _focusNode,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmit,
       textInputAction: TextInputAction.next,
       autofillHints: widget.autofillHints,
       keyboardType: widget.keyboardType,
