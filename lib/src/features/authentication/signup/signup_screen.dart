@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../shared/widgets/back_app_bar.dart';
 import '../shared/widgets/header.dart';
 import './widgets/name_field.dart';
 import './widgets/email_field.dart';
@@ -11,10 +12,10 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(backgroundColor: Colors.transparent),
-      body: const Padding(
+      appBar: BackAppBar(),
+      body: Padding(
         padding: EdgeInsets.all(40.0),
         child: Column(
           children: [

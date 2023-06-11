@@ -14,7 +14,7 @@ class ForgotPassword extends StatelessWidget {
         alignment: Alignment.topRight,
         child: TextLink(
           text: "Forgot Password",
-          onTap: () => context.push(AppRoutes.forgotPassword),
+          onTap: () => context.go(AppRoutes.forgotPassword),
         ),
       ),
     );

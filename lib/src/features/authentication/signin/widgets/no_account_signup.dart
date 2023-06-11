@@ -22,7 +22,7 @@ class NoAccountSignup extends StatelessWidget {
           TextLink(
             text: "Sign Up",
             fontWeight: FontWeight.bold,
-            onTap: () => context.push(AppRoutes.signup),
+            onTap: () => context.go(AppRoutes.signup),
           ),
         ],
       ),
