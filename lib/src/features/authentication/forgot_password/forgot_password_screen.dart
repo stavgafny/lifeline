@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../shared/widgets/back_app_bar.dart';
 import '../shared/widgets/header.dart';
 import './widgets/email_field.dart';
 import './widgets/reset_button.dart';
@@ -9,10 +8,10 @@ class ForgotPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: BackAppBar(),
-      body: Padding(
+      appBar: AppBar(forceMaterialTransparency: true),
+      body: const Padding(
         padding: EdgeInsets.all(40.0),
         child: Column(
           children: [

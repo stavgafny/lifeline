@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../router/routes/app_routes.dart';
 import '../../shared/widgets/text_link.dart';
+import '../controllers/signin_controller.dart';
 
-class NoAccountSignup extends StatelessWidget {
+class NoAccountSignup extends ConsumerWidget {
   const NoAccountSignup({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(signinProvider.notifier);
+
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -22,7 +26,11 @@ class NoAccountSignup extends StatelessWidget {
           TextLink(
             text: "Sign Up",
             fontWeight: FontWeight.bold,
-            onTap: () => context.go(AppRoutes.signup),
+            onTap: () {
+              context.pushReplacement(AppRoutes.signin);
+              controller.clear();
+              context.push(AppRoutes.signup);
+            },
           ),
         ],
       ),
