@@ -45,6 +45,8 @@ dependencies:
 
   form_validators:
     path: packages/form_validators
+  fire_auth:
+    path: packages/fire_auth
 
 dev_dependencies:
   flutter_test:
