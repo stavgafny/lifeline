@@ -25,6 +25,8 @@ class _GoogleSigninController extends StateNotifier<GoogleSigninState> {
       state = GoogleSigninState.success;
     } on SignInWithGoogleException catch (_) {
       state = GoogleSigninState.error;
+    } finally {
+      state = GoogleSigninState.init;
     }
   }
 }

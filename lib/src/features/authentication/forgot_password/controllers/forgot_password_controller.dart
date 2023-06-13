@@ -31,6 +31,9 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
     } on ForgotPasswordException catch (e) {
       state = state.copyWith(
           status: FormSubmissionStatus.failure, errorMessage: e.code);
+    } finally {
+      state =
+          state.copyWith(status: FormSubmissionStatus.init, errorMessage: null);
     }
   }
 }

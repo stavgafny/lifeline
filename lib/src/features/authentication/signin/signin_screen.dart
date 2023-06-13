@@ -18,13 +18,14 @@ class SigninScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<SigninState>(signinProvider, (previous, current) {
-      if (current.status == FormSubmissionStatus.progress) {
+      if (current.status == FormSubmissionStatus.progress &&
+          previous?.status != FormSubmissionStatus.progress) {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
-        Navigator.of(context).maybePop();
+        Navigator.maybePop(context);
         print("Error ${current.errorMessage}");
       } else if (current.status == FormSubmissionStatus.success) {
-        Navigator.of(context).maybePop();
+        Navigator.maybePop(context);
       }
     });
 

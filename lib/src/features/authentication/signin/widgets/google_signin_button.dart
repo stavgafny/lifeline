@@ -9,7 +9,8 @@ class GoogleSigninButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<GoogleSigninState>(googleSigninProvider, (previous, current) {
-      if (current == GoogleSigninState.loading) {
+      if (current == GoogleSigninState.loading &&
+          previous != GoogleSigninState.loading) {
         LoadingSheet.show(context);
       } else if (current == GoogleSigninState.error) {
         Navigator.maybePop(context);

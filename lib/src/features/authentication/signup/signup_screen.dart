@@ -16,7 +16,8 @@ class SignupScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<SignupState>(signupProvider, (previous, current) {
-      if (current.status == FormSubmissionStatus.progress) {
+      if (current.status == FormSubmissionStatus.progress &&
+          previous?.status != FormSubmissionStatus.progress) {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
         Navigator.of(context).maybePop();
