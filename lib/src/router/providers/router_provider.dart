@@ -15,6 +15,7 @@ final routerProvider = Provider.autoDispose<GoRouter>((ref) {
     initialLocation: AppRoutes.initial,
     routes: AppRoutes.routes,
     redirect: (context, state) {
+      if (authState.status == AuthStatus.initialized) return null; //! SPLASH
       if (authState.status == AuthStatus.authenticated) {
         if (!authState.user.emailVerified) {
           return AppRoutes.home; //! VERIFY EMAIL

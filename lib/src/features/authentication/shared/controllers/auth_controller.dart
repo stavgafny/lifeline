@@ -14,7 +14,7 @@ class _AuthenticationController extends StateNotifier<AuthState> {
   StreamSubscription? _userStreamSubscription;
 
   _AuthenticationController(this._authHandler)
-      : super(const AuthState.unauthenticated()) {
+      : super(const AuthState.initialized()) {
     _userStreamSubscription =
         _authHandler.user.listen((user) => _onUserChanged(user));
   }

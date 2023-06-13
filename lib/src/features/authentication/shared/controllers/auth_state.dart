@@ -1,6 +1,6 @@
 part of './auth_controller.dart';
 
-enum AuthStatus { authenticated, unauthenticated }
+enum AuthStatus { initialized, authenticated, unauthenticated }
 
 class AuthState {
   final AuthStatus status;
@@ -10,6 +10,8 @@ class AuthState {
     required this.status,
     this.user = AuthUser.empty,
   });
+
+  const AuthState.initialized() : this._(status: AuthStatus.initialized);
 
   const AuthState.authenticated(AuthUser user)
       : this._(status: AuthStatus.authenticated, user: user);
