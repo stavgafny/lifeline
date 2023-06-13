@@ -1,20 +1,34 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import 'package:fire_auth/fire_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../repositories/auth_repo_provider.dart';
 
-final authStateProvider = StreamProvider<AuthState>((ref) {
-  return FirebaseAuth.instance
-      .authStateChanges()
-      .map((user) => AuthState(user));
-});
+part './auth_state.dart';
 
-class AuthState {
-  final User? _user;
+final authStateProvider = StateNotifierProvider<_AuthProvider, AuthState>(
+  (ref) => _AuthProvider(ref.watch(authRepoProvider)),
+);
 
-  const AuthState(this._user);
+class _AuthProvider extends StateNotifier<AuthState> {
+  final AuthHandler _authHandler;
+  StreamSubscription? _userStreamSubscription;
 
-  /// Whether the user exists - signed in (not necessarily verified)
-  bool get exist => _user != null && _user?.uid != null;
+  _AuthProvider(this._authHandler) : super(const AuthState.initialized()) {
+    _userStreamSubscription =
+        _authHandler.user.listen((user) => _onUserChanged(user));
+  }
 
-  /// Can only be true if the user exists
-  bool get verified => exist && _user!.emailVerified;
+  void _onUserChanged(AuthUser user) {
+    state = user.isEmpty
+        ? const AuthState.unauthenticated()
+        : AuthState.authenticated(user);
+  }
+
+  void onSignOut() => _authHandler.signOut();
+
+  @override
+  void dispose() {
+    _userStreamSubscription?.cancel();
+    super.dispose();
+  }
 }

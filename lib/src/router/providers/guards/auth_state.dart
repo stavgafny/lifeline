@@ -1,4 +1,4 @@
-part of './auth_controller.dart';
+part of './auth_state_provider.dart';
 
 enum AuthStatus { initialized, authenticated, unauthenticated }
 
