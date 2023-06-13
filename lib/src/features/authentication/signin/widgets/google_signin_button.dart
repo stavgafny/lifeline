@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../shared/widgets/loading_sheet.dart';
+import '../controllers/google_signin_controller.dart';
 
-class GoogleSigninButton extends StatelessWidget {
+class GoogleSigninButton extends ConsumerWidget {
   const GoogleSigninButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<GoogleSigninState>(googleSigninProvider, (previous, current) {
+      if (current == GoogleSigninState.loading) {
+        LoadingSheet.show(context);
+      } else if (current == GoogleSigninState.error) {
+        Navigator.maybePop(context);
+        print("Google Sign In Error");
+      } else {
+        Navigator.maybePop(context);
+      }
+    });
+
     final image = Image.asset(
       "assets/google_logo.png",
       fit: BoxFit.scaleDown,
@@ -24,7 +38,7 @@ class GoogleSigninButton extends StatelessWidget {
       width: double.infinity,
       height: 55.0,
       child: GestureDetector(
-        onTap: () {},
+        onTap: () => ref.read(googleSigninProvider.notifier).signinWithGoogle(),
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.background,
