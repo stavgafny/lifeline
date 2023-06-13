@@ -2,9 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fire_auth/fire_auth.dart';
 import '../../../../repositories/auth_repo_provider.dart';
 
-final googleSigninProvider =
-    StateNotifierProvider<_GoogleSigninController, GoogleSigninState>(
-        (ref) => _GoogleSigninController(ref.watch(authRepoProvider)));
+final googleSigninProvider = StateNotifierProvider.autoDispose<
+        _GoogleSigninController, GoogleSigninState>(
+    (ref) => _GoogleSigninController(ref.watch(authRepoProvider)));
 
 enum GoogleSigninState { init, loading, error, success }
 
