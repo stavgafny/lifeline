@@ -10,8 +10,8 @@ final signupProvider =
         (ref) => _SignupController(ref.watch(authRepoProvider)));
 
 class _SignupController extends StateNotifier<SignupState> {
-  final AuthHandler _authenticationHandler;
-  _SignupController(this._authenticationHandler) : super(const SignupState());
+  final AuthHandler _authHandler;
+  _SignupController(this._authHandler) : super(const SignupState());
 
   void _update({
     NameValidator? name,
@@ -49,7 +49,7 @@ class _SignupController extends StateNotifier<SignupState> {
     if (!state.isValidated) return;
     // set loading
     try {
-      await _authenticationHandler.signUpWithEmailAndPassword(
+      await _authHandler.signUpWithEmailAndPassword(
         email: state.email.value,
         password: state.password.value,
       );

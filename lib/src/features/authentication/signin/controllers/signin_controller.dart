@@ -10,8 +10,8 @@ final signinProvider =
         (ref) => _SigninController(ref.watch(authRepoProvider)));
 
 class _SigninController extends StateNotifier<SigninState> {
-  final AuthHandler _authenticationHandler;
-  _SigninController(this._authenticationHandler) : super(const SigninState());
+  final AuthHandler _authHandler;
+  _SigninController(this._authHandler) : super(const SigninState());
 
   void _update({EmailValidator? email, PasswordValidator? password}) {
     state = state.copyWith(email: email, password: password);
@@ -40,7 +40,7 @@ class _SigninController extends StateNotifier<SigninState> {
 
     // set loading
     try {
-      await _authenticationHandler.signInWithEmailAndPassword(
+      await _authHandler.signInWithEmailAndPassword(
         email: state.email.value,
         password: state.password.value,
       );
