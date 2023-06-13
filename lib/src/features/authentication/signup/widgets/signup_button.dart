@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/widgets/submit_button.dart';
-import '../../shared/widgets/loading_sheet.dart';
 import '../controllers/signup_controller.dart';
 
 class SignupButton extends ConsumerWidget {
@@ -15,12 +14,7 @@ class SignupButton extends ConsumerWidget {
 
     return SubmitButton(
       text: "Sign Up",
-      onPressed: isValidated
-          ? () {
-              LoadingSheet.show(context);
-              controller.signupWithEmailAndPassword();
-            }
-          : null,
+      onPressed: isValidated ? controller.signupWithEmailAndPassword : null,
     );
   }
 }

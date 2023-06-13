@@ -13,8 +13,16 @@ class _SigninController extends StateNotifier<SigninState> {
   final AuthHandler _authHandler;
   _SigninController(this._authHandler) : super(const SigninState());
 
-  void _update({EmailValidator? email, PasswordValidator? password}) {
-    state = state.copyWith(email: email, password: password);
+  void _update({
+    EmailValidator? email,
+    PasswordValidator? password,
+    FormSubmissionStatus? status,
+  }) {
+    state = state.copyWith(
+      email: email,
+      password: password,
+      status: status,
+    );
   }
 
   void clear() => state = const SigninState();
@@ -38,16 +46,17 @@ class _SigninController extends StateNotifier<SigninState> {
   void signinWithEmailAndPassword() async {
     if (!state.isValidated) return;
 
-    // set loading
+    _update(status: FormSubmissionStatus.progress);
+
     try {
       await _authHandler.signInWithEmailAndPassword(
         email: state.email.value,
         password: state.password.value,
       );
-      // state status to success
+      _update(status: FormSubmissionStatus.success);
     } on SignInWithEmailAndPasswordException catch (e) {
       e;
-      // set failure
+      _update(status: FormSubmissionStatus.failure);
     }
   }
 }

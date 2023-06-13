@@ -17,8 +17,14 @@ class _SignupController extends StateNotifier<SignupState> {
     NameValidator? name,
     EmailValidator? email,
     PasswordValidator? password,
+    FormSubmissionStatus? status,
   }) {
-    state = state.copyWith(name: name, email: email, password: password);
+    state = state.copyWith(
+      name: name,
+      email: email,
+      password: password,
+      status: status,
+    );
   }
 
   void onNameChange(String value) {
@@ -47,16 +53,16 @@ class _SignupController extends StateNotifier<SignupState> {
 
   void signupWithEmailAndPassword() async {
     if (!state.isValidated) return;
-    // set loading
+    _update(status: FormSubmissionStatus.progress);
     try {
       await _authHandler.signUpWithEmailAndPassword(
         email: state.email.value,
         password: state.password.value,
       );
-      // state status to success
+      _update(status: FormSubmissionStatus.success);
     } on SignUpWithEmailAndPasswordException catch (e) {
       e;
-      // set failure
+      _update(status: FormSubmissionStatus.failure);
     }
   }
 }

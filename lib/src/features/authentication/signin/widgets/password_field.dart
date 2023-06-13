@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import '../../shared/widgets/text_input.dart';
-import '../../shared/widgets/loading_sheet.dart';
 import '../controllers/signin_controller.dart';
 
 class PasswordField extends ConsumerWidget {
@@ -20,10 +19,10 @@ class PasswordField extends ConsumerWidget {
       onBlur: (value) => controller.validatePassword(value),
       onSubmit: (value) {
         controller.validatePassword(value);
-        if (ref.read(signinProvider).isValidated) {
-          LoadingSheet.show(context);
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           controller.signinWithEmailAndPassword();
-        }
+        });
       },
     );
   }

@@ -1,3 +1,5 @@
+enum FormSubmissionStatus { init, progress, failure, success }
+
 abstract class FormValidator<T, E extends Enum> {
   final T value;
   final bool _needsToValidate;
