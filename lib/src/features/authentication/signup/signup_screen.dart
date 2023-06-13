@@ -20,7 +20,7 @@ class SignupScreen extends ConsumerWidget {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
         Navigator.of(context).maybePop();
-        print("Error");
+        print("Error ${current.errorMessage}");
       } else if (current.status == FormSubmissionStatus.success) {
         Navigator.of(context).maybePop();
       }

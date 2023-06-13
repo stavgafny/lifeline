@@ -18,12 +18,14 @@ class _SignupController extends StateNotifier<SignupState> {
     EmailValidator? email,
     PasswordValidator? password,
     FormSubmissionStatus? status,
+    String? errorMessage,
   }) {
     state = state.copyWith(
       name: name,
       email: email,
       password: password,
       status: status,
+      errorMessage: errorMessage,
     );
   }
 
@@ -61,8 +63,7 @@ class _SignupController extends StateNotifier<SignupState> {
       );
       _update(status: FormSubmissionStatus.success);
     } on SignUpWithEmailAndPasswordException catch (e) {
-      e;
-      _update(status: FormSubmissionStatus.failure);
+      _update(status: FormSubmissionStatus.failure, errorMessage: e.code);
     }
   }
 }
