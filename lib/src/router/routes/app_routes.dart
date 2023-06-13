@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/authentication/signin/signin_screen.dart';
 import '../../features/authentication/signup/signup_screen.dart';
 import '../../features/authentication/forgot_password/forgot_password_screen.dart';
+
+import './_home.dart';
 
 class AppRoutes {
   static const String initial = "/";
@@ -42,27 +43,9 @@ class AppRoutes {
     ),
     GoRoute(
       path: home,
-      builder: (context, state) => const _Home(),
+      builder: (context, state) => const Home(),
     ),
   ];
-}
-
-class _Home extends StatelessWidget {
-  const _Home();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Center(
-        child: Text("Home"),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await FirebaseAuth.instance.signOut();
-        },
-      ),
-    );
-  }
 }
 
 class _Splash extends StatelessWidget {
