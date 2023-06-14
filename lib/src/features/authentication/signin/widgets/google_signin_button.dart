@@ -13,10 +13,10 @@ class GoogleSigninButton extends ConsumerWidget {
           previous != GoogleSigninState.loading) {
         LoadingSheet.show(context);
       } else if (current == GoogleSigninState.error) {
-        Navigator.maybePop(context);
+        Navigator.of(context).maybePop();
         print("Google Sign In Error");
       } else {
-        Navigator.maybePop(context);
+        Navigator.of(context).maybePop();
       }
     });
 

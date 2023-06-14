@@ -22,10 +22,10 @@ class SigninScreen extends ConsumerWidget {
           previous?.status != FormSubmissionStatus.progress) {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
-        Navigator.maybePop(context);
+        Navigator.of(context).maybePop();
         print("Error ${current.errorMessage}");
       } else if (current.status == FormSubmissionStatus.success) {
-        Navigator.maybePop(context);
+        Navigator.of(context).maybePop();
       }
     });
 
