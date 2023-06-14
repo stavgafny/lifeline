@@ -4,6 +4,11 @@ import 'package:form_validators/form_validators.dart';
 import '../../shared/widgets/text_input.dart';
 import '../controllers/signin_controller.dart';
 
+/// Note that [onSubmit] dismisses the keyboard and by that also calls [onBlur]
+/// This may cause a conflict of controller state setting status in progress and
+/// calling [onBlur] callback that has `.copyWith`, it sets status to progress
+/// again, making two calls on progress.
+/// To avoid this behaviour the screen filters duplicate progress status
 class PasswordField extends ConsumerWidget {
   const PasswordField({super.key});
 
@@ -18,8 +23,10 @@ class PasswordField extends ConsumerWidget {
       onChanged: error != null ? controller.onPasswordChange : null,
       onBlur: (value) => controller.validatePassword(value),
       onSubmit: (value) {
+        // Validate password for any change before signin
         controller.validatePassword(value);
 
+        // To avoid keyboard dismiss conflicts
         WidgetsBinding.instance.addPostFrameCallback((_) {
           controller.signinWithEmailAndPassword();
         });
