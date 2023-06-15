@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import '../shared/widgets/loading_sheet.dart';
 import '../shared/widgets/header.dart';
+import './widgets/error_message.dart';
 import './widgets/name_field.dart';
 import './widgets/email_field.dart';
 import './widgets/password_field.dart';
@@ -21,7 +22,6 @@ class SignupScreen extends ConsumerWidget {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
         Navigator.of(context).maybePop();
-        print("Error ${current.errorMessage}");
       } else if (current.status == FormSubmissionStatus.success) {
         Navigator.of(context).maybePop();
       }
@@ -38,7 +38,7 @@ class SignupScreen extends ConsumerWidget {
               title: "Get Onboard!",
               info: "Let the adventure begin!",
             ),
-            SizedBox(height: 30.0),
+            ErrorMessage(),
             NameField(),
             SizedBox(height: 10.0),
             EmailField(),

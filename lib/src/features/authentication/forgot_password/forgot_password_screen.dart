@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../shared/widgets/header.dart';
+import './widgets/error_message.dart';
 import './widgets/email_field.dart';
 import './widgets/reset_button.dart';
 
@@ -20,7 +21,7 @@ class ForgotPasswordScreen extends ConsumerWidget {
               title: "Password?",
               info: "Fear not. Recovery Email Incoming",
             ),
-            SizedBox(height: 30.0),
+            ErrorMessage(),
             EmailField(),
             SizedBox(height: 20.0),
             ResetButton(),

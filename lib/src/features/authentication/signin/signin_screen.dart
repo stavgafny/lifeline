@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import '../shared/widgets/loading_sheet.dart';
 import '../shared/widgets/header.dart';
-import '../shared/widgets/error_box.dart';
+import './widgets/error_message.dart';
 import './widgets/email_field.dart';
 import './widgets/password_field.dart';
 import './widgets/forgot_password.dart';
@@ -24,7 +24,6 @@ class SigninScreen extends ConsumerWidget {
         LoadingSheet.show(context);
       } else if (current.status == FormSubmissionStatus.failure) {
         Navigator.of(context).maybePop();
-        print("Error ${current.errorMessage}");
       } else if (current.status == FormSubmissionStatus.success) {
         Navigator.of(context).maybePop();
       }
@@ -41,12 +40,7 @@ class SigninScreen extends ConsumerWidget {
                 title: "Hi There!",
                 info: "Looks like you aren't signed in",
               ),
-              SizedBox(height: 5.0),
-              SizedBox(
-                height: 50.0,
-                child: ErrorBox(message: "some error"),
-              ),
-              SizedBox(height: 5.0),
+              ErrorMessage(),
               EmailField(),
               SizedBox(height: 10.0),
               PasswordField(),
