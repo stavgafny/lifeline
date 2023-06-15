@@ -14,7 +14,10 @@ class SubmitButton extends StatelessWidget {
     final color = Theme.of(context).colorScheme.primary;
 
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        WidgetsBinding.instance.addPostFrameCallback((_) => onPressed?.call());
+      },
       style: OutlinedButton.styleFrom(
         side: BorderSide(
           color: color,
