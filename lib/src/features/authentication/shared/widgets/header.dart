@@ -14,14 +14,16 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const SizedBox(height: 45.0),
         AspectRatio(
-          aspectRatio: 1.75,
+          aspectRatio: 2.8,
           child: Image.asset(
-            "assets/logo_outline.png",
+            "./assets/logo_outline.png",
             fit: BoxFit.contain,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
+        const SizedBox(height: 10.0),
         Text(title, style: GoogleFonts.pacifico(fontSize: 42.0)),
         Text(info),
       ],

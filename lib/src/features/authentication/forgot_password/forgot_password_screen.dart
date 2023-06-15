@@ -22,7 +22,7 @@ class ForgotPasswordScreen extends ConsumerWidget {
             ),
             SizedBox(height: 30.0),
             EmailField(),
-            SizedBox(height: 15.0),
+            SizedBox(height: 20.0),
             ResetButton(),
           ],
         ),
