@@ -65,7 +65,7 @@ class _SignupController extends StateNotifier<SignupState> {
     } on SignUpWithEmailAndPasswordException catch (e) {
       _update(status: FormSubmissionStatus.failure, errorMessage: e.code);
     } finally {
-      _update(status: FormSubmissionStatus.init, errorMessage: null);
+      _update(status: FormSubmissionStatus.init);
     }
   }
 }
