@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import '../shared/widgets/loading_sheet.dart';
 import '../shared/widgets/header.dart';
+import '../shared/widgets/error_box.dart';
 import './widgets/email_field.dart';
 import './widgets/password_field.dart';
 import './widgets/forgot_password.dart';
@@ -10,7 +11,7 @@ import './widgets/or_divider.dart';
 import './widgets/signin_button.dart';
 import './widgets/google_signin_button.dart';
 import './widgets/no_account_signup.dart';
-import 'controllers/signin_controller.dart';
+import './controllers/signin_controller.dart';
 
 class SigninScreen extends ConsumerWidget {
   const SigninScreen({super.key});
@@ -40,7 +41,12 @@ class SigninScreen extends ConsumerWidget {
                 title: "Hi There!",
                 info: "Looks like you aren't signed in",
               ),
-              SizedBox(height: 30.0),
+              SizedBox(height: 5.0),
+              SizedBox(
+                height: 50.0,
+                child: ErrorBox(message: "some error"),
+              ),
+              SizedBox(height: 5.0),
               EmailField(),
               SizedBox(height: 10.0),
               PasswordField(),
