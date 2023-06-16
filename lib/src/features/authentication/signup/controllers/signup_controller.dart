@@ -60,7 +60,10 @@ class _SignupController extends StateNotifier<SignupState> {
       await _authHandler.signUpWithEmailAndPassword(
         email: state.email.value,
         password: state.password.value,
-        name: state.name.value,
+        options: SignUpWithEmailAndPasswordOptions(
+          name: state.name.value,
+          sendEmailVerification: true,
+        ),
       );
       _update(status: FormSubmissionStatus.success);
     } on SignUpWithEmailAndPasswordException catch (e) {

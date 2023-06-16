@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import './auth_user.dart';
 
 class SignUpWithEmailAndPasswordException implements Exception {
@@ -21,6 +23,15 @@ class SignInWithGoogleException implements Exception {}
 
 class SignOutException implements Exception {}
 
+class SignUpWithEmailAndPasswordOptions {
+  final String? name;
+  final bool sendEmailVerification;
+  SignUpWithEmailAndPasswordOptions({
+    this.name,
+    this.sendEmailVerification = false,
+  });
+}
+
 class AuthHandler {
   final _firebaseAuth = FirebaseAuth.instance;
   final _googleSignIn = GoogleSignIn.standard();
@@ -38,15 +49,23 @@ class AuthHandler {
     });
   }
 
-  Future<void> signUpWithEmailAndPassword(
-      {required String email, required String password, String? name}) async {
+  Future<void> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+    SignUpWithEmailAndPasswordOptions? options,
+  }) async {
     try {
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      if (name != null) {
-        userCredential.user?.updateDisplayName(name);
+      if (options != null) {
+        if (options.name != null) {
+          userCredential.user?.updateDisplayName(options.name);
+        }
+        if (options.sendEmailVerification) {
+          userCredential.user?.sendEmailVerification();
+        }
       }
     } on FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordException(e.code);
