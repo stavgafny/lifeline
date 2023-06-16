@@ -14,7 +14,6 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 45.0),
         AspectRatio(
           aspectRatio: 2.8,
           child: Image.asset(
@@ -23,7 +22,7 @@ class Header extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 5.0),
         Text(title, style: GoogleFonts.pacifico(fontSize: 42.0)),
         Text(info),
       ],

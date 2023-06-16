@@ -33,7 +33,7 @@ class SigninScreen extends ConsumerWidget {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(40.0),
+          padding: EdgeInsets.fromLTRB(40.0, 100.0, 40.0, 40.0),
           child: Column(
             children: [
               Header(
