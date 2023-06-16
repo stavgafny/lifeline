@@ -16,6 +16,7 @@ class Home extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text("User id: ${authUser.id}"),
+            Text("User name: ${authUser.name}"),
             Text("User email: ${authUser.email}"),
             Text("User verified: ${authUser.emailVerified}"),
           ],

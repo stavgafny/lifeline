@@ -26,7 +26,7 @@ class AuthHandler {
   final _googleSignIn = GoogleSignIn.standard();
 
   Stream<AuthUser> get user {
-    return _firebaseAuth.authStateChanges().map((firebaseUser) {
+    return _firebaseAuth.userChanges().map((firebaseUser) {
       return firebaseUser == null
           ? AuthUser.empty
           : AuthUser(
@@ -39,12 +39,15 @@ class AuthHandler {
   }
 
   Future<void> signUpWithEmailAndPassword(
-      {required String email, required String password}) async {
+      {required String email, required String password, String? name}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      if (name != null) {
+        userCredential.user?.updateDisplayName(name);
+      }
     } on FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordException(e.code);
     }
