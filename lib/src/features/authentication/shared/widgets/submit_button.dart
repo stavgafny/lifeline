@@ -3,21 +3,28 @@ import 'package:flutter/material.dart';
 class SubmitButton extends StatelessWidget {
   final String text;
   final void Function()? onPressed;
+  final bool disabled;
   const SubmitButton({
     Key? key,
     required this.text,
     required this.onPressed,
+    this.disabled = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
+    final color = disabled
+        ? Theme.of(context).colorScheme.onSecondary
+        : Theme.of(context).colorScheme.primary;
 
     return OutlinedButton(
-      onPressed: () {
-        FocusScope.of(context).unfocus();
-        WidgetsBinding.instance.addPostFrameCallback((_) => onPressed?.call());
-      },
+      onPressed: !disabled
+          ? () {
+              FocusScope.of(context).unfocus();
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => onPressed?.call());
+            }
+          : null,
       style: OutlinedButton.styleFrom(
         side: BorderSide(
           color: color,
