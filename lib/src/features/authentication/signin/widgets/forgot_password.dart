@@ -10,7 +10,6 @@ class ForgotPassword extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.read(signinProvider.notifier);
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 5, 8, 0),
       child: Align(
@@ -18,13 +17,9 @@ class ForgotPassword extends ConsumerWidget {
         child: TextLink(
           text: "Forgot Password",
           onTap: () {
-            FocusScope.of(context).unfocus();
-            // adding `.addPostFrameCallback` to prevent validators onBlur error
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.pushReplacement(AppRoutes.signin);
-              controller.clear();
-              context.push(AppRoutes.forgotPassword);
-            });
+            ref.read(signinProvider.notifier).clear();
+            context.pushReplacement(AppRoutes.signin);
+            context.push(AppRoutes.forgotPassword);
           },
         ),
       ),
