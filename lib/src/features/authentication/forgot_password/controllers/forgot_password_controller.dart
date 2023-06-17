@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import 'package:fire_auth/fire_auth.dart';
 import '../../../../repositories/auth_repo_provider.dart';
+import '../../shared/utils/error_message_handler.dart';
 import './reset_cooldown_controller.dart';
 
 part './forgot_password_state.dart';
@@ -39,8 +40,10 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
       );
       _resetCooldownController.setCooldown();
     } on ForgotPasswordException catch (e) {
+      final errorMessage = ErrorMessageHandler.generateErrorMessage(
+          ErrorMessageHandler.getErrorCode(e.code));
       state = state.copyWith(
-          status: FormSubmissionStatus.failure, errorMessage: e.code);
+          status: FormSubmissionStatus.failure, errorMessage: errorMessage);
     } finally {
       state = state.copyWith(status: FormSubmissionStatus.init);
     }
