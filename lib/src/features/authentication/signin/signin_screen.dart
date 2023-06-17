@@ -37,8 +37,8 @@ class SigninScreen extends ConsumerWidget {
           child: Column(
             children: [
               Header(
-                title: "Hi There!",
-                info: "Looks like you aren't signed in",
+                title: "Hey There!",
+                info: "Knock, knock! Sign In o'clock!",
               ),
               ErrorMessage(),
               EmailField(),

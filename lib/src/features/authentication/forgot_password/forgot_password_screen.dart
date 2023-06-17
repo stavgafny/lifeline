@@ -19,7 +19,7 @@ class ForgotPasswordScreen extends ConsumerWidget {
           children: [
             Header(
               title: "Password?",
-              info: "Fear not. Recovery Email Incoming",
+              info: "Missing password? Panic mode!",
             ),
             ErrorMessage(),
             EmailField(),

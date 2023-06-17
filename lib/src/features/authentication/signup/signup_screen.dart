@@ -36,7 +36,7 @@ class SignupScreen extends ConsumerWidget {
           children: [
             Header(
               title: "Get Onboard!",
-              info: "Let the adventure begin!",
+              info: "Free hugs included with sign-up!",
             ),
             ErrorMessage(),
             NameField(),

@@ -23,7 +23,7 @@ class Header extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 5.0),
-        Text(title, style: GoogleFonts.pacifico(fontSize: 42.0)),
+        Text(title, style: GoogleFonts.akayaTelivigala(fontSize: 40.0)),
         Text(info),
       ],
     );
