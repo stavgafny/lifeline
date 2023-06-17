@@ -7,29 +7,24 @@ import '../../../../repositories/auth_repo_provider.dart';
 
 part './forgot_password_state.dart';
 
+final forgotPasswordTimeoutProvider = StateNotifierProvider<
+    _ForgotPasswordTimeoutController,
+    ForgotPasswordTimeoutState>((ref) => _ForgotPasswordTimeoutController());
+
 final forgotPasswordProvider = StateNotifierProvider.autoDispose<
-        _ForgotPasswordController, ForgotPasswordState>(
-    (ref) => _ForgotPasswordController(ref.watch(authRepoProvider)));
+    _ForgotPasswordController, ForgotPasswordState>((ref) {
+  return _ForgotPasswordController(
+    ref.watch(authRepoProvider),
+    ref.watch(forgotPasswordTimeoutProvider.notifier),
+  );
+});
 
 class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
-  static const timeoutDuration = Duration(seconds: 30);
-
   final AuthHandler _authHandler;
-  Timer? _timer;
+  final _ForgotPasswordTimeoutController _timeoutController;
 
-  _ForgotPasswordController(this._authHandler)
+  _ForgotPasswordController(this._authHandler, this._timeoutController)
       : super(const ForgotPasswordState());
-
-  void _setTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final timeout = max(state.timeout - 1, 0);
-      state = state.copyWith(timeout: timeout);
-      if (!state.isTimedOut) {
-        timer.cancel();
-      }
-    });
-  }
 
   void onEmailChange(String value) {
     state = state.copyWith(email: EmailValidator.pure(value));
@@ -46,9 +41,8 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
       await _authHandler.forgotPassword(email: state.email.value);
       state = state.copyWith(
         status: FormSubmissionStatus.success,
-        timeout: timeoutDuration.inSeconds,
       );
-      _setTimer();
+      _timeoutController.setTimeout();
     } on ForgotPasswordException catch (e) {
       state = state.copyWith(
           status: FormSubmissionStatus.failure, errorMessage: e.code);
@@ -56,10 +50,46 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
       state = state.copyWith(status: FormSubmissionStatus.init);
     }
   }
+}
+
+class _ForgotPasswordTimeoutController
+    extends StateNotifier<ForgotPasswordTimeoutState> {
+  static const timeoutDuration = Duration(seconds: 30);
+
+  Timer? _timer;
+  _ForgotPasswordTimeoutController() : super(ForgotPasswordTimeoutState());
+
+  void _clearTimer() => _timer?.cancel();
+
+  void _updateTime(int time) => state = state.copyWith(time);
+
+  void _setTimeout() => _updateTime(timeoutDuration.inSeconds);
+
+  void setTimeout() {
+    _clearTimer();
+    _setTimeout();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateTime(max(state.timeout - 1, 0));
+      if (!state.isTimedOut) {
+        timer.cancel();
+      }
+    });
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+}
+
+class ForgotPasswordTimeoutState {
+  final int timeout;
+  ForgotPasswordTimeoutState([this.timeout = 0]);
+
+  bool get isTimedOut => timeout > 0;
+
+  ForgotPasswordTimeoutState copyWith([int? timeout]) {
+    return ForgotPasswordTimeoutState(timeout ?? this.timeout);
   }
 }

@@ -7,12 +7,12 @@ import '../controllers/forgot_password_controller.dart';
 class ResetButton extends ConsumerWidget {
   const ResetButton({super.key});
 
-  String _getText(ForgotPasswordState state) {
+  String _getText(ForgotPasswordState state, ForgotPasswordTimeoutState time) {
     if (state.status == FormSubmissionStatus.progress) {
       return "Sending";
     }
-    if (state.isTimedOut) {
-      return "Resend in ${state.timeout}";
+    if (time.isTimedOut) {
+      return "Resend in ${time.timeout}";
     }
     return "Reset Password";
   }
@@ -21,11 +21,12 @@ class ResetButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
     final controller = ref.read(forgotPasswordProvider.notifier);
+    final timeout = ref.watch(forgotPasswordTimeoutProvider);
 
     return SubmitButton(
-      text: _getText(forgotPasswordState),
+      text: _getText(forgotPasswordState, timeout),
       onPressed: controller.forgotPassword,
-      disabled: forgotPasswordState.isTimedOut,
+      disabled: timeout.isTimedOut,
     );
   }
 }
