@@ -23,6 +23,8 @@ class PasswordField extends ConsumerWidget {
       onChanged: error != null ? controller.onPasswordChange : null,
       onBlur: (value) => controller.validatePassword(value),
       onSubmit: (value) {
+        FocusScope.of(context).unfocus();
+
         // Validate password for any change before signin
         controller.validatePassword(value);
 
