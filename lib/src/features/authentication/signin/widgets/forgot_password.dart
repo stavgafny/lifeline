@@ -18,9 +18,13 @@ class ForgotPassword extends ConsumerWidget {
         child: TextLink(
           text: "Forgot Password",
           onTap: () {
-            context.pushReplacement(AppRoutes.signin);
-            controller.clear();
-            context.push(AppRoutes.forgotPassword);
+            FocusScope.of(context).unfocus();
+            // adding `.addPostFrameCallback` to prevent validators onBlur error
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.pushReplacement(AppRoutes.signin);
+              controller.clear();
+              context.push(AppRoutes.forgotPassword);
+            });
           },
         ),
       ),
