@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/authentication/signin/signin_screen.dart';
 import '../../features/authentication/signup/signup_screen.dart';
+import '../../features/authentication/email_verification/email_verification_screen.dart';
 import '../../features/authentication/forgot_password/forgot_password_screen.dart';
 
 import './_home.dart';
@@ -18,7 +19,6 @@ class AppRoutes {
   static const _nonAuthAllowed = <String>[
     signin,
     signup,
-    emailVerification,
     forgotPassword,
   ];
 
@@ -36,6 +36,10 @@ class AppRoutes {
     GoRoute(
       path: signup,
       builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: emailVerification,
+      builder: (context, state) => const EmailVerificationScreen(),
     ),
     GoRoute(
       path: forgotPassword,
