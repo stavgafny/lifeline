@@ -12,7 +12,12 @@ class TextSection extends ConsumerWidget {
     return Column(
       children: [
         Text(
-          "Hey there $name, guess who sent you an email? That's right, it's us! Our email is on its way to give you a virtual high-five. Don't leave it hanging!",
+          "Hey there $name,",
+          maxLines: 1,
+          style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+        ),
+        const Text(
+          "guess who sent you an email? That's right, it's us! Our email is on its way to give you a virtual high-five. Don't leave it hanging!",
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20.0),
