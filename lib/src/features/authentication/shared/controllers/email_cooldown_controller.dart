@@ -10,7 +10,7 @@ final emailCooldownProvider =
         (ref) => EmailCooldownController());
 
 class EmailCooldownController extends StateNotifier<EmailCooldownState> {
-  static const cooldownDuration = Duration(minutes: 1);
+  static const cooldownDuration = Duration(seconds: 30);
 
   Timer? _timer;
   EmailCooldownController() : super(EmailCooldownState());

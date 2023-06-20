@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../shared/widgets/header.dart';
 import './widgets/text_section.dart';
 import './widgets/email_sent_text.dart';
+import './widgets/resend_button.dart';
+import './widgets/check_spam_text.dart';
 import './widgets/switch_account_link.dart';
 
 class EmailVerificationScreen extends ConsumerWidget {
@@ -22,9 +24,11 @@ class EmailVerificationScreen extends ConsumerWidget {
               info: "Pssst! Your inbox holds hidden surprises!",
             ),
             SizedBox(height: 35.0),
-            SizedBox(height: 5.0),
             TextSection(),
             EmailSentText(),
+            ResendButton(),
+            SizedBox(height: 10.0),
+            CheckSpamText(),
             SwitchAccountLink(),
             SizedBox(height: 10.0),
           ],

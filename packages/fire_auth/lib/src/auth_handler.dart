@@ -14,6 +14,11 @@ class SignInWithEmailAndPasswordException implements Exception {
   const SignInWithEmailAndPasswordException(this.code);
 }
 
+class SendEmailVerificationException implements Exception {
+  final String code;
+  const SendEmailVerificationException(this.code);
+}
+
 class ForgotPasswordException implements Exception {
   final String code;
   const ForgotPasswordException(this.code);
@@ -66,7 +71,7 @@ class AuthHandler {
           userCredential.user?.updateDisplayName(options.name);
         }
         if (options.sendEmailVerification) {
-          userCredential.user?.sendEmailVerification();
+          sendEmailVerification();
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -87,6 +92,14 @@ class AuthHandler {
       );
     } on FirebaseAuthException catch (e) {
       throw SignInWithEmailAndPasswordException(e.code);
+    }
+  }
+
+  Future<void> sendEmailVerification() async {
+    try {
+      return await _firebaseAuth.currentUser?.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      throw SendEmailVerificationException(e.code);
     }
   }
 
