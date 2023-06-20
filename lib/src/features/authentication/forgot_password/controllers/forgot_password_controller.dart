@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import 'package:fire_auth/fire_auth.dart';
 import '../../../../repositories/auth_repo_provider.dart';
+import '../../shared/controllers/email_cooldown_controller.dart';
 import '../../shared/utils/error_message_handler.dart';
-import './reset_cooldown_controller.dart';
 
 part './forgot_password_state.dart';
 
@@ -11,15 +11,15 @@ final forgotPasswordProvider = StateNotifierProvider.autoDispose<
     _ForgotPasswordController, ForgotPasswordState>((ref) {
   return _ForgotPasswordController(
     ref.watch(authRepoProvider),
-    ref.watch(resetCooldownProvider.notifier),
+    ref.watch(emailCooldownProvider.notifier),
   );
 });
 
 class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
   final AuthHandler _authHandler;
-  final ResetCooldownController _resetCooldownController;
+  final EmailCooldownController _emailCooldownController;
 
-  _ForgotPasswordController(this._authHandler, this._resetCooldownController)
+  _ForgotPasswordController(this._authHandler, this._emailCooldownController)
       : super(const ForgotPasswordState());
 
   void onEmailChange(String value) {
@@ -38,7 +38,7 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
       state = state.copyWith(
         status: FormSubmissionStatus.success,
       );
-      _resetCooldownController.setCooldown();
+      _emailCooldownController.setCooldown();
     } on ForgotPasswordException catch (e) {
       final errorMessage = ErrorMessageHandler.generateErrorMessage(
           ErrorMessageHandler.getErrorCode(e.code));

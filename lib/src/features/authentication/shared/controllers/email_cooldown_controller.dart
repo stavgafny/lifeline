@@ -3,17 +3,17 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-part './reset_cooldown_state.dart';
+part './email_cooldown_state.dart';
 
-final resetCooldownProvider =
-    StateNotifierProvider<ResetCooldownController, ResetCooldownState>(
-        (ref) => ResetCooldownController());
+final emailCooldownProvider =
+    StateNotifierProvider<EmailCooldownController, EmailCooldownState>(
+        (ref) => EmailCooldownController());
 
-class ResetCooldownController extends StateNotifier<ResetCooldownState> {
-  static const cooldownDuration = Duration(seconds: 30);
+class EmailCooldownController extends StateNotifier<EmailCooldownState> {
+  static const cooldownDuration = Duration(minutes: 1);
 
   Timer? _timer;
-  ResetCooldownController() : super(ResetCooldownState());
+  EmailCooldownController() : super(EmailCooldownState());
 
   void _clearTimer() => _timer?.cancel();
 
