@@ -35,6 +35,7 @@ class SignUpWithEmailAndPasswordOptions {
 class AuthHandler {
   final _firebaseAuth = FirebaseAuth.instance;
   final _googleSignIn = GoogleSignIn.standard();
+  String? _onSignUpName;
 
   Stream<AuthUser> get user {
     return _firebaseAuth.userChanges().map((firebaseUser) {
@@ -43,7 +44,7 @@ class AuthHandler {
           : AuthUser(
               id: firebaseUser.uid,
               email: firebaseUser.email,
-              name: firebaseUser.displayName,
+              name: firebaseUser.displayName ?? _onSignUpName,
               emailVerified: firebaseUser.emailVerified,
             );
     });
@@ -55,6 +56,7 @@ class AuthHandler {
     SignUpWithEmailAndPasswordOptions? options,
   }) async {
     try {
+      _onSignUpName = options?.name;
       final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -69,6 +71,8 @@ class AuthHandler {
       }
     } on FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordException(e.code);
+    } finally {
+      _onSignUpName = null;
     }
   }
 
