@@ -5,6 +5,7 @@ import './widgets/text_section.dart';
 import './widgets/email_sent_text.dart';
 import './widgets/resend_button.dart';
 import './widgets/check_spam_text.dart';
+import './widgets/why_verify_tappable_text.dart';
 import './widgets/switch_account_link.dart';
 
 class EmailVerificationScreen extends ConsumerWidget {
@@ -29,6 +30,8 @@ class EmailVerificationScreen extends ConsumerWidget {
             ResendButton(),
             SizedBox(height: 10.0),
             CheckSpamText(),
+            SizedBox(height: 10.0),
+            WhyVerifyTappableText(),
             SwitchAccountLink(),
             SizedBox(height: 10.0),
           ],
