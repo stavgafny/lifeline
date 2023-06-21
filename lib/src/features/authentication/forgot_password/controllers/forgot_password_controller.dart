@@ -35,9 +35,7 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
     state = state.copyWith(status: FormSubmissionStatus.progress);
     try {
       await _authHandler.forgotPassword(email: state.email.value);
-      state = state.copyWith(
-        status: FormSubmissionStatus.success,
-      );
+      state = state.copyWith(status: FormSubmissionStatus.success);
       _emailCooldownController.setCooldown();
     } on ForgotPasswordException catch (e) {
       final errorMessage = ErrorMessageHandler.generateErrorMessage(

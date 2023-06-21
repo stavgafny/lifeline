@@ -7,8 +7,15 @@ import '../controllers/email_verification_controller.dart';
 class ResendButton extends ConsumerWidget {
   const ResendButton({super.key});
 
-  String _getText(EmailCooldownState cooldownState) {
+  String _getText(
+      EmailVerificationState state, EmailCooldownState cooldownState) {
+    if (state.status == EmailVerificationStatus.progress) {
+      return "Sending";
+    }
     if (cooldownState.isInCooldown) {
+      if (state.status == EmailVerificationStatus.error) {
+        return "Too many emails aahh";
+      }
       return "Resend in ${cooldownState.time}";
     }
     return "No Email? Resend";
@@ -16,13 +23,14 @@ class ResendButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cooldownState = ref.watch(emailCooldownProvider);
-    final cooldownController = ref.watch(emailVerificationProvider.notifier);
+    final emailVerificationState = ref.watch(emailVerificationProvider);
+    final emailCooldownState = ref.watch(emailCooldownProvider);
 
     return SubmitButton(
-      text: _getText(cooldownState),
-      onPressed: () => cooldownController.resendVerification(),
-      disabled: cooldownState.isInCooldown,
+      text: _getText(emailVerificationState, emailCooldownState),
+      onPressed: () =>
+          ref.read(emailVerificationProvider.notifier).resendVerification(),
+      disabled: emailCooldownState.isInCooldown,
     );
   }
 }
