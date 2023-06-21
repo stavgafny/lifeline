@@ -10,8 +10,6 @@ const _ani = [
 ];
 
 class LoadingSheet extends StatelessWidget {
-  const LoadingSheet._();
-
   static Future<void> show(BuildContext context) {
     return showModalBottomSheet(
       isDismissible: false,
@@ -24,6 +22,8 @@ class LoadingSheet extends StatelessWidget {
       builder: (_) => const LoadingSheet._(),
     );
   }
+
+  const LoadingSheet._();
 
   @override
   Widget build(BuildContext context) {
