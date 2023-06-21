@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './verify_explanation_dialog.dart';
 
 class WhyVerifyTappableText extends StatelessWidget {
   const WhyVerifyTappableText({
@@ -8,7 +9,7 @@ class WhyVerifyTappableText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () => VerifyExplanationDialog.show(context),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
