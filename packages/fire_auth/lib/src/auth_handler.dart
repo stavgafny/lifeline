@@ -42,6 +42,8 @@ class AuthHandler {
   final _googleSignIn = GoogleSignIn.standard();
   String? _onSignUpName;
 
+  Future<void> reload() async => await _firebaseAuth.currentUser?.reload();
+
   Stream<AuthUser> get user {
     return _firebaseAuth.userChanges().map((firebaseUser) {
       return firebaseUser == null
@@ -52,7 +54,12 @@ class AuthHandler {
               name: firebaseUser.displayName ?? _onSignUpName,
               emailVerified: firebaseUser.emailVerified,
             );
-    });
+    }).distinct(
+      (previous, current) {
+        return previous.id == current.id &&
+            previous.emailVerified == current.emailVerified;
+      },
+    );
   }
 
   Future<void> signUpWithEmailAndPassword({
