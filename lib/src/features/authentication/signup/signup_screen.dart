@@ -31,7 +31,7 @@ class SignupScreen extends ConsumerWidget {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(forceMaterialTransparency: true),
       body: const Padding(
-        padding: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 40.0),
+        padding: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 50.0),
         child: Column(
           children: [
             Header(
