@@ -32,8 +32,9 @@ class SigninScreen extends ConsumerWidget {
     return const Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
+        bottom: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(40.0, 100.0, 40.0, 30.0),
+          padding: EdgeInsets.fromLTRB(40.0, 100.0, 40.0, 50.0),
           child: Column(
             children: [
               Header(
