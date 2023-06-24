@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validators/form_validators.dart';
 import 'package:fire_auth/fire_auth.dart';
-import '../../shared/utils/error_message_handler.dart';
 import '../../../../repositories/auth_repo_provider.dart';
+import '../../shared/utils/auth_error_handler.dart';
 
 part './signin_state.dart';
 
@@ -58,8 +58,7 @@ class _SigninController extends StateNotifier<SigninState> {
       );
       _update(status: FormSubmissionStatus.success);
     } on SignInWithEmailAndPasswordException catch (e) {
-      final errorMessage = ErrorMessageHandler.generateErrorMessage(
-          ErrorMessageHandler.getErrorCode(e.code));
+      final errorMessage = AuthErrorHandler.getErrorFromCode(e.code).message;
       _update(status: FormSubmissionStatus.failure, errorMessage: errorMessage);
     } finally {
       _update(status: FormSubmissionStatus.init);

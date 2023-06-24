@@ -3,7 +3,7 @@ import 'package:form_validators/form_validators.dart';
 import 'package:fire_auth/fire_auth.dart';
 import '../../../../repositories/auth_repo_provider.dart';
 import '../../shared/controllers/email_cooldown_controller.dart';
-import '../../shared/utils/error_message_handler.dart';
+import '../../shared/utils/auth_error_handler.dart';
 
 part './forgot_password_state.dart';
 
@@ -38,8 +38,7 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
       state = state.copyWith(status: FormSubmissionStatus.success);
       _emailCooldownController.setCooldown();
     } on ForgotPasswordException catch (e) {
-      final errorMessage = ErrorMessageHandler.generateErrorMessage(
-          ErrorMessageHandler.getErrorCode(e.code));
+      final errorMessage = AuthErrorHandler.getErrorFromCode(e.code).message;
       state = state.copyWith(
           status: FormSubmissionStatus.failure, errorMessage: errorMessage);
     } finally {
