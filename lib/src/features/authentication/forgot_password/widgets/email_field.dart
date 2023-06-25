@@ -10,13 +10,13 @@ class EmailField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
-    final controller = ref.read(forgotPasswordProvider.notifier);
     final error = forgotPasswordState.email.error;
+    final controller = ref.watch(forgotPasswordProvider.notifier);
 
     return TextInput.email(
       errorText: EmailValidator.getErrorMessage(error),
       onChanged: error != null ? controller.onEmailChange : null,
-      onBlur: (value) => controller.validateEmail(value),
+      onBlur: controller.validateEmail,
     );
   }
 }

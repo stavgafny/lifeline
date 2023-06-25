@@ -10,13 +10,13 @@ class EmailField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signinState = ref.watch(signinProvider);
-    final controller = ref.read(signinProvider.notifier);
     final error = signinState.email.error;
+    final controller = ref.watch(signinProvider.notifier);
 
     return TextInput.email(
       errorText: EmailValidator.getErrorMessage(error),
       onChanged: error != null ? controller.onEmailChange : null,
-      onBlur: (value) => controller.validateEmail(value),
+      onBlur: controller.validateEmail,
     );
   }
 }

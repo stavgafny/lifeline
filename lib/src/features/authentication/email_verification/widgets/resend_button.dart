@@ -25,11 +25,11 @@ class ResendButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailVerificationState = ref.watch(emailVerificationProvider);
     final emailCooldownState = ref.watch(emailCooldownProvider);
+    final controller = ref.watch(emailVerificationProvider.notifier);
 
     return SubmitButton(
       text: _getText(emailVerificationState, emailCooldownState),
-      onPressed: () =>
-          ref.read(emailVerificationProvider.notifier).resendVerification(),
+      onPressed: controller.resendVerification,
       disabled: emailCooldownState.isInCooldown,
     );
   }

@@ -15,13 +15,13 @@ class PasswordField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signinState = ref.watch(signinProvider);
-    final controller = ref.read(signinProvider.notifier);
     final error = signinState.password.error;
+    final controller = ref.watch(signinProvider.notifier);
 
     return TextInput.password(
       errorText: PasswordValidator.getErrorMessage(error),
       onChanged: error != null ? controller.onPasswordChange : null,
-      onBlur: (value) => controller.validatePassword(value),
+      onBlur: controller.validatePassword,
       onSubmit: (value) {
         FocusScope.of(context).unfocus();
 
