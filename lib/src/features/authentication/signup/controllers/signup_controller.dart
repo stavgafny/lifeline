@@ -55,7 +55,7 @@ class _SignupController extends StateNotifier<SignupState> {
   }
 
   void signupWithEmailAndPassword() async {
-    if (!state.isValidated || state.inProgress) return;
+    if (!state.isSubmittable) return;
 
     _update(status: FormSubmissionStatus.progress);
     try {
