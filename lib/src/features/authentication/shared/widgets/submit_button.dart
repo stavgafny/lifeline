@@ -17,33 +17,46 @@ class SubmitButton extends StatelessWidget {
         ? Theme.of(context).colorScheme.onSecondary
         : Theme.of(context).colorScheme.primary;
 
-    return OutlinedButton(
-      onPressed: !disabled && onPressed != null
-          ? () {
-              FocusScope.of(context).unfocus();
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => onPressed?.call());
-            }
-          : null,
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(
-          color: color,
-          width: 1.0,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: onPressed == null
+              ? ButtonStyle(
+                  overlayColor:
+                      MaterialStateColor.resolveWith((_) => Colors.transparent),
+                  splashFactory: NoSplash.splashFactory,
+                )
+              : null,
         ),
       ),
-      child: SizedBox(
-        height: 55.0,
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: color,
-              fontSize: 15.0,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
+      child: OutlinedButton(
+        onPressed: !disabled
+            ? () {
+                FocusScope.of(context).unfocus();
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => onPressed?.call());
+              }
+            : null,
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(
+            color: color,
+            width: 1.0,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+        ),
+        child: SizedBox(
+          height: 55.0,
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: color,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
             ),
           ),
         ),
