@@ -9,8 +9,8 @@ class SignupButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signupState = ref.watch(signupProvider);
-    final isValidated = signupState.isValidated;
     final controller = ref.watch(signupProvider.notifier);
+    final isValidated = signupState.isValidated;
 
     return SubmitButton(
       text: "Sign Up",

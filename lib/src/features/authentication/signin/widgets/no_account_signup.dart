@@ -10,6 +10,8 @@ class NoAccountSignup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(signinProvider.notifier);
+
     return Expanded(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -25,7 +27,7 @@ class NoAccountSignup extends ConsumerWidget {
             text: "Sign Up",
             fontWeight: FontWeight.bold,
             onTap: () {
-              ref.read(signinProvider.notifier).clear();
+              controller.clear();
               context.pushReplacement(AppRoutes.signin);
               context.push(AppRoutes.signup);
             },

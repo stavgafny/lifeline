@@ -15,8 +15,8 @@ class PasswordField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signinState = ref.watch(signinProvider);
-    final error = signinState.password.error;
     final controller = ref.watch(signinProvider.notifier);
+    final error = signinState.password.error;
 
     return TextInput.password(
       errorText: PasswordValidator.getErrorMessage(error),

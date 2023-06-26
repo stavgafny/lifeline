@@ -10,9 +10,9 @@ class SigninButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final signinState = ref.watch(signinProvider);
+    final controller = ref.watch(signinProvider.notifier);
     final isValidated = signinState.isValidated;
     final isInProgress = signinState.status == FormSubmissionStatus.progress;
-    final controller = ref.watch(signinProvider.notifier);
 
     return SubmitButton(
       text: "Sign In",

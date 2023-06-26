@@ -8,6 +8,8 @@ class GoogleSigninButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(googleSigninProvider.notifier);
+
     ref.listen<GoogleSigninState>(googleSigninProvider, (previous, current) {
       if (current == GoogleSigninState.loading &&
           previous != GoogleSigninState.loading) {
@@ -39,7 +41,7 @@ class GoogleSigninButton extends ConsumerWidget {
       width: double.infinity,
       height: 55.0,
       child: GestureDetector(
-        onTap: () => ref.read(googleSigninProvider.notifier).signinWithGoogle(),
+        onTap: controller.signinWithGoogle,
         child: Container(
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.background,
