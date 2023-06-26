@@ -11,10 +11,13 @@ class SignupButton extends ConsumerWidget {
     final signupState = ref.watch(signupProvider);
     final controller = ref.watch(signupProvider.notifier);
     final isValidated = signupState.isValidated;
+    final inProgress = signupState.inProgress;
 
     return SubmitButton(
       text: "Sign Up",
-      onPressed: isValidated ? controller.signupWithEmailAndPassword : null,
+      onPressed: (isValidated && !inProgress)
+          ? controller.signupWithEmailAndPassword
+          : null,
     );
   }
 }

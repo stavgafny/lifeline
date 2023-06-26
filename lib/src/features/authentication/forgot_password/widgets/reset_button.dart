@@ -23,10 +23,11 @@ class ResetButton extends ConsumerWidget {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
     final emailCooldownState = ref.watch(emailCooldownProvider);
     final controller = ref.watch(forgotPasswordProvider.notifier);
+    final inProgress = forgotPasswordState.inProgress;
 
     return SubmitButton(
       text: _getText(forgotPasswordState, emailCooldownState),
-      onPressed: controller.forgotPassword,
+      onPressed: inProgress ? null : controller.forgotPassword,
       disabled: emailCooldownState.isInCooldown,
     );
   }
