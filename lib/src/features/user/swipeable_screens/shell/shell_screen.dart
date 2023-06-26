@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import '../../../../router/routes/app_routes.dart';
+
+const _screenChangeAnimationDuration = Duration(milliseconds: 250);
 
 class ShellScreen extends StatelessWidget {
   final Widget body;
@@ -9,7 +12,7 @@ class ShellScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selected = location == AppRoutes.dashboard
+    final screenIndex = location == AppRoutes.dashboard
         ? 0
         : location == AppRoutes.timeline
             ? 2
@@ -17,37 +20,31 @@ class ShellScreen extends StatelessWidget {
 
     return Scaffold(
       body: body,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selected,
-        destinations: [
-          NavigationDestination(
-            label: 'Dashboard',
-            icon: IconButton(
-              icon: const Icon(Icons.dashboard),
-              onPressed: () {
-                context.go(AppRoutes.dashboard);
-              },
-            ),
-          ),
-          NavigationDestination(
-            label: 'Home',
-            icon: IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                context.go(AppRoutes.home);
-              },
-            ),
-          ),
-          NavigationDestination(
-            label: 'Timeline',
-            icon: IconButton(
-              icon: const Icon(Icons.timeline),
-              onPressed: () {
-                context.go(AppRoutes.timeline);
-              },
-            ),
-          ),
+      bottomNavigationBar: CurvedNavigationBar(
+        height: 65.0,
+        index: screenIndex,
+        letIndexChange: (index) {
+          if (index != screenIndex) {
+            context.go(
+              index == 0
+                  ? AppRoutes.dashboard
+                  : index == 2
+                      ? AppRoutes.timeline
+                      : AppRoutes.home,
+            );
+            return true;
+          }
+          return false;
+        },
+        items: const [
+          Icon(Icons.dashboard),
+          Icon(Icons.home),
+          Icon(Icons.timeline),
         ],
+        color: Theme.of(context).navigationBarTheme.backgroundColor!,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        animationDuration: _screenChangeAnimationDuration,
+        animationCurve: Curves.easeOutSine,
       ),
     );
   }
