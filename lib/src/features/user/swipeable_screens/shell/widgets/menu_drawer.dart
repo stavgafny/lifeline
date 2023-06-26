@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/router/providers/guards/auth_state_provider.dart';
 
-class MenuDrawer extends StatelessWidget {
+class MenuDrawer extends ConsumerWidget {
   const MenuDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authStateProvider).user;
+
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ListView(
             shrinkWrap: true,
-            children: const [
+            children: [
               DrawerHeader(
                 child: CircleAvatar(
-                  child: Text("\$ProfileImage\$"),
+                  backgroundColor: Colors.transparent,
+                  child: CircleAvatar(
+                    radius: 60.0,
+                    backgroundImage: NetworkImage(user.photoURL ?? ""),
+                  ),
                 ),
               ),
-              ListTile(
+              const ListTile(
                 title: Text("Settings"),
                 leading: Icon(Icons.settings),
               ),
