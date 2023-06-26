@@ -17,6 +17,8 @@ class SignupState {
 
   bool get isValidated => FormValidator.validateAll([name, email, password]);
 
+  bool get inProgress => status == FormSubmissionStatus.progress;
+
   SignupState copyWith({
     NameValidator? name,
     EmailValidator? email,

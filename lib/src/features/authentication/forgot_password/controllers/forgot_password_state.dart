@@ -13,6 +13,8 @@ class ForgotPasswordState {
 
   bool get isValidated => FormValidator.validateAll([email]);
 
+  bool get inProgress => status == FormSubmissionStatus.progress;
+
   ForgotPasswordState copyWith({
     EmailValidator? email,
     FormSubmissionStatus? status,

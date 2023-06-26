@@ -36,7 +36,8 @@ class _EmailVerificationController
   }
 
   void resendVerification() async {
-    if (state.status == EmailVerificationStatus.progress) return;
+    if (state.inProgress) return;
+
     state = state.copyWith(status: EmailVerificationStatus.progress);
     try {
       await _authHandler.sendEmailVerification();

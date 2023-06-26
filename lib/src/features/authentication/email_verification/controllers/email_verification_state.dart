@@ -7,6 +7,8 @@ class EmailVerificationState {
 
   const EmailVerificationState({this.status = EmailVerificationStatus.init});
 
+  bool get inProgress => status == EmailVerificationStatus.progress;
+
   EmailVerificationState copyWith({EmailVerificationStatus? status}) {
     return EmailVerificationState(status: status ?? this.status);
   }
