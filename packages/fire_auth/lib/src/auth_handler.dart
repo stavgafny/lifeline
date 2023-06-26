@@ -53,6 +53,7 @@ class AuthHandler {
               email: firebaseUser.email,
               name: firebaseUser.displayName ?? _onSignUpName,
               emailVerified: firebaseUser.emailVerified,
+              photoURL: firebaseUser.photoURL,
             );
     }).distinct(
       (previous, current) {
