@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/guards/auth_state_provider.dart';
+import '../../../../../router/providers/guards/auth_state_provider.dart';
 
-class Home extends ConsumerWidget {
-  const Home({super.key});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,11 +19,12 @@ class Home extends ConsumerWidget {
             Text("User name: ${authUser.name}"),
             Text("User email: ${authUser.email}"),
             Text("User verified: ${authUser.emailVerified}"),
+            TextButton(
+              onPressed: () async => authController.onSignOut(),
+              child: const Text("Sign Out"),
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async => authController.onSignOut(),
       ),
     );
   }
