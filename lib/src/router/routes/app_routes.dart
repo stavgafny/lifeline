@@ -4,9 +4,13 @@ import '../../features/authentication/signin/signin_screen.dart';
 import '../../features/authentication/signup/signup_screen.dart';
 import '../../features/authentication/email_verification/email_verification_screen.dart';
 import '../../features/authentication/forgot_password/forgot_password_screen.dart';
+import '../../features/user/swipeable_screens/shell/shell_screen.dart'
+    as user_swipeable_shell;
 import '../../features/user/swipeable_screens/screens/home/home_screen.dart';
 import '../../features/user/swipeable_screens/screens/dashboard/dashboard_screen.dart';
 import '../../features/user/swipeable_screens/screens/timeline/timeline_screen.dart';
+
+final _userShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'u_shell');
 
 class AppRoutes {
   static const String initial = "/";
@@ -49,21 +53,28 @@ class AppRoutes {
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     ShellRoute(
+        navigatorKey: _userShellNavigatorKey,
         builder: (context, state, child) {
-          return NavigationScaffold(body: child, location: state.location);
+          return user_swipeable_shell.ShellScreen(
+            body: child,
+            location: state.location,
+          );
         },
         routes: [
           GoRoute(
             path: home,
             builder: (context, state) => const HomeScreen(),
+            parentNavigatorKey: _userShellNavigatorKey,
           ),
           GoRoute(
             path: dashboard,
             builder: (context, state) => const DashboardScreen(),
+            parentNavigatorKey: _userShellNavigatorKey,
           ),
           GoRoute(
             path: timeline,
             builder: (context, state) => const TimelineScreen(),
+            parentNavigatorKey: _userShellNavigatorKey,
           ),
         ]),
   ];
@@ -77,66 +88,6 @@ class _Splash extends StatelessWidget {
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
-class NavigationScaffold extends StatefulWidget {
-  final Widget body;
-  final String location;
-  const NavigationScaffold({
-    super.key,
-    required this.body,
-    required this.location,
-  });
-
-  @override
-  State<NavigationScaffold> createState() => _NavigationScaffoldState();
-}
-
-class _NavigationScaffoldState extends State<NavigationScaffold> {
-  @override
-  Widget build(BuildContext context) {
-    final selected = widget.location == AppRoutes.dashboard
-        ? 0
-        : widget.location == AppRoutes.timeline
-            ? 2
-            : 1;
-
-    return Scaffold(
-      body: widget.body,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selected,
-        destinations: [
-          NavigationDestination(
-            label: 'Dashboard',
-            icon: IconButton(
-              icon: const Icon(Icons.dashboard),
-              onPressed: () {
-                context.go(AppRoutes.dashboard);
-              },
-            ),
-          ),
-          NavigationDestination(
-            label: 'Home',
-            icon: IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                context.go(AppRoutes.home);
-              },
-            ),
-          ),
-          NavigationDestination(
-            label: 'Timeline',
-            icon: IconButton(
-              icon: const Icon(Icons.timeline),
-              onPressed: () {
-                context.go(AppRoutes.timeline);
-              },
-            ),
-          ),
-        ],
       ),
     );
   }
