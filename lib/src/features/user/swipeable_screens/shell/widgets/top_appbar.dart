@@ -9,15 +9,6 @@ class TopAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 20),
-          child: GestureDetector(
-            onTap: () {},
-            child: const Icon(Icons.menu_outlined),
-          ),
-        ),
-      ],
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
