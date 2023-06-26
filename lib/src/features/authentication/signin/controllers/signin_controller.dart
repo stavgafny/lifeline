@@ -47,10 +47,10 @@ class _SigninController extends StateNotifier<SigninState> {
   }
 
   void signinWithEmailAndPassword() async {
-    if (!state.isValidated) return;
-
+    if (!state.isValidated || state.status == FormSubmissionStatus.progress) {
+      return;
+    }
     _update(status: FormSubmissionStatus.progress);
-
     try {
       await _authHandler.signInWithEmailAndPassword(
         email: state.email.value,

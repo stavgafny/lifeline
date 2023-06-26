@@ -31,7 +31,9 @@ class _ForgotPasswordController extends StateNotifier<ForgotPasswordState> {
   }
 
   void forgotPassword() async {
-    if (!state.isValidated) return;
+    if (!state.isValidated || state.status == FormSubmissionStatus.progress) {
+      return;
+    }
     state = state.copyWith(status: FormSubmissionStatus.progress);
     try {
       await _authHandler.forgotPassword(email: state.email.value);

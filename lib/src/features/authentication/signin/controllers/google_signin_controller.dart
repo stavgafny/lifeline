@@ -14,6 +14,7 @@ class _GoogleSigninController extends StateNotifier<GoogleSigninState> {
   _GoogleSigninController(this._authHandler) : super(GoogleSigninState.init);
 
   Future<void> signinWithGoogle() async {
+    if (state == GoogleSigninState.loading) return;
     state = GoogleSigninState.loading;
     try {
       final isNewUser = await _authHandler.signInWithGoogle();
