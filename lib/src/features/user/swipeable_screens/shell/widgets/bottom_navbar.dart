@@ -4,6 +4,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import '../utils/bottom_navbar_items.dart';
 
 const _screenChangeAnimationDuration = Duration(milliseconds: 250);
+const _navHeight = 72.0;
 
 class BottomNavbar extends StatelessWidget {
   final int navIndex;
@@ -13,7 +14,7 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
-      height: 65.0,
+      height: _navHeight,
       index: navIndex,
       letIndexChange: (index) {
         if (index != navIndex) {

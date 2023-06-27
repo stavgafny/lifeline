@@ -9,9 +9,18 @@ class BottomNavbarItem {
 
 class BottomNavbarItems {
   static const _items = <BottomNavbarItem>[
-    BottomNavbarItem(route: AppRoutes.dashboard, icon: Icon(Icons.dashboard)),
-    BottomNavbarItem(route: AppRoutes.home, icon: Icon(Icons.home)),
-    BottomNavbarItem(route: AppRoutes.timeline, icon: Icon(Icons.timeline)),
+    BottomNavbarItem(
+      route: AppRoutes.dashboard,
+      icon: Icon(Icons.dashboard, color: Colors.white),
+    ),
+    BottomNavbarItem(
+      route: AppRoutes.home,
+      icon: Icon(Icons.home, color: Colors.white),
+    ),
+    BottomNavbarItem(
+      route: AppRoutes.timeline,
+      icon: Icon(Icons.timeline, color: Colors.white),
+    ),
   ];
 
   static List<Icon> get icons => _items.map((item) => item.icon).toList();
