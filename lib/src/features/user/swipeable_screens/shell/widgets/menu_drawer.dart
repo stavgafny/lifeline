@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/router/providers/guards/auth_state_provider.dart';
+import '../../../../../providers/theme_mode_provider.dart';
 
 class MenuDrawer extends ConsumerWidget {
   const MenuDrawer({super.key});
@@ -8,6 +9,8 @@ class MenuDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider).user;
+    final themeMode = ref.watch(themeModeProvider);
+    final themeModeController = ref.watch(themeModeProvider.notifier);
 
     return Drawer(
       child: Column(
@@ -31,11 +34,12 @@ class MenuDrawer extends ConsumerWidget {
               ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 30.0),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
             child: ListTile(
-              title: Text("Toggle Theme"),
-              leading: Icon(Icons.color_lens_outlined),
+              title: Text("Toggle Theme [${themeMode.name}]"),
+              leading: const Icon(Icons.color_lens_outlined),
+              onTap: themeModeController.toggleMode,
             ),
           ),
         ],

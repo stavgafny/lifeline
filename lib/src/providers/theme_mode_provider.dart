@@ -17,16 +17,4 @@ class ThemeModeController extends StateNotifier<ThemeMode> {
   void toggleMode() {
     state = state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
   }
-
-  @override
-  String toString() {
-    switch (state) {
-      case ThemeMode.system:
-        return "System";
-      case ThemeMode.light:
-        return "Light";
-      case ThemeMode.dark:
-        return "Dark";
-    }
-  }
 }
