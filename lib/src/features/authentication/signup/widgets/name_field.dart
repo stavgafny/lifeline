@@ -15,7 +15,7 @@ class NameField extends ConsumerWidget {
 
     return TextInput.name(
       errorText: NameValidator.getErrorMessage(error),
-      onChanged: error != null ? controller.onNameChange : null,
+      onChanged: controller.onNameChange,
       onBlur: controller.validateName,
     );
   }

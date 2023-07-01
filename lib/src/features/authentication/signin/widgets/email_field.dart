@@ -15,7 +15,7 @@ class EmailField extends ConsumerWidget {
 
     return TextInput.email(
       errorText: EmailValidator.getErrorMessage(error),
-      onChanged: error != null ? controller.onEmailChange : null,
+      onChanged: controller.onEmailChange,
       onBlur: controller.validateEmail,
     );
   }

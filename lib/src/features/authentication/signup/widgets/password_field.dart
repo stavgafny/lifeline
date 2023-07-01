@@ -16,7 +16,7 @@ class PasswordField extends ConsumerWidget {
     return TextInput.password(
       autofillHints: const [AutofillHints.newPassword],
       errorText: PasswordValidator.getErrorMessage(error),
-      onChanged: error != null ? controller.onPasswordChange : null,
+      onChanged: controller.onPasswordChange,
       onBlur: controller.validatePassword,
     );
   }

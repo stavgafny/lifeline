@@ -20,7 +20,7 @@ class PasswordField extends ConsumerWidget {
 
     return TextInput.password(
       errorText: PasswordValidator.getErrorMessage(error),
-      onChanged: error != null ? controller.onPasswordChange : null,
+      onChanged: controller.onPasswordChange,
       onBlur: controller.validatePassword,
       onSubmit: (value) {
         FocusScope.of(context).unfocus();
