@@ -8,14 +8,12 @@ class SwitchAccountLink extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(authStateProvider.notifier);
-
     return Expanded(
       child: Align(
         alignment: Alignment.bottomCenter,
         child: TextLink(
           text: "Switch Account",
-          onTap: controller.onSignOut,
+          onTap: ref.read(authStateProvider.notifier).onSignOut,
         ),
       ),
     );

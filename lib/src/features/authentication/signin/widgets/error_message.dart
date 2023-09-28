@@ -8,7 +8,9 @@ class ErrorMessage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final message = ref.watch(signinProvider).errorMessage;
+    final message = ref.watch(
+      signinProvider.select((signinState) => signinState.errorMessage),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(

@@ -8,15 +8,18 @@ class SigninButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final signinState = ref.watch(signinProvider);
-    final controller = ref.watch(signinProvider.notifier);
-
-    final isSubmittable = signinState.isSubmittable;
-    final isInProgress = signinState.isInProgress;
+    final isSubmittable = ref.watch(
+      signinProvider.select((signinState) => signinState.isSubmittable),
+    );
+    final isInProgress = ref.watch(
+      signinProvider.select((signinState) => signinState.isInProgress),
+    );
 
     return SubmitButton(
       text: "Sign In",
-      onPressed: isSubmittable ? controller.signinWithEmailAndPassword : null,
+      onPressed: isSubmittable
+          ? ref.read(signinProvider.notifier).signinWithEmailAndPassword
+          : null,
       disabled: isInProgress,
     );
   }

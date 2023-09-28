@@ -8,14 +8,15 @@ class SignupButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final signupState = ref.watch(signupProvider);
-    final controller = ref.watch(signupProvider.notifier);
-
-    final isSubmittable = signupState.isSubmittable;
+    final isSubmittable = ref.watch(
+      signupProvider.select((signupState) => signupState.isSubmittable),
+    );
 
     return SubmitButton(
       text: "Sign Up",
-      onPressed: isSubmittable ? controller.signupWithEmailAndPassword : null,
+      onPressed: isSubmittable
+          ? ref.read(signupProvider.notifier).signupWithEmailAndPassword
+          : null,
     );
   }
 }

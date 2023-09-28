@@ -10,8 +10,6 @@ class ForgotPassword extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(signinProvider.notifier);
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 5, 8, 0),
       child: Align(
@@ -19,7 +17,7 @@ class ForgotPassword extends ConsumerWidget {
         child: TextLink(
           text: "Forgot Password",
           onTap: () {
-            controller.clear();
+            ref.read(signinProvider.notifier).clear();
             context.pushReplacement(AppRoutes.signin);
             context.push(AppRoutes.forgotPassword);
           },

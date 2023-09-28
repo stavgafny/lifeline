@@ -22,13 +22,14 @@ class ResetButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final forgotPasswordState = ref.watch(forgotPasswordProvider);
     final emailCooldownState = ref.watch(emailCooldownProvider);
-    final controller = ref.watch(forgotPasswordProvider.notifier);
 
     final isSubmittable = forgotPasswordState.isSubmittable;
 
     return SubmitButton(
       text: _getText(forgotPasswordState, emailCooldownState),
-      onPressed: isSubmittable ? controller.forgotPassword : null,
+      onPressed: isSubmittable
+          ? ref.read(forgotPasswordProvider.notifier).forgotPassword
+          : null,
       disabled: emailCooldownState.isInCooldown,
     );
   }

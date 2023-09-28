@@ -9,15 +9,14 @@ class PasswordField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final signupState = ref.watch(signupProvider);
-    final controller = ref.watch(signupProvider.notifier);
-    final error = signupState.password.error;
+    final signupStateError = ref.watch(
+        signupProvider.select((signupState) => signupState.password.error));
 
     return TextInput.password(
       autofillHints: const [AutofillHints.newPassword],
-      errorText: PasswordValidator.getErrorMessage(error),
-      onChanged: controller.onPasswordChange,
-      onBlur: controller.validatePassword,
+      errorText: PasswordValidator.getErrorMessage(signupStateError),
+      onChanged: ref.read(signupProvider.notifier).onPasswordChange,
+      onBlur: ref.read(signupProvider.notifier).validatePassword,
     );
   }
 }

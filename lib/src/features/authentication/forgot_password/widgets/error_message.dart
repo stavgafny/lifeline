@@ -8,7 +8,8 @@ class ErrorMessage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final message = ref.watch(forgotPasswordProvider).errorMessage;
+    final message = ref.watch(forgotPasswordProvider
+        .select((forgotPasswordState) => forgotPasswordState.errorMessage));
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
