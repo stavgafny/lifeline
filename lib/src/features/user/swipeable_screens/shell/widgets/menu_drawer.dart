@@ -32,6 +32,14 @@ class MenuDrawer extends ConsumerWidget {
                 title: Text("Settings"),
                 leading: Icon(Icons.settings),
               ),
+              ListTile(
+                title: const Text("Sign Out"),
+                leading: const Icon(Icons.logout),
+                onTap: () {
+                  Navigator.pop(context);
+                  ref.read(authStateProvider.notifier).onSignOut();
+                },
+              ),
             ],
           ),
           Padding(
