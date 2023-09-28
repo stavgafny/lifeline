@@ -1,11 +1,10 @@
-class DurationHelper {
-  static String formatDuration(Duration duration, {bool secondary = false}) {
+extension DurationExtension on Duration {
+  String format({bool secondary = false}) {
     final timeFormats = <String>[];
-
-    final days = duration.inDays;
-    final hours = duration.inHours.remainder(Duration.hoursPerDay);
-    final minutes = duration.inMinutes.remainder(Duration.minutesPerHour);
-    final seconds = duration.inSeconds.remainder(Duration.secondsPerMinute);
+    final days = inDays;
+    final hours = inHours.remainder(Duration.hoursPerDay);
+    final minutes = inMinutes.remainder(Duration.minutesPerHour);
+    final seconds = inSeconds.remainder(Duration.secondsPerMinute);
 
     if (days.abs() > 0) timeFormats.add("${days}d");
     if (hours.abs() > 0) timeFormats.add("${hours}h");
