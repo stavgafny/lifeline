@@ -17,9 +17,11 @@ class ForgotPassword extends ConsumerWidget {
         child: TextLink(
           text: "Forgot Password",
           onTap: () {
-            ref.read(signinProvider.notifier).clear();
-            context.pushReplacement(AppRoutes.signin);
-            context.push(AppRoutes.forgotPassword);
+            FocusManager.instance.primaryFocus?.unfocus();
+            Future.delayed(Duration.zero, () {
+              ref.read(signinProvider.notifier).clear();
+              context.push(AppRoutes.forgotPassword);
+            });
           },
         ),
       ),
