@@ -5,7 +5,7 @@ import '../../models/goal_tracker_model.dart';
 import './widgets/progress_precent_indicator.dart';
 import './widgets/play_pause_button.dart';
 import './widgets/goal_name.dart';
-import './widgets/progress_duration_info.dart';
+import './widgets/play_time_info.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _width = double.infinity;
@@ -62,7 +62,7 @@ class GoalTrackerCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GoalName(provider: provider),
-        ProgressDurationInfo(provider: provider),
+        PlayTimeInfo(provider: provider),
       ],
     );
   }

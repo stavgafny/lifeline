@@ -20,7 +20,7 @@ class ProgressPrecentIndicator extends ConsumerWidget {
       lineWidth: _lineWidth,
       backgroundColor: Theme.of(context).colorScheme.onSecondary,
       progressColor: Theme.of(context).colorScheme.primary,
-      percent: precent,
+      percent: precent.clamp(0.0, 1.0),
     );
   }
 }

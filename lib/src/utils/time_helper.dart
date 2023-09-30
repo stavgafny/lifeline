@@ -21,4 +21,13 @@ extension DurationExtension on Duration {
     }
     return timeFormats.first + secondaryTime;
   }
+
+  Duration trimSubseconds() {
+    return this -
+        Duration(
+          microseconds: inMicroseconds.remainder(
+            Duration.microsecondsPerSecond,
+          ),
+        );
+  }
 }

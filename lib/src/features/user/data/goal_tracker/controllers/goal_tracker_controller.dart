@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/goal_tracker_model.dart';
 
@@ -14,19 +16,19 @@ final goalTrackerProvider =
 );
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
+  Timer? _timer;
   GoalTrackerController(GoalTrackerModel model) : super(model);
 
   void _play() {
-    state = state.copyWith(playTimestamp: DateTime.now());
+    state = state.activated();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      state = state.updated();
+    });
   }
 
   void _stop() {
-    final addedProgress = DateTime.now().difference(state.playTimestamp!);
-    state = GoalTrackerModel.pure().copyWith(
-      name: state.name,
-      duration: state.duration,
-      progress: state.progress + addedProgress,
-    );
+    _timer?.cancel();
+    state = state.inactivated();
   }
 
   void toggle() => state.isPlaying ? _stop() : _play();

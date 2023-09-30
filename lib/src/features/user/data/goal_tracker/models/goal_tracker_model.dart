@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:lifeline/src/utils/time_helper.dart';
+
 class GoalTrackerModel {
   final String name;
   final Duration duration;
@@ -12,33 +14,48 @@ class GoalTrackerModel {
     this.playTimestamp,
   });
 
-  GoalTrackerModel.pure()
-      : name = "",
-        duration = const Duration(),
-        progress = const Duration(),
-        playTimestamp = null;
-
   bool get isPlaying => playTimestamp != null;
 
   double get progressPrecentage {
-    if (duration == const Duration()) {
-      return 0;
-    }
-    final ratio = progress.inMilliseconds / duration.inMilliseconds;
-    return ratio;
+    if (duration == const Duration()) return 0;
+    return progress.inMilliseconds / duration.inMilliseconds;
   }
 
-  GoalTrackerModel copyWith({
+  String get playTimeInfo {
+    return "${progress.format(secondary: true)} / ${duration.format(secondary: true)}";
+  }
+
+  GoalTrackerModel activated() {
+    return nullableCopyWith(
+        playTimestamp: () => DateTime.now().subtract(progress));
+  }
+
+  GoalTrackerModel updated() {
+    final now = DateTime.now();
+    final addedProgress = now.difference(playTimestamp ?? now);
+    return nullableCopyWith(progress: addedProgress);
+  }
+
+  GoalTrackerModel inactivated() {
+    final current = updated();
+    return current.nullableCopyWith(
+      progress: current.progress.trimSubseconds(),
+      playTimestamp: () => null,
+    );
+  }
+
+  GoalTrackerModel nullableCopyWith({
     String? name,
     Duration? duration,
     Duration? progress,
-    DateTime? playTimestamp,
+    DateTime? Function()? playTimestamp,
   }) {
     return GoalTrackerModel(
       name: name ?? this.name,
       duration: duration ?? this.duration,
       progress: progress ?? this.progress,
-      playTimestamp: playTimestamp ?? this.playTimestamp,
+      playTimestamp:
+          playTimestamp != null ? playTimestamp() : this.playTimestamp,
     );
   }
 
