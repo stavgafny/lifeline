@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../data/goal_tracker/models/goal_tracker_model.dart';
+import '../../../data/goal_tracker/controllers/goal_tracker_controller.dart';
 import '../../../data/goal_tracker/views/goal_tracker_card/goal_tracker_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,14 +8,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: const [
-        GoalTrackerCard(
-          model: GoalTrackerModel(
-            name: "Goal Tracker",
-            duration: Duration(hours: 1, minutes: 5),
-            progress: Duration(seconds: 4),
-          ),
-        ),
+      children: [
+        const SizedBox(height: 300),
+        GoalTrackerCard(provider: goalTrackerProvider),
       ],
     );
   }

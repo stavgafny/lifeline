@@ -12,6 +12,22 @@ class GoalTrackerModel {
     this.playTimestamp,
   });
 
+  GoalTrackerModel.pure()
+      : name = "",
+        duration = const Duration(),
+        progress = const Duration(),
+        playTimestamp = null;
+
+  bool get isPlaying => playTimestamp != null;
+
+  double get progressPrecentage {
+    if (duration == const Duration()) {
+      return 0;
+    }
+    final ratio = progress.inMilliseconds / duration.inMilliseconds;
+    return ratio;
+  }
+
   GoalTrackerModel copyWith({
     String? name,
     Duration? duration,
