@@ -1,12 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/utils/playable_duration.dart';
+import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 
 typedef GoalTrackerProvider
     = StateNotifierProvider<GoalTrackerController, GoalTrackerModel>;
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
+  static int _uuid = 0;
+
+  final int id = _uuid++;
+
   Timer? _timer;
   GoalTrackerController(GoalTrackerModel model) : super(model) {
     if (model.isPlaying) {
@@ -15,18 +21,26 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
   }
 
   void _play() {
-    state = state.activated();
+    state = state.copyWith(
+      progress: PlayableDuration.playing(
+        timestamp: DateTime.now().subtract(state.progress.current),
+      ),
+    );
     _initializeTickUpdates();
   }
 
   void _stop() {
     _timer?.cancel();
-    state = state.inactivated();
+    state = state.copyWith(
+      progress: PlayableDuration.paused(
+        duration: state.progress.current.trimSubseconds(),
+      ),
+    );
   }
 
   void _initializeTickUpdates() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      state = state.updated();
+      state = state.copyWith();
     });
   }
 

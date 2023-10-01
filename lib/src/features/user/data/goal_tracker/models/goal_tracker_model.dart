@@ -1,61 +1,39 @@
 import 'dart:convert';
 
+import 'package:lifeline/src/utils/playable_duration.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 
 class GoalTrackerModel {
   final String name;
   final Duration duration;
-  final Duration progress;
-  final DateTime? playTimestamp;
+  final PlayableDuration progress;
+
   const GoalTrackerModel({
     required this.name,
     required this.duration,
     required this.progress,
-    this.playTimestamp,
   });
 
-  bool get isPlaying => playTimestamp != null;
+  bool get isPlaying => progress.isPlaying;
 
   double get progressPrecentage {
     if (duration == const Duration()) return 0;
-    return progress.inMilliseconds / duration.inMilliseconds;
+    return progress.current.inMilliseconds / duration.inMilliseconds;
   }
 
   String get playTimeInfo {
-    return "${progress.format(secondary: true)} / ${duration.format(secondary: true)}";
+    return "${progress.current.format(secondary: true)} / ${duration.format(secondary: true)}";
   }
 
-  GoalTrackerModel activated() {
-    return nullableCopyWith(
-        playTimestamp: () => DateTime.now().subtract(progress));
-  }
-
-  GoalTrackerModel updated() {
-    final now = DateTime.now();
-    final addedProgress = now.difference(playTimestamp ?? now);
-    return nullableCopyWith(progress: addedProgress);
-  }
-
-  GoalTrackerModel inactivated() {
-    final current = updated();
-    return current.nullableCopyWith(
-      progress: current.progress.trimSubseconds(),
-      playTimestamp: () => null,
-    );
-  }
-
-  GoalTrackerModel nullableCopyWith({
+  GoalTrackerModel copyWith({
     String? name,
     Duration? duration,
-    Duration? progress,
-    DateTime? Function()? playTimestamp,
+    PlayableDuration? progress,
   }) {
     return GoalTrackerModel(
       name: name ?? this.name,
       duration: duration ?? this.duration,
       progress: progress ?? this.progress,
-      playTimestamp:
-          playTimestamp != null ? playTimestamp() : this.playTimestamp,
     );
   }
 
@@ -63,8 +41,7 @@ class GoalTrackerModel {
     return <String, dynamic>{
       'name': name,
       'duration': duration.inMilliseconds,
-      'progress': progress.inMilliseconds,
-      'playTimestamp': playTimestamp?.millisecondsSinceEpoch,
+      'progress': progress.toMap(),
     };
   }
 
@@ -72,10 +49,8 @@ class GoalTrackerModel {
     return GoalTrackerModel(
       name: map['name'] as String,
       duration: Duration(milliseconds: map['duration'] as int),
-      progress: Duration(milliseconds: map['progress'] as int),
-      playTimestamp: map['playTimestamp'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['playTimestamp'] as int)
-          : null,
+      progress:
+          PlayableDuration.fromMap(map['progress'] as Map<String, dynamic>),
     );
   }
 
@@ -85,9 +60,8 @@ class GoalTrackerModel {
       GoalTrackerModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() {
-    return 'GoalTrackerModel(name: $name, duration: $duration, progress: $progress, playTimestamp: $playTimestamp)';
-  }
+  String toString() =>
+      'GoalTrackerModel(name: $name, duration: $duration, progress: $progress)';
 
   @override
   bool operator ==(covariant GoalTrackerModel other) {
@@ -95,15 +69,9 @@ class GoalTrackerModel {
 
     return other.name == name &&
         other.duration == duration &&
-        other.progress == progress &&
-        other.playTimestamp == playTimestamp;
+        other.progress == progress;
   }
 
   @override
-  int get hashCode {
-    return name.hashCode ^
-        duration.hashCode ^
-        progress.hashCode ^
-        playTimestamp.hashCode;
-  }
+  int get hashCode => name.hashCode ^ duration.hashCode ^ progress.hashCode;
 }
