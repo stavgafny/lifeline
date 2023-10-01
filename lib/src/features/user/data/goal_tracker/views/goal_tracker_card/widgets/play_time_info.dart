@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/goal_tracker_controller.dart';
-import '../../../models/goal_tracker_model.dart';
 
 class PlayTimeInfo extends ConsumerWidget {
-  final StateNotifierProvider<GoalTrackerController, GoalTrackerModel> provider;
+  final GoalTrackerProvider provider;
   const PlayTimeInfo({
     super.key,
     required this.provider,

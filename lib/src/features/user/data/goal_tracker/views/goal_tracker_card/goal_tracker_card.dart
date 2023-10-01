@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/goal_tracker_controller.dart';
-import '../../models/goal_tracker_model.dart';
 import './widgets/progress_precent_indicator.dart';
 import './widgets/play_pause_button.dart';
 import './widgets/goal_name.dart';
@@ -15,7 +13,7 @@ class GoalTrackerCard extends StatelessWidget {
   static const _cardBorderRadius = 15.0;
   static const _playerToInfoGap = SizedBox(width: 12.0);
 
-  final StateNotifierProvider<GoalTrackerController, GoalTrackerModel> provider;
+  final GoalTrackerProvider provider;
   const GoalTrackerCard({
     super.key,
     required this.provider,
