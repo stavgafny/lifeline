@@ -5,6 +5,7 @@ import 'package:lifeline/src/utils/playable_duration.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 
+//! Manually disposed by `GoalTrackersController`
 typedef GoalTrackerProvider
     = StateNotifierProvider<GoalTrackerController, GoalTrackerModel>;
 
@@ -48,6 +49,7 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   @override
   void dispose() {
+    print("Disposed $id");
     _timer?.cancel();
     super.dispose();
   }
