@@ -9,10 +9,26 @@ class GoalTrackersListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goalTrackers = ref.watch(goalTrackersProvider);
-    return ListView(
-      children: goalTrackers
-          .map((goalTracker) => GoalTrackerCard(provider: goalTracker))
-          .toList(),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+      ),
+      child: ReorderableListView(
+        children: goalTrackers
+            .map((goalTracker) => GoalTrackerCard(
+                  key: ValueKey(ref.read(goalTracker.notifier).id),
+                  provider: goalTracker,
+                ))
+            .toList(),
+        onReorder: (oldIndex, newIndex) {
+          if (newIndex > oldIndex) newIndex--;
+          final current = ref.read(goalTrackersProvider.notifier).state;
+          current.insert(newIndex, current.removeAt(oldIndex));
+          ref.read(goalTrackersProvider.notifier).state = [...current];
+        },
+        proxyDecorator: (child, i, a) => Material(child: child),
+      ),
     );
   }
 }
