@@ -15,6 +15,9 @@ class PlayableDuration {
         _timestamp = null,
         isPlaying = false;
 
+  static PlayableDuration get zero =>
+      const PlayableDuration.paused(duration: Duration.zero);
+
   Duration get current {
     if (!isPlaying) return _duration ?? const Duration();
     final now = DateTime.now();

@@ -1,11 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/goal_tracker_model.dart';
-import '../models/goal_trackers.dart';
 import '../services/goal_trackers_storage.dart';
 import './goal_tracker_controller.dart';
 
 final goalTrackersProvider = StateNotifierProvider.autoDispose<
-    GoalTrackersController, AsyncValue<GoalTrackers>>(
+    GoalTrackersController, AsyncValue<List<GoalTrackerProvider>>>(
   (ref) {
     final controller = GoalTrackersController();
 
@@ -22,47 +21,48 @@ final goalTrackersProvider = StateNotifierProvider.autoDispose<
   },
 );
 
-class GoalTrackersController extends StateNotifier<AsyncValue<GoalTrackers>> {
+class GoalTrackersController
+    extends StateNotifier<AsyncValue<List<GoalTrackerProvider>>> {
   GoalTrackersController() : super(const AsyncValue.loading()) {
     _loadGoalTrackers();
   }
 
-  List<GoalTrackerProvider> get _providers => state.value?.providers ?? [];
+  List<GoalTrackerProvider> get _providers => state.value ?? [];
 
   Future<void> _loadGoalTrackers() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final models = await GoalTrackersStorage().read();
-      return GoalTrackers(
-        selectedID: -1,
-        providers: _createProviders(models),
-      );
+      return _createProviders(models);
     });
   }
 
   void swap(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex--;
     if (state.value == null) return;
-    final current = state.value!.providers;
+    final current = state.value!;
     current.insert(newIndex, current.removeAt(oldIndex));
-    state = AsyncValue.data(state.value!.copyWith(providers: current));
+    state = AsyncValue.data(current);
+  }
+
+  void add(GoalTrackerModel model) {
+    if (state.value == null) return;
+    state = AsyncValue.data([...state.value!, _createProvider(model)]);
   }
 
   void remove(GoalTrackerProvider provider) {
     if (state.value == null) return;
-    state = AsyncValue.data(state.value!.copyWith(providers: [
-      for (final p in state.value!.providers)
+    state = AsyncValue.data([
+      for (final p in state.value!)
         if (p != provider) p,
-    ]));
+    ]);
   }
 }
 
+GoalTrackerProvider _createProvider(GoalTrackerModel model) {
+  return GoalTrackerProvider((ref) => GoalTrackerController(model));
+}
+
 List<GoalTrackerProvider> _createProviders(List<GoalTrackerModel> models) {
-  return models
-      .map(
-        (model) => GoalTrackerProvider(
-          (ref) => GoalTrackerController(model),
-        ),
-      )
-      .toList();
+  return models.map((model) => _createProvider(model)).toList();
 }

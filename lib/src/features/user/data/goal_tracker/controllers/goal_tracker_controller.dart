@@ -10,11 +10,8 @@ typedef GoalTrackerProvider
     = StateNotifierProvider<GoalTrackerController, GoalTrackerModel>;
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
-  static int _uuid = 0;
-
-  final int id = _uuid++;
-
   Timer? _timer;
+
   GoalTrackerController(GoalTrackerModel model) : super(model) {
     if (model.isPlaying) {
       _initializeTickUpdates();
@@ -47,9 +44,10 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   void toggle() => state.isPlaying ? _stop() : _play();
 
+  void reset() => state = state.copyWith(progress: PlayableDuration.zero);
+
   @override
   void dispose() {
-    print("Disposed $id");
     _timer?.cancel();
     super.dispose();
   }
