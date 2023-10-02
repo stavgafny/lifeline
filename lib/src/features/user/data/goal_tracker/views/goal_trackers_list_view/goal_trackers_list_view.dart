@@ -8,34 +8,41 @@ class GoalTrackersListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final goalTrackers = ref.watch(goalTrackersProvider);
-    return Theme(
-      data: Theme.of(context).copyWith(
-        canvasColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-      ),
-      child: ReorderableListView(
-        header: ElevatedButton(
-          onPressed: () {
-            final provider = goalTrackers.providers[0];
-            ref.read(goalTrackersProvider.notifier).remove(provider);
-            ref.read(provider.notifier).dispose();
-          },
-          child: const Text("rm [0]"),
-        ),
-        children: goalTrackers.providers
-            .map(
-              (goalTracker) => GoalTrackerCard(
-                key: ValueKey(ref.read(goalTracker.notifier).id),
-                provider: goalTracker,
+    return ref.watch(goalTrackersProvider).when(
+          data: (goalTrackers) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: Colors.transparent,
+                shadowColor: Colors.transparent,
               ),
-            )
-            .toList(),
-        onReorder: (oldIndex, newIndex) {
-          ref.read(goalTrackersProvider.notifier).swap(oldIndex, newIndex);
-        },
-        proxyDecorator: (child, i, a) => Material(child: child),
-      ),
-    );
+              child: ReorderableListView(
+                header: ElevatedButton(
+                  onPressed: () {
+                    final provider = goalTrackers.providers[0];
+                    ref.read(goalTrackersProvider.notifier).remove(provider);
+                    ref.read(provider.notifier).dispose();
+                  },
+                  child: const Text("rm [0]"),
+                ),
+                children: goalTrackers.providers
+                    .map(
+                      (goalTracker) => GoalTrackerCard(
+                        key: ValueKey(ref.read(goalTracker.notifier).id),
+                        provider: goalTracker,
+                      ),
+                    )
+                    .toList(),
+                onReorder: (oldIndex, newIndex) {
+                  ref
+                      .read(goalTrackersProvider.notifier)
+                      .swap(oldIndex, newIndex);
+                },
+                proxyDecorator: (child, i, a) => Material(child: child),
+              ),
+            );
+          },
+          error: (error, stackTrace) => const Text("error"),
+          loading: () => const CircularProgressIndicator(),
+        );
   }
 }
