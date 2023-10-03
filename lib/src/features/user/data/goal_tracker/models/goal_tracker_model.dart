@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:lifeline/src/models/deadline.dart';
 import 'package:lifeline/src/models/playable_duration.dart';
-import 'package:lifeline/src/utils/time_helper.dart';
 
 class GoalTrackerModel {
   final String name;
@@ -24,18 +23,6 @@ class GoalTrackerModel {
       return (progress.current == Duration.zero) ? 0 : 1;
     }
     return progress.current.inMilliseconds / duration.inMilliseconds;
-  }
-
-  String get formattedProgressPrecentage {
-    return "${(progressPrecentage * 100).floor()}%";
-  }
-
-  String get playTimeInfo {
-    return "${progress.current.format(secondary: true)} / ${duration.format(secondary: true)}";
-  }
-
-  String get deadlineRemainingTimeInfo {
-    return deadline.remainingTime.format();
   }
 
   GoalTrackerModel copyWith({

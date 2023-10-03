@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/goal_tracker_controller.dart';
+import '../../../utils/goal_tracker_info_formatter.dart';
 
 class DeadlineInfo extends ConsumerWidget {
   final GoalTrackerProvider provider;
@@ -8,11 +9,11 @@ class DeadlineInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final info = ref.watch(
-      provider.select((model) => model.deadlineRemainingTimeInfo),
+    final deadlineInfo = ref.watch(
+      provider.select(GoalTrackerInfoFormatter.deadlineRemainingTime),
     );
     return Text(
-      info,
+      deadlineInfo,
       style: TextStyle(
         color: Theme.of(context).colorScheme.primary,
         fontWeight: FontWeight.w700,
