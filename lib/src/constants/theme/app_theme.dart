@@ -21,6 +21,9 @@ final ThemeData lightTheme = ThemeData(
   textTheme: GoogleFonts.montserratTextTheme().apply(
     bodyColor: const Color(0xFF3B343D),
   ),
+  iconTheme: ThemeData.light().iconTheme.copyWith(
+        color: const Color(0xFF3B343D),
+      ),
   scaffoldBackgroundColor: const Color(0xFFDDD8EB),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFF462D3E),
@@ -57,6 +60,9 @@ final ThemeData darkTheme = ThemeData(
   textTheme: GoogleFonts.montserratTextTheme().apply(
     bodyColor: const Color(0xFFDDCDEE),
   ),
+  iconTheme: ThemeData.dark().iconTheme.copyWith(
+        color: const Color(0xFFDDCDEE),
+      ),
   scaffoldBackgroundColor: const Color(0xFF1C171D),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFFF0D4F0),
