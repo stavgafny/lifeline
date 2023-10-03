@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class Deadline {
-  static getNextDeadlineDate(int days, TimeOfDay time) {
+  static DateTime _getNextDeadlineDate(int days, TimeOfDay time) {
     final now = DateTime.now();
     final date = DateTime(now.year, now.month, now.day, time.hour, time.minute);
     if (now.isBefore(date)) {
@@ -27,9 +27,13 @@ class Deadline {
     this.iterationDays = 1,
     this.iterationTimeOfDay = const TimeOfDay(hour: 0, minute: 0),
     this.isActive = true,
-  }) : date = Deadline.getNextDeadlineDate(iterationDays, iterationTimeOfDay);
+  }) : date = Deadline._getNextDeadlineDate(iterationDays, iterationTimeOfDay);
 
   Duration get remainingTime => date.difference(DateTime.now());
+
+  Deadline get nextDeadline => copyWith(
+        date: Deadline._getNextDeadlineDate(iterationDays, iterationTimeOfDay),
+      );
 
   Deadline copyWith({
     DateTime? date,
