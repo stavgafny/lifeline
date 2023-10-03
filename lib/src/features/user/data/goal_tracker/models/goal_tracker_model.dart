@@ -17,8 +17,14 @@ class GoalTrackerModel {
   bool get isPlaying => progress.isPlaying;
 
   double get progressPrecentage {
-    if (duration == const Duration()) return 0;
+    if (duration == Duration.zero) {
+      return (progress.current == Duration.zero) ? 0 : 1;
+    }
     return progress.current.inMilliseconds / duration.inMilliseconds;
+  }
+
+  String get formattedProgressPrecentage {
+    return "${(progressPrecentage * 100).floor()}%";
   }
 
   String get playTimeInfo {

@@ -9,11 +9,15 @@ class GoalName extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final name = ref.watch(provider.select((model) => model.name));
-    return Text(
-      name,
-      style: const TextStyle(
-        fontSize: 18.0,
-        fontWeight: FontWeight.w700,
+    return Flexible(
+      child: Text(
+        name,
+        style: const TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.w700,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

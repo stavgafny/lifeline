@@ -11,8 +11,9 @@ class PlayTimeInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playTimeInfo =
-        ref.watch(provider.select((model) => model.playTimeInfo));
+    final playTimeInfo = ref.watch(
+      provider.select((model) => model.playTimeInfo),
+    );
     return Text(
       playTimeInfo,
       style: TextStyle(
