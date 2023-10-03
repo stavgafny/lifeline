@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lifeline/src/utils/playable_duration.dart';
+import 'package:lifeline/src/models/playable_duration.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 

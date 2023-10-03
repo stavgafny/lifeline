@@ -53,4 +53,17 @@ class PlayableDuration {
   String toString() {
     return 'PlayableDuration(isPlaying $isPlaying, current: $current)';
   }
+
+  @override
+  bool operator ==(covariant PlayableDuration other) {
+    if (identical(this, other)) return true;
+
+    return other.isPlaying == isPlaying &&
+        other._duration == _duration &&
+        other._timestamp == _timestamp;
+  }
+
+  @override
+  int get hashCode =>
+      isPlaying.hashCode ^ _duration.hashCode ^ _timestamp.hashCode;
 }

@@ -1,17 +1,20 @@
 import 'dart:convert';
 
-import 'package:lifeline/src/utils/playable_duration.dart';
+import 'package:lifeline/src/models/deadline.dart';
+import 'package:lifeline/src/models/playable_duration.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 
 class GoalTrackerModel {
   final String name;
   final Duration duration;
   final PlayableDuration progress;
+  final Deadline deadline;
 
   const GoalTrackerModel({
     required this.name,
     required this.duration,
     required this.progress,
+    required this.deadline,
   });
 
   bool get isPlaying => progress.isPlaying;
@@ -31,15 +34,21 @@ class GoalTrackerModel {
     return "${progress.current.format(secondary: true)} / ${duration.format(secondary: true)}";
   }
 
+  String get deadlineRemainingTimeInfo {
+    return deadline.remainingTime.format();
+  }
+
   GoalTrackerModel copyWith({
     String? name,
     Duration? duration,
     PlayableDuration? progress,
+    Deadline? deadline,
   }) {
     return GoalTrackerModel(
       name: name ?? this.name,
       duration: duration ?? this.duration,
       progress: progress ?? this.progress,
+      deadline: deadline ?? this.deadline,
     );
   }
 
@@ -48,6 +57,7 @@ class GoalTrackerModel {
       'name': name,
       'duration': duration.inMilliseconds,
       'progress': progress.toMap(),
+      'deadline': deadline.toMap(),
     };
   }
 
@@ -55,8 +65,12 @@ class GoalTrackerModel {
     return GoalTrackerModel(
       name: map['name'] as String,
       duration: Duration(milliseconds: map['duration'] as int),
-      progress:
-          PlayableDuration.fromMap(map['progress'] as Map<String, dynamic>),
+      progress: PlayableDuration.fromMap(
+        map['progress'] as Map<String, dynamic>,
+      ),
+      deadline: Deadline.fromMap(
+        map['deadline'] as Map<String, dynamic>,
+      ),
     );
   }
 
@@ -67,7 +81,7 @@ class GoalTrackerModel {
 
   @override
   String toString() =>
-      'GoalTrackerModel(name: $name, duration: $duration, progress: $progress)';
+      'GoalTrackerModel(name: $name, duration: $duration, progress: $progress, deadline: $deadline)';
 
   @override
   bool operator ==(covariant GoalTrackerModel other) {
@@ -75,9 +89,11 @@ class GoalTrackerModel {
 
     return other.name == name &&
         other.duration == duration &&
-        other.progress == progress;
+        other.progress == progress &&
+        other.deadline == deadline;
   }
 
   @override
-  int get hashCode => name.hashCode ^ duration.hashCode ^ progress.hashCode;
+  int get hashCode =>
+      name.hashCode ^ duration.hashCode ^ progress.hashCode ^ deadline.hashCode;
 }

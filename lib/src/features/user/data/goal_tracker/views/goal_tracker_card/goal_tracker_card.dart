@@ -8,6 +8,7 @@ import './widgets/play_time_info.dart';
 import './widgets/progress_precent_info.dart';
 import './widgets/select_button.dart';
 import './widgets/selected_wrapper.dart';
+import './widgets/deadline_info.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _margin = EdgeInsets.all(12.0);
@@ -47,8 +48,6 @@ class GoalTrackerCard extends StatelessWidget {
           SelectedWrapper(
             provider: provider,
             builder: (context, isSelected) {
-              print("build");
-
               return ExpandedSection(
                 expand: isSelected,
                 child: const Padding(
@@ -86,7 +85,13 @@ class GoalTrackerCard extends StatelessWidget {
             ],
           ),
           _nameToInfoGap,
-          PlayTimeInfo(provider: provider),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              PlayTimeInfo(provider: provider),
+              DeadlineInfo(provider: provider),
+            ],
+          ),
         ],
       ),
     );

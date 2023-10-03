@@ -19,10 +19,11 @@ class GTError extends StatelessWidget {
           children: [
             const Text(
               "Failed to load goal trackers",
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20.0),
             ),
             const SizedBox(height: 10.0),
-            Text("\"$errorMsg\""),
+            Text("\"$errorMsg\"", textAlign: TextAlign.center),
           ],
         ),
       ),
