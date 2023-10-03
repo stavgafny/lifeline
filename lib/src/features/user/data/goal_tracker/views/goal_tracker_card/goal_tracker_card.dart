@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lifeline/src/features/user/data/goal_tracker/controllers/goal_tracker_select_controller.dart';
 import 'package:lifeline/src/widgets/expanded_section.dart';
 import '../../controllers/goal_tracker_controller.dart';
 import './widgets/progress_precent_indicator.dart';
@@ -8,7 +6,8 @@ import './widgets/play_pause_button.dart';
 import './widgets/goal_name.dart';
 import './widgets/play_time_info.dart';
 import './widgets/progress_precent_info.dart';
-import './widgets/expand_button.dart';
+import './widgets/select_button.dart';
+import './widgets/selected_wrapper.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _margin = EdgeInsets.all(12.0);
@@ -45,20 +44,20 @@ class GoalTrackerCard extends StatelessWidget {
               _suffix(context),
             ],
           ),
-          Consumer(
-            builder: (context, ref, child) {
-              ref.watch(goalTrackerSelectProvider);
+          SelectedWrapper(
+            provider: provider,
+            builder: (context, isSelected) {
+              print("build");
+
               return ExpandedSection(
-                expand: ref
-                    .read(goalTrackerSelectProvider.notifier)
-                    .isSelected(provider),
+                expand: isSelected,
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Center(child: Text("SELECTED")),
                 ),
               );
             },
-          )
+          ),
         ],
       ),
     );
@@ -94,6 +93,6 @@ class GoalTrackerCard extends StatelessWidget {
   }
 
   Widget _suffix(BuildContext context) {
-    return ExpandButton(provider: provider);
+    return SelectButton(provider: provider);
   }
 }
