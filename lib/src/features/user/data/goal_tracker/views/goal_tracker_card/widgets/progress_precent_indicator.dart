@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 
 class ProgressPrecentIndicator extends ConsumerWidget {
@@ -8,12 +8,14 @@ class ProgressPrecentIndicator extends ConsumerWidget {
   static const _lineWidth = 4.0;
 
   final GoalTrackerProvider provider;
+
   const ProgressPrecentIndicator({super.key, required this.provider});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final precent =
-        ref.watch(provider.select((model) => model.progressPrecentage));
+    final precent = ref.watch(
+      provider.select((model) => model.progressPrecentage),
+    );
     return CircularPercentIndicator(
       radius: _radius,
       lineWidth: _lineWidth,
