@@ -5,6 +5,9 @@ class PlayableDuration {
   final Duration? _duration;
   final DateTime? _timestamp;
 
+  static PlayableDuration get zero =>
+      const PlayableDuration.paused(duration: Duration.zero);
+
   const PlayableDuration.playing({required DateTime timestamp})
       : _duration = null,
         _timestamp = timestamp,
@@ -15,8 +18,12 @@ class PlayableDuration {
         _timestamp = null,
         isPlaying = false;
 
-  static PlayableDuration get zero =>
-      const PlayableDuration.paused(duration: Duration.zero);
+  PlayableDuration clear({required bool keepPlay}) {
+    if (isPlaying && keepPlay) {
+      return PlayableDuration.playing(timestamp: DateTime.now());
+    }
+    return PlayableDuration.zero;
+  }
 
   Duration get current {
     if (!isPlaying) return _duration ?? const Duration();

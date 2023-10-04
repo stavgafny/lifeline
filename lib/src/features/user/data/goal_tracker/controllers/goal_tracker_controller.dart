@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/models/deadline.dart';
 import 'package:lifeline/src/models/playable_duration.dart';
-import 'package:lifeline/src/services/global_time.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 
@@ -12,18 +12,45 @@ typedef GoalTrackerProvider
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
   Timer? _timer;
-  StreamSubscription<void>? _deadlineTickSubscription;
+  Timer? _nextDeadlineTimer;
 
   GoalTrackerController(GoalTrackerModel model) : super(model) {
+    _handleDeadline();
     if (state.isPlaying) {
       _initializeTickUpdates();
     }
-    _updateDeadline();
-    _deadlineTickSubscription = GlobalTime.onEveryDeviceSecond.listen((_) {
-      if (state.deadline.remainingTime.isNegative) {
-        _resetProgress();
-        _updateDeadline();
+  }
+
+  void _update({
+    String? name,
+    Duration? duration,
+    PlayableDuration? progress,
+    Deadline? deadline,
+  }) {
+    state = state.copyWith(
+      name: name,
+      duration: duration,
+      progress: progress,
+      deadline: deadline,
+    );
+  }
+
+  void _resetProgress({required bool keepPlay}) {
+    _update(progress: state.progress.clear(keepPlay: keepPlay));
+  }
+
+  void _handleDeadline() {
+    _nextDeadlineTimer?.cancel();
+    final nextDeadline = state.deadline.nextDeadline;
+    if (nextDeadline != state.deadline) {
+      _update(deadline: nextDeadline);
+    }
+
+    _nextDeadlineTimer = Timer(nextDeadline.remainingTime, () {
+      if (state.deadline.reached) {
+        _resetProgress(keepPlay: true);
       }
+      Future.delayed(Duration.zero, _handleDeadline);
     });
   }
 
@@ -45,20 +72,6 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
     );
   }
 
-  void _resetProgress() {
-    if (state.isPlaying) {
-      state = state.copyWith(
-        progress: PlayableDuration.playing(timestamp: DateTime.now()),
-      );
-    } else {
-      state = state.copyWith(progress: PlayableDuration.zero);
-    }
-  }
-
-  void _updateDeadline() {
-    state = state.copyWith(deadline: state.deadline.nextDeadline);
-  }
-
   void _initializeTickUpdates() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       state = state.copyWith();
@@ -74,7 +87,7 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
   @override
   void dispose() {
     _timer?.cancel();
-    _deadlineTickSubscription?.cancel();
+    _nextDeadlineTimer?.cancel();
     super.dispose();
   }
 }

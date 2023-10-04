@@ -31,6 +31,8 @@ class Deadline {
 
   Duration get remainingTime => date.difference(DateTime.now());
 
+  bool get reached => remainingTime <= Duration.zero;
+
   Deadline get nextDeadline => copyWith(
         date: Deadline._getNextDeadlineDate(iterationDays, iterationTimeOfDay),
       );
