@@ -1,19 +1,51 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/services/global_time.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../utils/goal_tracker_info_formatter.dart';
 
-class DeadlineInfo extends ConsumerWidget {
+class DeadlineInfo extends ConsumerStatefulWidget {
   final GoalTrackerProvider provider;
+
   const DeadlineInfo({super.key, required this.provider});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deadlineInfo = ref.watch(
-      provider.select(GoalTrackerInfoFormatter.deadlineRemainingTime),
+  DeadlineInfoState createState() => DeadlineInfoState();
+}
+
+class DeadlineInfoState extends ConsumerState<DeadlineInfo> {
+  late String _deadlineInfo = _getDeadlineInfo();
+  StreamSubscription<void>? _tickSubscription;
+
+  String _getDeadlineInfo() {
+    return GoalTrackerInfoFormatter.deadlineRemainingTime(
+      ref.read(widget.provider),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tickSubscription = GlobalTime.onEveryDeviceSecond.listen((_) {
+      final newDeadlineInfo = _getDeadlineInfo();
+      if (newDeadlineInfo != _deadlineInfo) {
+        setState(() => _deadlineInfo = newDeadlineInfo);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tickSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Text(
-      deadlineInfo,
+      _deadlineInfo,
       style: TextStyle(
         color: Theme.of(context).colorScheme.primary,
         fontWeight: FontWeight.w700,

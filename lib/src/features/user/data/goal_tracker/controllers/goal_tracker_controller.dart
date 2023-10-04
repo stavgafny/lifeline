@@ -23,8 +23,6 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
       if (state.deadline.remainingTime.isNegative) {
         _resetProgress();
         _updateDeadline();
-      } else {
-        state = state.copyWith();
       }
     });
   }
