@@ -24,6 +24,7 @@ final ThemeData lightTheme = ThemeData(
   iconTheme: ThemeData.light().iconTheme.copyWith(
         color: const Color(0xFF3B343D),
       ),
+  disabledColor: const Color(0xFFB8A4B4),
   scaffoldBackgroundColor: const Color(0xFFDDD8EB),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFF462D3E),
@@ -63,6 +64,7 @@ final ThemeData darkTheme = ThemeData(
   iconTheme: ThemeData.dark().iconTheme.copyWith(
         color: const Color(0xFFDDCDEE),
       ),
+  disabledColor: const Color(0xFF3B2D37),
   scaffoldBackgroundColor: const Color(0xFF1C171D),
   appBarTheme: const AppBarTheme(
     foregroundColor: Color(0xFFF0D4F0),
