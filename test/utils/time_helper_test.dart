@@ -180,5 +180,144 @@ void main() {
         });
       });
     });
+
+    group('Duration.getNextUpdate', () {
+      group('--no-secondary', () {
+        test('1 second', () {
+          expect(
+            const Duration(seconds: 1).getNextUpdate(),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 minute', () {
+          expect(
+            const Duration(minutes: 1).getNextUpdate(),
+            const Duration(minutes: 1),
+          );
+        });
+        test('1 hour', () {
+          expect(
+            const Duration(hours: 1).getNextUpdate(),
+            const Duration(hours: 1),
+          );
+        });
+        test('1 day', () {
+          expect(
+            const Duration(days: 1).getNextUpdate(),
+            const Duration(days: 1),
+          );
+        });
+
+        test('1 minute 1 second', () {
+          expect(
+            const Duration(minutes: 1, seconds: 1).getNextUpdate(),
+            const Duration(minutes: 1),
+          );
+        });
+        test('1 day 1 second', () {
+          expect(
+            const Duration(days: 1, seconds: 1).getNextUpdate(),
+            const Duration(days: 1),
+          );
+        });
+        test('1 day 1 minute', () {
+          expect(
+            const Duration(days: 1, minutes: 1).getNextUpdate(),
+            const Duration(days: 1),
+          );
+        });
+        test('1 day 1 minute 1 second', () {
+          expect(
+            const Duration(days: 1, minutes: 1, seconds: 1).getNextUpdate(),
+            const Duration(days: 1),
+          );
+        });
+      });
+
+      group('--secondary', () {
+        test('1 second', () {
+          expect(
+            const Duration(seconds: 1).getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 minute', () {
+          expect(
+            const Duration(minutes: 1).getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 hour', () {
+          expect(
+            const Duration(hours: 1).getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 day', () {
+          expect(
+            const Duration(days: 1).getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+
+        test('1 minute 1 second', () {
+          expect(
+            const Duration(minutes: 1, seconds: 1)
+                .getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 day 1 second', () {
+          expect(
+            const Duration(days: 1, seconds: 1).getNextUpdate(secondary: true),
+            const Duration(seconds: 1),
+          );
+        });
+        test('1 day 1 minute', () {
+          expect(
+            const Duration(days: 1, minutes: 1).getNextUpdate(secondary: true),
+            const Duration(minutes: 1),
+          );
+        });
+        test('1 day 1 minute 1 second', () {
+          expect(
+            const Duration(days: 1, minutes: 1, seconds: 1)
+                .getNextUpdate(secondary: true),
+            const Duration(minutes: 1),
+          );
+        });
+      });
+    });
+
+    group('Duration.trimSubseconds {extention}', () {
+      test('trimSubseconds removes subseconds correctly', () {
+        expect(
+          const Duration(seconds: 2, milliseconds: 500).trimSubseconds(),
+          equals(const Duration(seconds: 2)),
+        );
+
+        expect(
+          const Duration(minutes: 1, milliseconds: 750).trimSubseconds(),
+          equals(const Duration(minutes: 1)),
+        );
+
+        expect(
+          const Duration(milliseconds: 500).trimSubseconds(),
+          equals(const Duration(seconds: 0)),
+        );
+
+        expect(
+          const Duration(seconds: 10).trimSubseconds(),
+          equals(const Duration(seconds: 10)),
+        );
+      });
+
+      test('trimSubseconds handles zero duration', () {
+        expect(
+          const Duration(seconds: 0).trimSubseconds(),
+          equals(const Duration(seconds: 0)),
+        );
+      });
+    });
   });
 }

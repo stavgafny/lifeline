@@ -22,6 +22,27 @@ extension DurationExtension on Duration {
     return timeFormats.first + secondaryTime;
   }
 
+  Duration getNextUpdate({bool secondary = false}) {
+    final days = inDays;
+    final hours = inHours.remainder(Duration.hoursPerDay);
+    final minutes = inMinutes.remainder(Duration.minutesPerHour);
+
+    final timeFactors = <int>[];
+
+    if (days.abs() > 0) timeFactors.add(Duration.microsecondsPerDay);
+    if (hours.abs() > 0) timeFactors.add(Duration.microsecondsPerHour);
+    if (minutes.abs() > 0) timeFactors.add(Duration.microsecondsPerMinute);
+    timeFactors.add(Duration.microsecondsPerSecond);
+
+    final timeFactor = secondary && timeFactors.length > 1
+        ? timeFactors[1]
+        : timeFactors.first;
+
+    return Duration(
+      microseconds: timeFactor,
+    );
+  }
+
   Duration trimSubseconds() {
     return this -
         Duration(
