@@ -69,6 +69,10 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   void toggle() => state.isPlaying ? _stop() : _play();
 
+  void setName(String name) {
+    state = state.copyWith(name: name);
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
