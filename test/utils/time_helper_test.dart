@@ -320,4 +320,29 @@ void main() {
       });
     });
   });
+
+  group('Duration.modulo {extention}', () {
+    const duration = Duration(days: 1, minutes: 3, seconds: 3);
+
+    test('0 modulo', () {
+      expect(duration.modulo(Duration.zero), duration);
+    });
+
+    test('no modulo', () {
+      expect(duration.modulo(const Duration(days: 2)), duration);
+    });
+
+    test('1 modulo', () {
+      expect(
+        duration.modulo(const Duration(days: 1)),
+        duration - const Duration(days: 1),
+      );
+    });
+    test('deep modulo', () {
+      expect(
+        duration.modulo(const Duration(minutes: 1)),
+        const Duration(seconds: 3),
+      );
+    });
+  });
 }

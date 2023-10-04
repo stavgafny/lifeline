@@ -50,4 +50,11 @@ extension DurationExtension on Duration {
           ),
         );
   }
+
+  Duration modulo(Duration other) {
+    if (other == Duration.zero) return this;
+    return Duration(
+      microseconds: inMicroseconds.remainder(other.inMicroseconds),
+    );
+  }
 }
