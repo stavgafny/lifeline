@@ -22,10 +22,7 @@ class DeadlineRemainingTimeState extends ConsumerState<DeadlineRemainingTime> {
     _timer?.cancel();
     final deadline = ref.read(widget.provider).deadline;
     final nextUpdate = deadline.remainingTime.getNextUpdate();
-    print(nextUpdate);
-    _timer = Timer(nextUpdate, () {
-      setState(() {});
-    });
+    _timer = Timer(nextUpdate, () => setState(() {}));
   }
 
   @override
