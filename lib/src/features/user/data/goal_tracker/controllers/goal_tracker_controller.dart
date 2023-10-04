@@ -36,7 +36,12 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
   }
 
   void _resetProgress({required bool keepPlay}) {
-    _update(progress: state.progress.clear(keepPlay: keepPlay));
+    _update(
+      progress: state.progress.clear(
+        keepPlay: keepPlay,
+        preserveModulo: state.deadline.durationBetweenDeadlines,
+      ),
+    );
   }
 
   void _updateDeadline() {

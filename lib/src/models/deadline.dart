@@ -37,6 +37,8 @@ class Deadline {
         date: Deadline._getNextDeadlineDate(iterationDays, iterationTimeOfDay),
       );
 
+  Duration get durationBetweenDeadlines => Duration(days: iterationDays);
+
   Deadline copyWith({
     DateTime? date,
     int? iterationDays,
