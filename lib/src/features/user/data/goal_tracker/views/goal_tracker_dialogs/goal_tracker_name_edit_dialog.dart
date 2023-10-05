@@ -71,6 +71,10 @@ class _GoalTrackerNameEditDialogState extends State<GoalTrackerNameEditDialog> {
         decoration: InputDecoration(
           focusedBorder: textFieldInputBorder,
           enabledBorder: textFieldInputBorder,
+          label: const Text(
+            "Name",
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+          ),
         ),
         style: _textStyle,
       ),

@@ -64,7 +64,11 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   void toggle() => state.isPlaying ? _stop() : _play();
 
-  void setName(String name) => _update(name: name);
+  void setName(String name) {
+    if (name != state.name && name.isNotEmpty) {
+      _update(name: name);
+    }
+  }
 
   @override
   void dispose() {
