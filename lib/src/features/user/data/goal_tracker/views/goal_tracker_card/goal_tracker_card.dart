@@ -89,7 +89,7 @@ class GoalTrackerCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               PlayTimeInfo(provider: provider),
-              DeadlineRemainingTime(provider: provider),
+              DeadlineRemainingTime(provider: provider, secondary: false),
             ],
           ),
         ],

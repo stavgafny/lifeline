@@ -1,3 +1,4 @@
+import 'package:lifeline/src/models/deadline.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 
@@ -10,7 +11,7 @@ class GoalTrackerInfoFormatter {
     return "${model.progress.current.format(secondary: true)} / ${model.duration.format(secondary: true)}";
   }
 
-  static String deadlineRemainingTime(GoalTrackerModel model) {
-    return model.deadline.remainingTime.format();
+  static String deadlineRemainingTime(Deadline deadline, bool secondary) {
+    return deadline.remainingTime.format(secondary: secondary);
   }
 }
