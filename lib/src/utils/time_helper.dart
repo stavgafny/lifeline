@@ -39,7 +39,7 @@ extension DurationExtension on Duration {
         : timeFactors.first;
 
     final value = inMicroseconds.remainder(timeFactor);
-    return Duration(microseconds: value > 0 ? value : timeFactor);
+    return Duration(microseconds: value > 1 ? value : timeFactors.last);
   }
 
   Duration trimSubseconds() {

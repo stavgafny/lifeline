@@ -192,19 +192,19 @@ void main() {
         test('1 minute', () {
           expect(
             const Duration(minutes: 1).getNextUpdate(),
-            const Duration(minutes: 1),
+            const Duration(seconds: 1),
           );
         });
         test('1 hour', () {
           expect(
             const Duration(hours: 1).getNextUpdate(),
-            const Duration(hours: 1),
+            const Duration(seconds: 1),
           );
         });
         test('1 day', () {
           expect(
             const Duration(days: 1).getNextUpdate(),
-            const Duration(days: 1),
+            const Duration(seconds: 1),
           );
         });
 
@@ -276,7 +276,7 @@ void main() {
         test('1 day 1 minute', () {
           expect(
             const Duration(days: 1, minutes: 1).getNextUpdate(secondary: true),
-            const Duration(minutes: 1),
+            const Duration(seconds: 1),
           );
         });
         test('1 day 1 minute 1 second', () {
