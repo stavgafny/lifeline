@@ -34,7 +34,7 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
     _update(
       progress: state.progress.clear(
         keepPlay: keepPlay,
-        preserveModulo: state.deadline.durationBetweenDeadlines,
+        fromDeadline: state.deadline,
       ),
     );
   }

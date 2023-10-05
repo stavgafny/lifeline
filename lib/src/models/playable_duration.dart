@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:lifeline/src/utils/time_helper.dart';
+import './deadline.dart';
 
 class PlayableDuration {
   final bool isPlaying;
@@ -32,15 +33,15 @@ class PlayableDuration {
     );
   }
 
-  /// if `preserveModulo` is null then resets progress to 0
-  PlayableDuration clear({required bool keepPlay, Duration? preserveModulo}) {
+  PlayableDuration clear({required bool keepPlay, Deadline? fromDeadline}) {
     if (isPlaying && keepPlay) {
       final now = DateTime.now();
       DateTime preservedProgress = now;
 
-      if (preserveModulo != null) {
-        final diff = (now).difference(_timestamp ?? now);
-        preservedProgress = now.subtract(diff.modulo(preserveModulo));
+      if (fromDeadline != null) {
+        final diff = now.difference(fromDeadline.previousDeadline.date);
+        final clamped = diff.modulo(fromDeadline.durationBetweenDeadlines);
+        preservedProgress = now.subtract(clamped);
       }
 
       return PlayableDuration.playing(timestamp: preservedProgress);
