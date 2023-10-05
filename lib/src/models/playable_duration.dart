@@ -20,6 +20,18 @@ class PlayableDuration {
         _timestamp = null,
         isPlaying = false;
 
+  PlayableDuration asPlaying() {
+    return PlayableDuration.playing(
+      timestamp: DateTime.now().subtract(current),
+    );
+  }
+
+  PlayableDuration asPaused({bool trimSubseconds = false}) {
+    return PlayableDuration.paused(
+      duration: trimSubseconds ? current.trimSubseconds() : current,
+    );
+  }
+
   /// if `preserveModulo` is null then resets progress to 0
   PlayableDuration clear({required bool keepPlay, Duration? preserveModulo}) {
     if (isPlaying && keepPlay) {

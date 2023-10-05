@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/models/deadline.dart';
 import 'package:lifeline/src/models/playable_duration.dart';
-import 'package:lifeline/src/utils/time_helper.dart';
 import '../models/goal_tracker_model.dart';
 
 //! Manually disposed by `GoalTrackersController`
@@ -11,14 +10,10 @@ typedef GoalTrackerProvider
     = StateNotifierProvider<GoalTrackerController, GoalTrackerModel>;
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
-  Timer? _timer;
   Timer? _nextDeadlineTimer;
 
   GoalTrackerController(GoalTrackerModel model) : super(model) {
     _handleDeadline();
-    if (state.isPlaying) {
-      _initializeTickUpdates();
-    }
   }
 
   void _update({
@@ -60,38 +55,19 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
   }
 
   void _play() {
-    state = state.copyWith(
-      progress: PlayableDuration.playing(
-        timestamp: DateTime.now().subtract(state.progress.current),
-      ),
-    );
-    _initializeTickUpdates();
+    _update(progress: state.progress.asPlaying());
   }
 
   void _stop() {
-    _timer?.cancel();
-    state = state.copyWith(
-      progress: PlayableDuration.paused(
-        duration: state.progress.current.trimSubseconds(),
-      ),
-    );
-  }
-
-  void _initializeTickUpdates() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      state = state.copyWith();
-    });
+    _update(progress: state.progress.asPaused(trimSubseconds: true));
   }
 
   void toggle() => state.isPlaying ? _stop() : _play();
 
-  void setName(String name) {
-    state = state.copyWith(name: name);
-  }
+  void setName(String name) => _update(name: name);
 
   @override
   void dispose() {
-    _timer?.cancel();
     _nextDeadlineTimer?.cancel();
     super.dispose();
   }
