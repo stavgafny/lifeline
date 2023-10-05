@@ -52,6 +52,8 @@ class _PlayingUpdaterState extends ConsumerState<PlayingUpdater> {
       }
     });
 
+    ref.watch(widget.provider.select((model) => model.progress));
+
     return widget.builder(context);
   }
 }
