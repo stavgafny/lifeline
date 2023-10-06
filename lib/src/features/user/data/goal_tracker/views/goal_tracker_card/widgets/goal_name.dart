@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../goal_tracker_dialogs/goal_tracker_name_edit_dialog.dart';
-import './selected_wrapper.dart';
+import './helper/selected_wrapper.dart';
 
 class GoalName extends ConsumerWidget {
   final GoalTrackerProvider provider;

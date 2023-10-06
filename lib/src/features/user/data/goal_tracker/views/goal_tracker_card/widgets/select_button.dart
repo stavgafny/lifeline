@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../controllers/goal_tracker_select_controller.dart';
-import './selected_wrapper.dart';
+import './helper/selected_wrapper.dart';
 
 class SelectButton extends ConsumerWidget {
   final GoalTrackerProvider provider;

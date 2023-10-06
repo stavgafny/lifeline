@@ -40,7 +40,7 @@ class PlayableDuration {
 
       if (fromDeadline != null) {
         final diff = now.difference(fromDeadline.previousDeadline.date);
-        final clamped = diff.modulo(fromDeadline.durationBetweenDeadlines);
+        final clamped = diff.remainder(fromDeadline.durationBetweenDeadlines);
         preservedProgress = now.subtract(clamped);
       }
 

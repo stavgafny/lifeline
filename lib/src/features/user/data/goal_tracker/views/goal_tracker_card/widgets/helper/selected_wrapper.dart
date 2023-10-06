@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../controllers/goal_tracker_controller.dart';
-import '../../../controllers/goal_tracker_select_controller.dart';
+import '../../../../controllers/goal_tracker_controller.dart';
+import '../../../../controllers/goal_tracker_select_controller.dart';
 
 // Rebuilds only on selection changes that involve provider.
 class SelectedWrapper extends ConsumerWidget {

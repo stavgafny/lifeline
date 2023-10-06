@@ -2,26 +2,30 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../controllers/goal_tracker_controller.dart';
-import '../../../models/goal_tracker_model.dart';
+import '../../../../controllers/goal_tracker_controller.dart';
+import '../../../../models/goal_tracker_model.dart';
 
-/// Rebuilds each second when playing
-class PlayingUpdater extends ConsumerStatefulWidget {
+/// Rebuilds on progress changes or each second when playing
+class ProgressUpdater extends ConsumerStatefulWidget {
   final GoalTrackerProvider provider;
 
-  final Widget Function(BuildContext context) builder;
+  final Widget Function(
+    BuildContext context,
+    GoalTrackerModel snapshot,
+  ) builder;
 
-  const PlayingUpdater({
+  const ProgressUpdater({
     super.key,
     required this.provider,
     required this.builder,
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _PlayingUpdaterState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ProgressUpdaterState();
 }
 
-class _PlayingUpdaterState extends ConsumerState<PlayingUpdater> {
+class _ProgressUpdaterState extends ConsumerState<ProgressUpdater> {
   static const _tickDuration = Duration(seconds: 1);
   Timer? _tickTimer;
 
@@ -54,6 +58,7 @@ class _PlayingUpdaterState extends ConsumerState<PlayingUpdater> {
 
     ref.watch(widget.provider.select((model) => model.progress));
 
-    return widget.builder(context);
+    final snapshot = ref.read(widget.provider);
+    return widget.builder(context, snapshot);
   }
 }

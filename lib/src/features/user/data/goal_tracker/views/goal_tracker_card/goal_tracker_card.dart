@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lifeline/src/widgets/expanded_section.dart';
 import '../../controllers/goal_tracker_controller.dart';
+import './widgets/helper/selected_wrapper.dart';
 import './widgets/progress_precent_indicator.dart';
 import './widgets/play_pause_button.dart';
 import './widgets/goal_name.dart';
 import './widgets/play_time_info.dart';
 import './widgets/progress_precent_info.dart';
 import './widgets/select_button.dart';
-import './widgets/selected_wrapper.dart';
 import './widgets/deadline_remaining_time.dart';
 
 class GoalTrackerCard extends StatelessWidget {

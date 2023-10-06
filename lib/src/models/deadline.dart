@@ -40,7 +40,6 @@ class Deadline {
   Duration get durationBetweenDeadlines => Duration(days: iterationDays);
 
   Deadline get previousDeadline {
-    if (reached) return this;
     final deadline = nextDeadline;
     return deadline.copyWith(
       date: deadline.date.subtract(Duration(days: deadline.iterationDays)),

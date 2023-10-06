@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../utils/goal_tracker_info_formatter.dart';
-import './playing_updater.dart';
+import './helper/progress_updater.dart';
 
 class ProgressPrecentInfo extends ConsumerWidget {
   final GoalTrackerProvider provider;
@@ -11,16 +11,14 @@ class ProgressPrecentInfo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return PlayingUpdater(
+    return ProgressUpdater(
       provider: provider,
-      builder: (context) {
-        final precentageInfo = GoalTrackerInfoFormatter.progressPrecentage(
-          ref.read(provider),
-        );
+      builder: (context, snapshot) {
+        final info = GoalTrackerInfoFormatter.progressPrecentage(snapshot);
         return Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: Text(
-            precentageInfo,
+            info,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSecondary,
               fontSize: 14.0,
