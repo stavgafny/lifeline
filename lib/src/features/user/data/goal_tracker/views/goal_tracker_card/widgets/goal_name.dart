@@ -16,51 +16,53 @@ class GoalName extends ConsumerWidget {
     return SelectedWrapper(
       provider: provider,
       builder: (context, isSelected) {
-        return GestureDetector(
-          onTap: () {
-            if (isSelected) {
-              showDialog(
-                context: context,
-                builder: (context) => GoalTrackerNameEditDialog(
-                  name: name,
-                  onCancel: () => context.pop(),
-                  onConfirm: (modifiedName) {
-                    ref.read(provider.notifier).setName(modifiedName);
-                    context.pop();
-                  },
-                ),
-              );
-            }
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            padding: const EdgeInsets.symmetric(horizontal: 6.0),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).colorScheme.onSecondary.withAlpha(75)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Visibility(
-                  visible: isSelected,
-                  child: const Icon(Icons.label_outline, size: 24.0),
-                ),
-                const SizedBox(width: 6.0),
-                Flexible(
-                  child: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+        return Flexible(
+          child: GestureDetector(
+            onTap: () {
+              if (isSelected) {
+                showDialog(
+                  context: context,
+                  builder: (context) => GoalTrackerNameEditDialog(
+                    name: name,
+                    onCancel: () => context.pop(),
+                    onConfirm: (modifiedName) {
+                      ref.read(provider.notifier).setName(modifiedName);
+                      context.pop();
+                    },
                   ),
-                ),
-              ],
+                );
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              padding: EdgeInsets.symmetric(horizontal: isSelected ? 6.0 : 0.0),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onSecondary.withAlpha(75)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSelected)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 6.0),
+                      child: Icon(Icons.label_outline, size: 24.0),
+                    ),
+                  Flexible(
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

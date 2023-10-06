@@ -17,7 +17,7 @@ class GoalTrackerCard extends StatelessWidget {
     vertical: 20.0,
   );
   static const _cardBorderRadius = 15.0;
-  static const _playerToInfoGap = SizedBox(width: 12.0);
+  static const _playPadding = EdgeInsets.only(right: 12.0);
   static const _nameToInfoGap = SizedBox(height: 6.0);
 
   final GoalTrackerProvider provider;
@@ -40,35 +40,26 @@ class GoalTrackerCard extends StatelessWidget {
           Row(
             children: [
               _player(context),
-              _playerToInfoGap,
               _info(context),
               _suffix(context),
             ],
           ),
-          SelectedWrapper(
-            provider: provider,
-            builder: (context, isSelected) {
-              return ExpandedSection(
-                expand: isSelected,
-                child: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Center(child: Text("SELECTED")),
-                ),
-              );
-            },
-          ),
+          _selected(context),
         ],
       ),
     );
   }
 
   Widget _player(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        ProgressPrecentIndicator(provider: provider),
-        PlayPauseButton(provider: provider),
-      ],
+    return Padding(
+      padding: _playPadding,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          ProgressPrecentIndicator(provider: provider),
+          PlayPauseButton(provider: provider),
+        ],
+      ),
     );
   }
 
@@ -99,5 +90,20 @@ class GoalTrackerCard extends StatelessWidget {
 
   Widget _suffix(BuildContext context) {
     return SelectButton(provider: provider);
+  }
+
+  Widget _selected(BuildContext context) {
+    return SelectedWrapper(
+      provider: provider,
+      builder: (context, isSelected) {
+        return ExpandedSection(
+          expand: isSelected,
+          child: const Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Center(child: Text("SELECTED")),
+          ),
+        );
+      },
+    );
   }
 }
