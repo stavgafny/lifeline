@@ -14,6 +14,8 @@ class ProgressPrecentIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Also listen for duration changes for precentage calculation
+    ref.watch(provider.select((model) => model.duration));
     return ProgressUpdater(
       provider: provider,
       builder: (context, snapshot) {

@@ -9,6 +9,7 @@ import './widgets/play_time_info.dart';
 import './widgets/progress_precent_info.dart';
 import './widgets/select_button.dart';
 import './widgets/deadline_remaining_time.dart';
+import './play_time_edit_fields.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _margin = EdgeInsets.all(12.0);
@@ -114,12 +115,11 @@ class GoalTrackerCard extends StatelessWidget {
       builder: (context, isSelected) {
         return ExpandedSection(
           expand: isSelected,
-          child: const Padding(
+          child: Padding(
             padding: _expandedSectionPadding,
             child: Column(
               children: [
-                Text("Progress"),
-                Text("Duration"),
+                PlayTimeEditFields(provider: provider),
               ],
             ),
           ),

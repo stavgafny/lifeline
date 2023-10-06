@@ -21,6 +21,12 @@ class PlayableDuration {
         _timestamp = null,
         isPlaying = false;
 
+  Duration get current {
+    if (!isPlaying) return _duration ?? const Duration();
+    final now = DateTime.now();
+    return now.difference(_timestamp ?? now);
+  }
+
   PlayableDuration asPlaying() {
     return PlayableDuration.playing(
       timestamp: DateTime.now().subtract(current),
@@ -49,10 +55,12 @@ class PlayableDuration {
     return PlayableDuration.zero;
   }
 
-  Duration get current {
-    if (!isPlaying) return _duration ?? const Duration();
+  PlayableDuration withNewDuration({required Duration duration}) {
+    if (!isPlaying) {
+      return PlayableDuration.paused(duration: duration);
+    }
     final now = DateTime.now();
-    return now.difference(_timestamp ?? now);
+    return PlayableDuration.playing(timestamp: now.subtract(duration));
   }
 
   Map<String, dynamic> toMap() {

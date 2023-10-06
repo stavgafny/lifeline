@@ -51,7 +51,8 @@ class _ProgressUpdaterState extends ConsumerState<ProgressUpdater> {
   @override
   Widget build(BuildContext context) {
     ref.listen<GoalTrackerModel>(widget.provider, (previous, next) {
-      if (next.isPlaying != previous?.isPlaying) {
+      if (next.isPlaying != previous?.isPlaying ||
+          next.progress != previous?.progress) {
         _handlePlayStateChanges();
       }
     });

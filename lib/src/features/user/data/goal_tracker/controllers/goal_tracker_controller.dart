@@ -70,6 +70,14 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
     }
   }
 
+  void setDuration(Duration duration) {
+    _update(duration: duration);
+  }
+
+  void setProgress(Duration duration) {
+    _update(progress: state.progress.withNewDuration(duration: duration));
+  }
+
   @override
   void dispose() {
     _nextDeadlineTimer?.cancel();
