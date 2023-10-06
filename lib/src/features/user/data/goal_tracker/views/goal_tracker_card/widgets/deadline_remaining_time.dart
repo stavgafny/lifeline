@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/models/deadline.dart';
-import 'package:lifeline/src/utils/time_helper.dart';
+import 'package:lifeline/src/utils/global_time.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../utils/goal_tracker_info_formatter.dart';
 
 class DeadlineRemainingTime extends ConsumerStatefulWidget {
   final GoalTrackerProvider provider;
-  final bool secondary;
+  final bool extended;
 
   const DeadlineRemainingTime({
     super.key,
     required this.provider,
-    required this.secondary,
+    required this.extended,
   });
 
   @override
@@ -22,20 +22,31 @@ class DeadlineRemainingTime extends ConsumerStatefulWidget {
 }
 
 class DeadlineRemainingTimeState extends ConsumerState<DeadlineRemainingTime> {
-  Timer? _timer;
+  String? _deadlineInfo;
+  StreamSubscription<void>? _deviceSecondListener;
 
-  void _waitForNextUpdate(Deadline deadline) {
-    _timer?.cancel();
-    final nextUpdate = deadline.remainingTime.getNextUpdate(
-      secondary: widget.secondary,
-    );
-    _timer = Timer(nextUpdate, () => setState(() {}));
+  @override
+  void initState() {
+    _deviceSecondListener = GlobalTime.onEveryDeviceSecond.listen((_) {
+      final current = _getDeadlineInfo(ref.read(widget.provider).deadline);
+      if (current != _deadlineInfo) {
+        setState(() => _deadlineInfo = current);
+      }
+    });
+    super.initState();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _deviceSecondListener?.cancel();
     super.dispose();
+  }
+
+  String _getDeadlineInfo(Deadline deadline) {
+    return GoalTrackerInfoFormatter.deadlineRemainingTime(
+      deadline,
+      widget.extended,
+    );
   }
 
   @override
@@ -45,16 +56,10 @@ class DeadlineRemainingTimeState extends ConsumerState<DeadlineRemainingTime> {
       widget.provider.select((model) => model.deadline),
     );
 
-    // Wait for next update and setState
-    _waitForNextUpdate(deadline);
-
-    final deadlineInfoText = GoalTrackerInfoFormatter.deadlineRemainingTime(
-      deadline,
-      widget.secondary,
-    );
+    _deadlineInfo = _getDeadlineInfo(deadline);
 
     return Text(
-      deadlineInfoText,
+      _deadlineInfo ?? "",
       style: TextStyle(
         color: deadline.isActive
             ? Theme.of(context).colorScheme.primary

@@ -17,8 +17,12 @@ class GoalTrackerCard extends StatelessWidget {
     vertical: 20.0,
   );
   static const _cardBorderRadius = 15.0;
-  static const _playPadding = EdgeInsets.only(right: 12.0);
-  static const _nameToInfoGap = SizedBox(height: 6.0);
+  static const _playerPadding = EdgeInsets.only(right: 12.0);
+  static const _headerPadding = EdgeInsets.only(bottom: 6.0);
+  static const _expandedSectionPadding = EdgeInsets.symmetric(
+    horizontal: 5.0,
+    vertical: 10.0,
+  );
 
   final GoalTrackerProvider provider;
   const GoalTrackerCard({
@@ -40,7 +44,14 @@ class GoalTrackerCard extends StatelessWidget {
           Row(
             children: [
               _player(context),
-              _info(context),
+              Expanded(
+                child: Column(
+                  children: [
+                    _header(context),
+                    _shrinkedInfo(context),
+                  ],
+                ),
+              ),
               _suffix(context),
             ],
           ),
@@ -52,7 +63,7 @@ class GoalTrackerCard extends StatelessWidget {
 
   Widget _player(BuildContext context) {
     return Padding(
-      padding: _playPadding,
+      padding: _playerPadding,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -63,28 +74,33 @@ class GoalTrackerCard extends StatelessWidget {
     );
   }
 
-  Widget _info(BuildContext context) {
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _header(BuildContext context) {
+    return Padding(
+      padding: _headerPadding,
+      child: Row(
         children: [
-          Row(
-            children: [
-              GoalName(provider: provider),
-              ProgressPrecentInfo(provider: provider),
-            ],
-          ),
-          _nameToInfoGap,
-          Row(
+          GoalName(provider: provider),
+          ProgressPrecentInfo(provider: provider),
+        ],
+      ),
+    );
+  }
+
+  Widget _shrinkedInfo(BuildContext context) {
+    return SelectedWrapper(
+      provider: provider,
+      builder: (context, isSelected) {
+        return Visibility.maintain(
+          visible: !isSelected,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               PlayTimeInfo(provider: provider),
-              DeadlineRemainingTime(provider: provider, secondary: false),
+              DeadlineRemainingTime(provider: provider, extended: false),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -99,8 +115,13 @@ class GoalTrackerCard extends StatelessWidget {
         return ExpandedSection(
           expand: isSelected,
           child: const Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Center(child: Text("SELECTED")),
+            padding: _expandedSectionPadding,
+            child: Column(
+              children: [
+                Text("Progress"),
+                Text("Duration"),
+              ],
+            ),
           ),
         );
       },

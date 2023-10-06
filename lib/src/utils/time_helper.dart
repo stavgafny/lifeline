@@ -1,54 +1,19 @@
+/// * [absolute] d:hh:mm:ss
+///
+/// * [compact] d > h > m > s > 0s
+///
+/// * [extended] d:h(m?|s?) > h:(m?|s?) > m:s? > s? > 0s
+enum DurationFormatType { absolute, compact, extended }
+
 extension DurationExtension on Duration {
-  String format({bool secondary = false}) {
-    final timeFormats = <String>[];
-    final days = inDays;
-    final hours = inHours.remainder(Duration.hoursPerDay);
-    final minutes = inMinutes.remainder(Duration.minutesPerHour);
-    final seconds = inSeconds.remainder(Duration.secondsPerMinute);
-
-    if (days.abs() > 0) timeFormats.add("${days}d");
-    if (hours.abs() > 0) timeFormats.add("${hours}h");
-    if (minutes.abs() > 0) timeFormats.add("${minutes}m");
-
-    // Seconds must be applicable (so case with secondary: 4m 0s becomes 4m)
-    if (timeFormats.isEmpty || seconds.abs() > 0) {
-      timeFormats.add("${seconds}s");
-    }
-    String secondaryTime = "";
-    if (secondary && timeFormats.length > 1) {
-      // replace leading '-' if has one so -1h -1m becomes -1h 1m
-      secondaryTime = " ${timeFormats[1].replaceAll('-', '')}";
-    }
-    return timeFormats.first + secondaryTime;
-  }
-
-  Duration getNextUpdate({bool secondary = false}) {
-    final days = inDays;
-    final hours = inHours.remainder(Duration.hoursPerDay);
-    final minutes = inMinutes.remainder(Duration.minutesPerHour);
-
-    final timeFactors = <int>[];
-
-    if (days.abs() > 0) timeFactors.add(Duration.microsecondsPerDay);
-    if (hours.abs() > 0) timeFactors.add(Duration.microsecondsPerHour);
-    if (minutes.abs() > 0) timeFactors.add(Duration.microsecondsPerMinute);
-    timeFactors.add(Duration.microsecondsPerSecond);
-
-    final timeFactor = secondary && timeFactors.length > 1
-        ? timeFactors[1]
-        : timeFactors.first;
-
-    final value = inMicroseconds.remainder(timeFactor);
-    return Duration(microseconds: value > 1 ? value : timeFactors.last);
+  String format(DurationFormatType formatType) {
+    final formatted = _formatDuration(this, formatType);
+    return isNegative ? "-$formatted" : formatted;
   }
 
   Duration trimSubseconds() {
-    return this -
-        Duration(
-          microseconds: inMicroseconds.remainder(
-            Duration.microsecondsPerSecond,
-          ),
-        );
+    final subSeconds = inMicroseconds.remainder(Duration.microsecondsPerSecond);
+    return this - Duration(microseconds: subSeconds);
   }
 
   Duration remainder(Duration other) {
@@ -58,3 +23,35 @@ extension DurationExtension on Duration {
     );
   }
 }
+
+String _formatDuration(Duration duration, DurationFormatType formatType) {
+  final days = duration.inDays.abs();
+  final hours = duration.inHours.remainder(Duration.hoursPerDay).abs();
+  final minutes = duration.inMinutes.remainder(Duration.minutesPerHour).abs();
+  final seconds = duration.inSeconds.remainder(Duration.secondsPerMinute).abs();
+
+  switch (formatType) {
+    case DurationFormatType.absolute:
+      return "$days:${_leadingZero(hours)}:${_leadingZero(minutes)}:${_leadingZero(seconds)}";
+
+    case DurationFormatType.compact:
+      return days > 0
+          ? "${days}d"
+          : hours > 0
+              ? "${hours}h"
+              : minutes > 0
+                  ? "${minutes}m"
+                  : "${seconds}s";
+
+    case DurationFormatType.extended:
+      return ("${days > 0 ? "${days}d" : ""}"
+              "${hours > 0 ? " ${hours}h" : ""}"
+              "${minutes > 0 ? " ${minutes}m" : ""}"
+              "${seconds > 0 && !((days > 0 || hours > 0) && minutes > 0) ? " ${seconds}s" : ""}")
+          .padRight(1, " 0s")
+          .trim();
+  }
+}
+
+/// Returns as string with a zero before if only one digit
+String _leadingZero(int value) => value.toString().padLeft(2, "0");

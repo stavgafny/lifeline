@@ -8,10 +8,15 @@ class GoalTrackerInfoFormatter {
   }
 
   static String playtime(GoalTrackerModel model) {
-    return "${model.progress.current.format(secondary: true)} / ${model.duration.format(secondary: true)}";
+    final progress = model.progress.current.format(DurationFormatType.extended);
+    final duration = model.duration.format(DurationFormatType.extended);
+
+    return "$progress / $duration";
   }
 
-  static String deadlineRemainingTime(Deadline deadline, bool secondary) {
-    return deadline.remainingTime.format(secondary: secondary);
+  static String deadlineRemainingTime(Deadline deadline, bool extended) {
+    return deadline.remainingTime.format(
+      extended ? DurationFormatType.extended : DurationFormatType.compact,
+    );
   }
 }
