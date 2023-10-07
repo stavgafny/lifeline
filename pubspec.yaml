@@ -43,6 +43,8 @@ dependencies:
   percent_indicator: ^4.2.2
   intl: ^0.17.0
 
+  wheel_picker: ^0.0.3
+
   form_validators:
     path: packages/form_validators
   fire_auth:

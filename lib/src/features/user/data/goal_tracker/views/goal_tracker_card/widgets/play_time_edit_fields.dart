@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
 import 'package:lifeline/src/widgets/tappable_text.dart';
-import '../../controllers/goal_tracker_controller.dart';
-import './widgets/helper/progress_updater.dart';
+import '../../../controllers/goal_tracker_controller.dart';
+import '../../goal_tracker_dialogs/goal_tracker_duration_edit_dialog.dart';
+import '../widgets/helper/progress_updater.dart';
 
 class PlayTimeEditFields extends StatelessWidget {
   static const _fieldsGap = SizedBox(height: 10.0);
@@ -16,7 +18,6 @@ class PlayTimeEditFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const newDuration = Duration(minutes: 4, seconds: 3);
     return Column(
       children: [
         Consumer(
@@ -28,7 +29,13 @@ class PlayTimeEditFields extends StatelessWidget {
                   label: "Progress",
                   duration: snapshot.progress.current,
                   onEditTap: () {
-                    ref.read(provider.notifier).setProgress(newDuration);
+                    _showEditDialog(
+                      context,
+                      initialDuration: ref.read(provider).progress.current,
+                      onConfirm: (duration) {
+                        ref.read(provider.notifier).setProgress(duration);
+                      },
+                    );
                   },
                 );
               },
@@ -45,12 +52,39 @@ class PlayTimeEditFields extends StatelessWidget {
               label: "Duration",
               duration: duration,
               onEditTap: () {
-                ref.read(provider.notifier).setDuration(newDuration);
+                _showEditDialog(
+                  context,
+                  initialDuration: ref.read(provider).duration,
+                  onConfirm: (duration) {
+                    ref.read(provider.notifier).setDuration(duration);
+                  },
+                );
               },
             );
           },
         ),
       ],
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context, {
+    required Duration initialDuration,
+    required void Function(Duration modifiedDuration) onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return GoalTrackerDurationEditDialog(
+          initialDuration: initialDuration,
+          onCancel: () => context.pop(),
+          onConfirm: (duration) {
+            if (duration.isNegative) return;
+            onConfirm.call(duration);
+            context.canPop() ? context.pop() : null;
+          },
+        );
+      },
     );
   }
 }
