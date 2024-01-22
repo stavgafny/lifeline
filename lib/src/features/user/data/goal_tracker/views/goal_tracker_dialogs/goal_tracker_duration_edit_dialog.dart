@@ -25,7 +25,7 @@ class _GoalTrackerDurationEditDialogState
   static const _buttonsTextStyle = TextStyle(fontSize: 18.0);
   final _wheelStyle = WheelPickerStyle(
     itemExtent: _wheelTextStyle.fontSize! * _wheelTextStyle.height!,
-    height: 150.0,
+    size: 150.0,
     squeeze: 1.15,
     diameterRatio: .85,
     surroundingOpacity: .25,
