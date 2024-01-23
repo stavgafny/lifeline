@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lifeline/src/widgets/tappable_text.dart';
 import '../../../controllers/goal_tracker_controller.dart';
+import '../../../utils/goal_tracker_info_formatter.dart';
 import '../../goal_tracker_dialogs/goal_tracker_deadline_days_edit_dialog.dart';
 import './deadline_remaining_time.dart';
 
@@ -70,55 +71,62 @@ class DeadlineEditSection extends StatelessWidget {
     return Consumer(
       builder: (context, ref, child) {
         final deadline = ref.watch(provider.select((model) => model.deadline));
-        return Row(
-          children: [
-            Row(
-              children: [
-                const Text("Resets every", style: _editTextStyle),
-                const SizedBox(width: 4.0),
-                TappableText(
-                  text: "${deadline.iterationDays} day",
-                  style: _editTextStyle,
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return GoalTrackerDeadlineDaysEditDialog(
-                          initialDays: deadline.iterationDays,
-                          onCancel: () => context.pop(),
-                          onConfirm: (days) {
-                            ref.read(provider.notifier).setDeadline(
-                                deadline.reCreateWith(iterationDays: days));
-                            context.canPop() ? context.pop() : null;
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(width: 12.0),
-            Row(
-              children: [
-                const Text("at", style: _editTextStyle),
-                const SizedBox(width: 4.0),
-                TappableText(
-                  text: deadline.iterationTimeOfDay.format(context),
-                  style: _editTextStyle,
-                  onTap: () async {
-                    final timeOfDay = await showTimePicker(
-                      context: context,
-                      initialTime: deadline.iterationTimeOfDay,
-                    );
-                    if (timeOfDay == null) return;
-                    ref.read(provider.notifier).setDeadline(
-                        deadline.reCreateWith(iterationTimeOfDay: timeOfDay));
-                  },
-                ),
-              ],
-            ),
-          ],
+        return IntrinsicHeight(
+          child: Row(
+            children: [
+              Row(
+                children: [
+                  const Text("Resets every", style: _editTextStyle),
+                  const SizedBox(width: 4.0),
+                  TappableText(
+                    text: GoalTrackerInfoFormatter.deadlineIterationDays(
+                        deadline),
+                    style: _editTextStyle,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return GoalTrackerDeadlineDaysEditDialog(
+                            initialDays: deadline.iterationDays,
+                            onCancel: () => context.pop(),
+                            onConfirm: (days) {
+                              ref.read(provider.notifier).setDeadline(
+                                  deadline.reCreateWith(iterationDays: days));
+                              context.canPop() ? context.pop() : null;
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              VerticalDivider(
+                color: Theme.of(context).colorScheme.onSecondary,
+                thickness: 1.25,
+              ),
+              Row(
+                children: [
+                  const Text("at", style: _editTextStyle),
+                  const SizedBox(width: 4.0),
+                  TappableText(
+                    text: GoalTrackerInfoFormatter.deadlineIterationTime(
+                        deadline),
+                    style: _editTextStyle,
+                    onTap: () async {
+                      final timeOfDay = await showTimePicker(
+                        context: context,
+                        initialTime: deadline.iterationTimeOfDay,
+                      );
+                      if (timeOfDay == null) return;
+                      ref.read(provider.notifier).setDeadline(
+                          deadline.reCreateWith(iterationTimeOfDay: timeOfDay));
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );

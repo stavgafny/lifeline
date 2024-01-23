@@ -19,4 +19,17 @@ class GoalTrackerInfoFormatter {
       extended ? DurationFormatType.extended : DurationFormatType.compact,
     );
   }
+
+  static String deadlineIterationDays(Deadline deadline) {
+    final days = deadline.iterationDays;
+    return "$days day${days != 1 ? 's' : ''}";
+  }
+
+  static String deadlineIterationTime(Deadline deadline) {
+    final time = deadline.iterationTimeOfDay;
+    return [
+      time.hour.toString().padLeft(2, '0'),
+      time.minute.toString().padLeft(2, '0'),
+    ].join(":");
+  }
 }

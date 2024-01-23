@@ -20,16 +20,16 @@ class GoalTrackerDurationEditDialog extends StatefulWidget {
 
 class _GoalTrackerDurationEditDialogState
     extends State<GoalTrackerDurationEditDialog> {
-  static const _labelTextStyle = TextStyle(fontSize: 14.0);
-  static const _wheelTextStyle = TextStyle(fontSize: 22.0, height: 1.2);
-  static const _buttonsTextStyle = TextStyle(fontSize: 18.0);
+  static const _labelTextStyle = TextStyle(fontSize: 16.0);
+  static const _wheelTextStyle = TextStyle(fontSize: 16.0, height: 1.25);
+  static const _buttonsTextStyle = TextStyle(fontSize: 16.0);
   final _wheelStyle = WheelPickerStyle(
     itemExtent: _wheelTextStyle.fontSize! * _wheelTextStyle.height!,
     size: 150.0,
-    squeeze: 1.15,
-    diameterRatio: .85,
+    squeeze: .85,
+    diameterRatio: .65,
     surroundingOpacity: .25,
-    magnification: 1.25,
+    magnification: 1.5,
   );
 
   late final _daysController = WheelPickerController(
@@ -56,25 +56,27 @@ class _GoalTrackerDurationEditDialogState
     required WheelPickerController controller,
   }) {
     final isDays = controller == _daysController;
-    return Column(
-      children: [
-        Text(label, style: _labelTextStyle),
-        WheelPicker(
-          builder: isDays
-              ? (c, i) => Text("$i", style: _wheelTextStyle)
-              : (c, i) => Text("$i".padLeft(2, '0'), style: _wheelTextStyle),
-          controller: controller,
-          style: _wheelStyle,
-          looping: !isDays,
-        ),
-      ],
+    return Expanded(
+      child: Column(
+        children: [
+          Text(label, style: _labelTextStyle),
+          WheelPicker(
+            builder: isDays
+                ? (c, i) => Text("$i", style: _wheelTextStyle)
+                : (c, i) => Text("$i".padLeft(2, '0'), style: _wheelTextStyle),
+            controller: controller,
+            style: _wheelStyle,
+            looping: !isDays,
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.all(40.0),
+      insetPadding: const EdgeInsets.all(60.0),
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -93,31 +95,35 @@ class _GoalTrackerDurationEditDialogState
                       label: "Minutes", controller: _minutesController),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  MaterialButton(
-                    onPressed: widget.onCancel,
-                    textColor: Theme.of(context).colorScheme.primary,
-                    child: const Text("Cancel", style: _buttonsTextStyle),
-                  ),
-                  MaterialButton(
-                    onPressed: () => widget.onConfirm(
-                      Duration(
-                        days: _daysController.selected,
-                        hours: _hoursController.selected,
-                        minutes: _minutesController.selected,
-                      ),
-                    ),
-                    textColor: Theme.of(context).colorScheme.primary,
-                    child: const Text("OK", style: _buttonsTextStyle),
-                  ),
-                ],
-              ),
+              _buildButtons(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        MaterialButton(
+          onPressed: widget.onCancel,
+          textColor: Theme.of(context).colorScheme.primary,
+          child: const Text("Cancel", style: _buttonsTextStyle),
+        ),
+        MaterialButton(
+          onPressed: () => widget.onConfirm(
+            Duration(
+              days: _daysController.selected,
+              hours: _hoursController.selected,
+              minutes: _minutesController.selected,
+            ),
+          ),
+          textColor: Theme.of(context).colorScheme.primary,
+          child: const Text("OK", style: _buttonsTextStyle),
+        ),
+      ],
     );
   }
 
