@@ -46,6 +46,19 @@ class Deadline {
     );
   }
 
+  Deadline reCreateWith({
+    DateTime? date,
+    int? iterationDays,
+    TimeOfDay? iterationTimeOfDay,
+    bool? isActive,
+  }) {
+    return Deadline.create(
+      iterationDays: iterationDays ?? this.iterationDays,
+      iterationTimeOfDay: iterationTimeOfDay ?? this.iterationTimeOfDay,
+      isActive: isActive ?? this.isActive,
+    );
+  }
+
   Deadline copyWith({
     DateTime? date,
     int? iterationDays,
@@ -74,7 +87,7 @@ class Deadline {
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
       iterationDays: map['iterationDays'] as int,
       iterationTimeOfDay: _TimeOfDayHelper.fromMap(
-        map['iterationTimeOfDay'] as int,
+        map['iterationTimeOfDay'] as String,
       ),
       isActive: map['isActive'] as bool,
     );
@@ -111,14 +124,15 @@ class Deadline {
 
 /// Time of day serialization helper class
 class _TimeOfDayHelper {
-  static int toMap(TimeOfDay timeOfDay) {
-    return (timeOfDay.hour * TimeOfDay.minutesPerHour) + timeOfDay.hour;
+  static String toMap(TimeOfDay timeOfDay) {
+    return "${timeOfDay.hour}:${timeOfDay.minute}";
   }
 
-  static TimeOfDay fromMap(int mappedTimeOfDay) {
+  static TimeOfDay fromMap(String mappedTimeOfDay) {
+    final time = mappedTimeOfDay.split(':');
     return TimeOfDay(
-      hour: mappedTimeOfDay % TimeOfDay.minutesPerHour,
-      minute: mappedTimeOfDay,
+      hour: int.parse(time[0]),
+      minute: int.parse(time[1]),
     );
   }
 }

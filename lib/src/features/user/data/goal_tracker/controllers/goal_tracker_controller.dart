@@ -39,16 +39,15 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
     );
   }
 
-  void _updateDeadline() {
-    _update(deadline: state.deadline.nextDeadline);
-  }
-
   void _handleDeadline() {
     _nextDeadlineTimer?.cancel();
 
     if (state.deadline.reached) {
-      _updateDeadline();
-      _resetProgress(keepPlay: true);
+      _update(deadline: state.deadline.nextDeadline);
+
+      if (state.deadline.isActive) {
+        _resetProgress(keepPlay: true);
+      }
     }
 
     _nextDeadlineTimer = Timer(state.deadline.remainingTime, _handleDeadline);
@@ -76,6 +75,11 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   void setProgress(Duration duration) {
     _update(progress: state.progress.withNewDuration(duration: duration));
+  }
+
+  void setDeadline(Deadline deadline) {
+    _update(deadline: deadline);
+    _handleDeadline();
   }
 
   @override

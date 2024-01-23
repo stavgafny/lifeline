@@ -58,12 +58,14 @@ class DeadlineRemainingTimeState extends ConsumerState<DeadlineRemainingTime> {
 
     _deadlineInfo = _getDeadlineInfo(deadline);
 
+    if (!deadline.isActive && !widget.extended) return const SizedBox();
+
     return Text(
       _deadlineInfo ?? "",
       style: TextStyle(
         color: deadline.isActive
             ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.surface,
+            : Theme.of(context).colorScheme.background.withAlpha(100),
         fontWeight: FontWeight.w700,
       ),
     );

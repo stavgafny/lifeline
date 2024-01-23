@@ -10,6 +10,7 @@ import './widgets/progress_precent_info.dart';
 import './widgets/select_button.dart';
 import './widgets/deadline_remaining_time.dart';
 import './widgets/play_time_edit_fields.dart';
+import './widgets/deadline_edit_section.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _margin = EdgeInsets.all(12.0);
@@ -24,6 +25,7 @@ class GoalTrackerCard extends StatelessWidget {
     horizontal: 5.0,
     vertical: 10.0,
   );
+  static const _expandedSectionItemsGap = SizedBox(height: 20.0);
 
   final GoalTrackerProvider provider;
   const GoalTrackerCard({
@@ -120,6 +122,8 @@ class GoalTrackerCard extends StatelessWidget {
             child: Column(
               children: [
                 PlayTimeEditFields(provider: provider),
+                _expandedSectionItemsGap,
+                DeadlineEditSection(provider: provider),
               ],
             ),
           ),
