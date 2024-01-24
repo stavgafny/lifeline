@@ -12,6 +12,7 @@ import './widgets/selected_icon.dart';
 import './widgets/deadline_remaining_time.dart';
 import './widgets/play_time_edit_fields.dart';
 import './widgets/deadline_edit_section.dart';
+import './widgets/footer_buttons.dart';
 
 class GoalTrackerCard extends StatelessWidget {
   static const _margin = EdgeInsets.all(12.0);
@@ -22,9 +23,10 @@ class GoalTrackerCard extends StatelessWidget {
   static const _cardBorderRadius = 15.0;
   static const _playerPadding = EdgeInsets.only(right: 12.0);
   static const _headerPadding = EdgeInsets.only(bottom: 6.0);
-  static const _expandedSectionPadding = EdgeInsets.symmetric(
-    horizontal: 5.0,
-    vertical: 10.0,
+  static const _expandedSectionPadding = EdgeInsets.only(
+    left: 5.0,
+    right: 5.0,
+    top: 10.0,
   );
   static const _expandedSectionItemsGap = SizedBox(height: 20.0);
 
@@ -128,6 +130,10 @@ class GoalTrackerCard extends StatelessWidget {
                 PlayTimeEditFields(provider: provider),
                 _expandedSectionItemsGap,
                 DeadlineEditSection(provider: provider),
+                Padding(
+                  padding: _expandedSectionPadding,
+                  child: FooterButtons(provider: provider),
+                ),
               ],
             ),
           ),
