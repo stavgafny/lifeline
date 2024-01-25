@@ -45,9 +45,11 @@ class GoalTrackersController
     state = AsyncValue.data(current);
   }
 
-  void add(GoalTrackerModel model) {
-    if (state.value == null) return;
-    state = AsyncValue.data([...state.value!, _createProvider(model)]);
+  GoalTrackerProvider? create(GoalTrackerModel model) {
+    if (state.value == null) return null;
+    final goalTrackerProvider = _createProvider(model);
+    state = AsyncValue.data([goalTrackerProvider, ...state.value!]);
+    return goalTrackerProvider;
   }
 
   void remove(GoalTrackerProvider provider) {

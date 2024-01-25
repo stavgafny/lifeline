@@ -16,6 +16,12 @@ class GoalTrackerModel {
     required this.deadline,
   });
 
+  GoalTrackerModel.empty({
+    required this.name,
+    this.duration = Duration.zero,
+    this.progress = PlayableDuration.zero,
+  }) : deadline = Deadline.create();
+
   bool get isPlaying => progress.isPlaying;
 
   double get progressPrecentage {

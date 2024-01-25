@@ -4,12 +4,11 @@ import 'package:lifeline/src/utils/time_helper.dart';
 import './deadline.dart';
 
 class PlayableDuration {
+  static const zero = PlayableDuration.paused(duration: Duration.zero);
+
   final bool isPlaying;
   final Duration? _duration;
   final DateTime? _timestamp;
-
-  static PlayableDuration get zero =>
-      const PlayableDuration.paused(duration: Duration.zero);
 
   const PlayableDuration.playing({required DateTime timestamp})
       : _duration = null,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/models/deadline.dart';
 import 'package:lifeline/src/models/playable_duration.dart';
+import 'package:lifeline/src/widgets/transitions.dart';
 import '../models/goal_tracker_model.dart';
 
 //! Manually disposed by `GoalTrackersController`
@@ -10,6 +11,8 @@ typedef GoalTrackerProvider
     = StateNotifierProvider<GoalTrackerController, GoalTrackerModel>;
 
 class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
+  final TransitionController transitionController = TransitionController();
+
   Timer? _nextDeadlineTimer;
 
   GoalTrackerController(GoalTrackerModel model) : super(model) {

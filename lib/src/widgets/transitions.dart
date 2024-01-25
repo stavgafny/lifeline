@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TransitionController {
-  final bool animateOnStart;
+  bool animateOnStart;
 
   AnimationController? _controller;
 
@@ -56,8 +56,8 @@ class Transitions extends StatefulWidget {
 
 class _TransitionsState extends State<Transitions>
     with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
 
   void _attachAnimationController() {
     _controller = AnimationController(
@@ -75,14 +75,15 @@ class _TransitionsState extends State<Transitions>
     _attachAnimationController();
     if (widget.controller.animateOnStart) {
       widget.controller.animateIn();
+      widget.controller.animateOnStart = false;
     }
   }
 
-  @override
-  void didUpdateWidget(covariant Transitions oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _attachAnimationController();
-  }
+  // @override
+  // void didUpdateWidget(covariant Transitions oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   _attachAnimationController();
+  // }
 
   @override
   void dispose() {
