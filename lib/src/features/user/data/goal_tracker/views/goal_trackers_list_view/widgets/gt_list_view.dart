@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lifeline/src/features/user/data/goal_tracker/models/goal_tracker_model.dart';
 import 'package:lifeline/src/widgets/transitions.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../controllers/goal_tracker_select_controller.dart';
 import '../../../controllers/goal_trackers_controller.dart';
 import '../../goal_tracker_card/goal_tracker_card.dart';
+import '../../goal_tracker_dialogs/goal_tracker_name_edit_dialog.dart';
 
 class GTListView extends ConsumerWidget {
   final List<GoalTrackerProvider> goalTrackers;
@@ -61,15 +63,27 @@ class GTListView extends ConsumerWidget {
                 backgroundColor: Theme.of(context).colorScheme.background,
               ),
               onPressed: () {
-                final goalTracker = ref
-                    .read(goalTrackersProvider.notifier)
-                    .create(GoalTrackerModel.empty(name: "new"));
-                if (goalTracker != null) {
-                  ref
-                      .read(goalTracker.notifier)
-                      .transitionController
-                      .animateOnStart = true;
-                }
+                showDialog(
+                  context: context,
+                  builder: (context) => GoalTrackerNameEditDialog(
+                    name: "",
+                    onCancel: () => context.pop(),
+                    onConfirm: (name) {
+                      final goalTracker = ref
+                          .read(goalTrackersProvider.notifier)
+                          .create(GoalTrackerModel.empty(name: name));
+
+                      if (goalTracker != null) {
+                        ref
+                            .read(goalTracker.notifier)
+                            .transitionController
+                            .animateOnStart = true;
+                      }
+
+                      context.pop();
+                    },
+                  ),
+                );
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
