@@ -31,9 +31,12 @@ class GoalTrackerCard extends StatelessWidget {
   static const _expandedSectionItemsGap = SizedBox(height: 20.0);
 
   final GoalTrackerProvider provider;
+  final void Function() onDelete;
+
   const GoalTrackerCard({
     super.key,
     required this.provider,
+    required this.onDelete,
   });
 
   @override
@@ -132,7 +135,7 @@ class GoalTrackerCard extends StatelessWidget {
                 DeadlineEditSection(provider: provider),
                 Padding(
                   padding: _expandedSectionPadding,
-                  child: FooterButtons(provider: provider),
+                  child: FooterButtons(provider: provider, onDelete: onDelete),
                 ),
               ],
             ),

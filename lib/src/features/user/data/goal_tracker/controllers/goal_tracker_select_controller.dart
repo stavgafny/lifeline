@@ -9,11 +9,11 @@ final goalTrackerSelectProvider =
 class GoalTrackerSelectController extends StateNotifier<GoalTrackerProvider?> {
   GoalTrackerSelectController() : super(null);
 
-  bool isSelected(GoalTrackerProvider goalTracker) {
+  bool isSelected(GoalTrackerProvider? goalTracker) {
     return state == goalTracker;
   }
 
-  void select(GoalTrackerProvider goalTracker) {
+  void select(GoalTrackerProvider? goalTracker) {
     state = isSelected(goalTracker) ? null : goalTracker;
   }
 }

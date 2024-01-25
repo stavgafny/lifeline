@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../controllers/goal_tracker_controller.dart';
-import '../../../controllers/goal_trackers_controller.dart';
 
 class FooterButtons extends StatelessWidget {
   static const _gap = SizedBox(width: 15.0);
   static const _iconsSize = 26.0;
 
   final GoalTrackerProvider provider;
+  final void Function() onDelete;
 
-  const FooterButtons({super.key, required this.provider});
+  const FooterButtons({
+    super.key,
+    required this.provider,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,7 @@ class FooterButtons extends StatelessWidget {
       children: [
         _ResetProgressButton(provider),
         _gap,
-        _DeleteButton(provider),
+        _DeleteButton(onDelete),
       ],
     );
   }
@@ -48,17 +51,15 @@ class _ResetProgressButton extends ConsumerWidget {
   }
 }
 
-class _DeleteButton extends ConsumerWidget {
-  final GoalTrackerProvider provider;
+class _DeleteButton extends StatelessWidget {
+  final void Function() onDelete;
 
-  const _DeleteButton(this.provider);
+  const _DeleteButton(this.onDelete);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        ref.read(goalTrackersProvider.notifier).remove(provider);
-      },
+      onTap: onDelete,
       child: const Icon(
         Icons.delete_outline_rounded,
         size: FooterButtons._iconsSize,
