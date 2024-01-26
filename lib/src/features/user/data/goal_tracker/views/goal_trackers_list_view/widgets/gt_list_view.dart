@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lifeline/src/features/user/data/goal_tracker/models/goal_tracker_model.dart';
+import 'package:lifeline/src/widgets/snackbars.dart';
 import 'package:lifeline/src/widgets/transitions.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../controllers/goal_tracker_select_controller.dart';
@@ -24,11 +25,26 @@ class GTListView extends ConsumerWidget {
           child: GoalTrackerCard(
             provider: goalTracker,
             onDelete: () async {
+              final name = ref.read(goalTracker).name;
+              UndoSnackBar(
+                      text: "Removed $name",
+                      onPressed: () {
+                        transitionC.animateIn();
+                      })
+                  .display(context, override: true)
+                  .closed
+                  .then((SnackBarClosedReason reason) {
+                // If undo was pressed, restore goal tracker
+                // else, remove goal tracker completely and dispose it after
+                if (reason != SnackBarClosedReason.action) {
+                  ref.read(goalTrackersProvider.notifier).remove(goalTracker);
+                  ref.read(goalTracker.notifier).dispose();
+                }
+              });
+
               await transitionC.animateOut();
 
               ref.read(goalTrackerSelectProvider.notifier).select(null);
-              ref.read(goalTrackersProvider.notifier).remove(goalTracker);
-              ref.read(goalTracker.notifier).dispose();
             },
           ),
         );
