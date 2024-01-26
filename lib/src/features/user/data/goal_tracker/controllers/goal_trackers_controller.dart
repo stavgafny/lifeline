@@ -52,12 +52,24 @@ class GoalTrackersController
     return goalTrackerProvider;
   }
 
+  void insert(GoalTrackerProvider provider, int index) {
+    if (state.value == null) return;
+    final data = [...state.value!];
+    data.insert(index, provider);
+    state = AsyncValue.data(data);
+  }
+
   void remove(GoalTrackerProvider provider) {
     if (state.value == null) return;
     state = AsyncValue.data([
       for (final p in state.value!)
         if (p != provider) p,
     ]);
+  }
+
+  int indexOf(GoalTrackerProvider provider) {
+    if (state.value == null) return -1;
+    return state.value!.indexOf(provider);
   }
 }
 

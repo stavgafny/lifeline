@@ -10,105 +10,128 @@ import '../../../controllers/goal_trackers_controller.dart';
 import '../../goal_tracker_card/goal_tracker_card.dart';
 import '../../goal_tracker_dialogs/goal_tracker_name_edit_dialog.dart';
 
-class GTListView extends ConsumerWidget {
+class GTListView extends ConsumerStatefulWidget {
   final List<GoalTrackerProvider> goalTrackers;
 
   const GTListView({super.key, required this.goalTrackers});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _GTListViewState();
+}
+
+class _GTListViewState extends ConsumerState<GTListView> {
+  GoalTrackersController get _goalTrackersController =>
+      ref.read(goalTrackersProvider.notifier);
+  GoalTrackerSelectController get _goalTrackersSelectController =>
+      ref.read(goalTrackerSelectProvider.notifier);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _goalTrackersList(context),
+        _createGoalTrackerButton(context),
+      ],
+    );
+  }
 
   Widget _buildGoalTracker(GoalTrackerProvider goalTracker) {
     return Consumer(
       key: ValueKey(goalTracker),
       builder: (context, ref, child) {
-        final transitionC = ref.read(goalTracker.notifier).transitionController;
+        final tc = ref.read(goalTracker.notifier).transitionController;
         return Transitions.sizeFade(
-          controller: transitionC,
+          controller: tc,
           child: GoalTrackerCard(
             provider: goalTracker,
-            onDelete: () async {
-              final name = ref.read(goalTracker).name;
-              UndoSnackBar(
-                      text: "Removed $name",
-                      onPressed: () {
-                        transitionC.animateIn();
-                      })
-                  .display(context, override: true)
-                  .closed
-                  .then((SnackBarClosedReason reason) {
-                // If undo was pressed, restore goal tracker
-                // else, remove goal tracker completely and dispose it after
-                if (reason != SnackBarClosedReason.action) {
-                  ref.read(goalTrackersProvider.notifier).remove(goalTracker);
-                  ref.read(goalTracker.notifier).dispose();
-                }
-              });
-
-              await transitionC.animateOut();
-
-              ref.read(goalTrackerSelectProvider.notifier).select(null);
-            },
+            onDelete: () => _onDeleteGoalTracker(goalTracker),
           ),
         );
       },
     );
   }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Stack(
-      children: [
-        Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-          ),
-          child: ReorderableListView(
-            onReorder: (oldIndex, newIndex) {
-              ref.read(goalTrackersProvider.notifier).swap(oldIndex, newIndex);
-            },
-            children: goalTrackers.map(_buildGoalTracker).toList(),
-            proxyDecorator: (child, i, a) => Material(child: child),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5.0,
-                backgroundColor: Theme.of(context).colorScheme.background,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => GoalTrackerNameEditDialog(
-                    name: "",
-                    onCancel: () => context.pop(),
-                    onConfirm: (name) {
-                      final goalTracker = ref
-                          .read(goalTrackersProvider.notifier)
-                          .create(GoalTrackerModel.empty(name: name));
-
-                      if (goalTracker != null) {
-                        ref
-                            .read(goalTracker.notifier)
-                            .transitionController
-                            .animateOnStart = true;
-                      }
-
-                      context.pop();
-                    },
-                  ),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-                child: Icon(Icons.add, size: 32.0),
-              ),
-            ),
-          ),
-        ),
-      ],
+  Widget _goalTrackersList(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+      ),
+      child: ReorderableListView(
+        onReorder: (oldIndex, newIndex) {
+          _goalTrackersController.swap(oldIndex, newIndex);
+        },
+        children: widget.goalTrackers.map(_buildGoalTracker).toList(),
+        proxyDecorator: (child, i, a) => Material(child: child),
+      ),
     );
+  }
+
+  Widget _createGoalTrackerButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ElevatedButton(
+          onPressed: _onCreateGoalTracker,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
+            child: Icon(Icons.add),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onCreateGoalTracker() {
+    showDialog(
+      context: context,
+      builder: (context) => GoalTrackerNameEditDialog(
+        name: "",
+        onCancel: () => context.pop(),
+        onConfirm: (name) {
+          final goalTracker = _goalTrackersController
+              .create(GoalTrackerModel.empty(name: name));
+
+          if (goalTracker != null) {
+            final tc = ref.read(goalTracker.notifier).transitionController;
+            tc.animateOnStart = true;
+          }
+
+          context.pop();
+        },
+      ),
+    );
+  }
+
+  void _onDeleteGoalTracker(GoalTrackerProvider goalTracker) async {
+    final goalTrackerController = ref.read(goalTracker.notifier);
+    final name = ref.read(goalTracker).name;
+    final index = _goalTrackersController.indexOf(goalTracker);
+    if (index == -1) return;
+
+    UndoSnackBar(
+      text: "Removed $name",
+      onUndoResult: (undoPressed) {
+        if (undoPressed) {
+          // if switched to a different screen and tapped undo while closing
+          if (!mounted) return;
+          goalTrackerController.transitionController.animateOnStart = true;
+          _goalTrackersController.insert(goalTracker, index);
+        } else {
+          goalTrackerController.dispose();
+        }
+      },
+    ).display(context, override: true);
+
+    await goalTrackerController.transitionController.animateOut();
+    _goalTrackersSelectController.select(null);
+    _goalTrackersController.remove(goalTracker);
+  }
+
+  @override
+  void dispose() {
+    UndoSnackBar.clear();
+    super.dispose();
   }
 }

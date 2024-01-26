@@ -6,14 +6,22 @@ class UndoSnackBar {
     borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
   );
 
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
+      _lastInstance;
+
+  static void clear() {
+    _lastInstance?.close();
+    _lastInstance = null;
+  }
+
   final String text;
-  final void Function() onPressed;
+  final void Function(bool undoPressed) onUndoResult;
   final Duration duration;
   final ShapeBorder shape;
 
   const UndoSnackBar({
     required this.text,
-    required this.onPressed,
+    required this.onUndoResult,
     this.duration = _defaultDuration,
     this.shape = _defaultShape,
   });
@@ -24,7 +32,7 @@ class UndoSnackBar {
         shape: shape,
         action: SnackBarAction(
           label: "Undo",
-          onPressed: onPressed,
+          onPressed: () => onUndoResult(true),
         ),
       );
 
@@ -39,6 +47,18 @@ class UndoSnackBar {
     if (override) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
-    return ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+    final snackbar = ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+    snackbar.closed.then((SnackBarClosedReason reason) {
+      // If last instance closed then remove it
+      _lastInstance = null;
+
+      // If undo was pressed, restore goal tracker
+      // else, remove goal tracker completely and dispose it after
+      if (reason != SnackBarClosedReason.action) {
+        onUndoResult(false);
+      }
+    });
+    _lastInstance = snackbar;
+    return snackbar;
   }
 }
