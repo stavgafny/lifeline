@@ -16,11 +16,10 @@ class GoalTrackersController
     _loadGoalTrackers();
   }
 
-  bool get hasData => state.value != null;
+  bool get _hasData => state.value != null;
 
   void _setData(List<GoalTrackerProvider> data) {
     state = AsyncValue.data(data);
-    GoalTrackersStorage().store(data.map((p) => ref.read(p)).toList());
   }
 
   Future<void> _loadGoalTrackers() async {
@@ -31,30 +30,36 @@ class GoalTrackersController
     });
   }
 
+  Future<bool> storeData() async {
+    if (!_hasData) return false;
+    final data = state.value!;
+    return GoalTrackersStorage().store(data.map((p) => ref.read(p)).toList());
+  }
+
   void swap(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex--;
-    if (!hasData) return;
+    if (!_hasData) return;
     final current = state.value!;
     current.insert(newIndex, current.removeAt(oldIndex));
     _setData(current);
   }
 
   GoalTrackerProvider? create(GoalTrackerModel model) {
-    if (!hasData) return null;
+    if (!_hasData) return null;
     final goalTrackerProvider = _createProvider(model);
     _setData([goalTrackerProvider, ...state.value!]);
     return goalTrackerProvider;
   }
 
   void insert(GoalTrackerProvider provider, int index) {
-    if (!hasData) return;
+    if (!_hasData) return;
     final data = [...state.value!];
     data.insert(index, provider);
     _setData(data);
   }
 
   void remove(GoalTrackerProvider provider) {
-    if (!hasData) return;
+    if (!_hasData) return;
     _setData([
       for (final p in state.value!)
         if (p != provider) p,
@@ -62,8 +67,14 @@ class GoalTrackersController
   }
 
   int indexOf(GoalTrackerProvider provider) {
-    if (!hasData) return -1;
+    if (!_hasData) return -1;
     return state.value!.indexOf(provider);
+  }
+
+  @override
+  void dispose() {
+    storeData();
+    super.dispose();
   }
 }
 
