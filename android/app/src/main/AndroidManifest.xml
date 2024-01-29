@@ -42,7 +42,7 @@
             android:value="2" />
 
         <!-- Foreground service task -->
-        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" />
+        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="true"/>
 
     </application>
 </manifest>

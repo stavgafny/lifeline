@@ -23,5 +23,11 @@ class GoalTrackersStorage extends LocalStorage<List<GoalTrackerModel>> {
           defaultValue: [],
         );
 
-  factory GoalTrackersStorage() => _instance;
+  static Future<List<GoalTrackerModel>> read() {
+    return _instance.$read();
+  }
+
+  static Future<bool> store(List<GoalTrackerModel> data) {
+    return _instance.$store(data);
+  }
 }

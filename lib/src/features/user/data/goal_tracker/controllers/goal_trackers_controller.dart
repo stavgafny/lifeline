@@ -1,19 +1,35 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/goal_tracker_model.dart';
 import '../services/goal_trackers_storage.dart';
 import './goal_tracker_controller.dart';
 
 final goalTrackersProvider = StateNotifierProvider.autoDispose<
-        GoalTrackersController, AsyncValue<List<GoalTrackerProvider>>>(
-    (ref) => GoalTrackersController(ref: ref));
+    GoalTrackersController, AsyncValue<List<GoalTrackerProvider>>>((ref) {
+  ref.maintainState = true;
+  return GoalTrackersController(ref: ref);
+});
 
 class GoalTrackersController
     extends StateNotifier<AsyncValue<List<GoalTrackerProvider>>> {
   final Ref ref;
 
+  late final AppLifecycleListener _lifecycleListener;
+
   GoalTrackersController({required this.ref})
       : super(const AsyncValue.loading()) {
     _loadGoalTrackers();
+
+    _lifecycleListener = AppLifecycleListener(
+      onResume: () async {
+        final prevProviders = state.value ?? [];
+        await _loadGoalTrackers();
+
+        for (final provider in prevProviders) {
+          ref.read(provider.notifier).dispose();
+        }
+      },
+    );
   }
 
   bool get _hasData => state.value != null;
@@ -25,15 +41,15 @@ class GoalTrackersController
   Future<void> _loadGoalTrackers() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final models = await GoalTrackersStorage().read();
-      return _createProviders(models);
+      final goalTrackers = await GoalTrackersStorage.read();
+      return _createProviders(goalTrackers);
     });
   }
 
   Future<bool> storeData() async {
     if (!_hasData) return false;
     final data = state.value!;
-    return GoalTrackersStorage().store(data.map((p) => ref.read(p)).toList());
+    return GoalTrackersStorage.store(data.map((p) => ref.read(p)).toList());
   }
 
   void swap(int oldIndex, int newIndex) {
@@ -74,6 +90,7 @@ class GoalTrackersController
   @override
   void dispose() {
     storeData();
+    _lifecycleListener.dispose();
     super.dispose();
   }
 }
