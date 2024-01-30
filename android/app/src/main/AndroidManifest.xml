@@ -4,9 +4,9 @@
     <!-- Foreground service premissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />        
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    -->
+    <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> -->
+   
 
    <application
         android:label="Lifeline"
@@ -42,7 +42,7 @@
             android:value="2" />
 
         <!-- Foreground service task -->
-        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="true"/>
+        <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="false"/>
 
     </application>
 </manifest>

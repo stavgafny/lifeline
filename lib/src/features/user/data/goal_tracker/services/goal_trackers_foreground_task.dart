@@ -17,27 +17,26 @@ void startTask() {
 class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
   static const _stopButtonID = "@stop";
 
-  static const IOSNotificationOptions _iosNotificationOptions =
-      IOSNotificationOptions(
+  static const _iosNotificationOptions = IOSNotificationOptions(
     showNotification: true,
     playSound: false,
   );
 
-  static const ForegroundTaskOptions _foregroundTaskOptions =
-      ForegroundTaskOptions(
+  static const _foregroundTaskOptions = ForegroundTaskOptions(
     interval: 1000,
     allowWakeLock: true,
     autoRunOnBoot: false,
     allowWifiLock: false,
   );
 
-  static final AndroidNotificationOptions _androidNotificationOptions =
-      AndroidNotificationOptions(
+  static final _androidNotificationOptions = AndroidNotificationOptions(
     channelId: "goal_trackers_foreground_task_channel_id",
     channelName: "Goal Trackers Foreground Task Notification",
     channelDescription: 'Appears when the goal tracker is playing.',
-    channelImportance: NotificationChannelImportance.LOW,
-    priority: NotificationPriority.MAX,
+    channelImportance: NotificationChannelImportance.DEFAULT,
+    priority: NotificationPriority.HIGH,
+    playSound: false,
+    isSticky: true,
     iconData: const NotificationIconData(
       resType: ResourceType.mipmap,
       resPrefix: ResourcePrefix.img,
@@ -46,7 +45,7 @@ class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
     buttons: _buttons,
   );
 
-  static void _buildStopButton({required bool multiplePlaying}) {
+  static void _createStopButton({required bool multiplePlaying}) {
     _buttons.clear();
     _buttons.add(
       NotificationButton(
@@ -76,7 +75,7 @@ class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
         if (!goalTrackers.hasPlaying()) return false;
 
         final multiplePlaying = goalTrackers.thatArePlaying().length > 1;
-        _buildStopButton(multiplePlaying: multiplePlaying);
+        _createStopButton(multiplePlaying: multiplePlaying);
 
         return true;
       },
@@ -109,12 +108,16 @@ class _TaskService extends TaskHandler {
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
     final goalTrackers = await GoalTrackersStorage.read();
     _model = goalTrackers.thatArePlaying().first;
+    _update();
   }
 
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
     // Updates notification information if still has a playing goal tracker
     _update();
+    if (await FlutterForegroundTask.isAppOnForeground) {
+      await FlutterForegroundTask.stopService();
+    }
   }
 
   @override
