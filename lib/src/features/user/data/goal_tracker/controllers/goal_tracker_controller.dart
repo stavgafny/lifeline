@@ -64,7 +64,15 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
     _update(progress: state.progress.asPaused(trimSubseconds: true));
   }
 
-  void toggle() => state.isPlaying ? _stop() : _play();
+  void setPlaying(bool playing) {
+    if (playing && !state.isPlaying) {
+      _play();
+    } else if (!playing && state.isPlaying) {
+      _stop();
+    }
+  }
+
+  void toggle() => setPlaying(!state.isPlaying);
 
   void setName(String name) {
     if (name != state.name && name.isNotEmpty) {

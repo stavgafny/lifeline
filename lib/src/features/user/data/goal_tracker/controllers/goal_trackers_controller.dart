@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/goal_tracker_model.dart';
 import '../services/goal_trackers_storage.dart';
@@ -14,22 +13,9 @@ class GoalTrackersController
     extends StateNotifier<AsyncValue<List<GoalTrackerProvider>>> {
   final Ref ref;
 
-  late final AppLifecycleListener _lifecycleListener;
-
   GoalTrackersController({required this.ref})
       : super(const AsyncValue.loading()) {
     _loadGoalTrackers();
-
-    _lifecycleListener = AppLifecycleListener(
-      onResume: () async {
-        final prevProviders = state.value ?? [];
-        await _loadGoalTrackers();
-
-        for (final provider in prevProviders) {
-          ref.read(provider.notifier).dispose();
-        }
-      },
-    );
   }
 
   bool get _hasData => state.value != null;
@@ -87,11 +73,12 @@ class GoalTrackersController
     return state.value!.indexOf(provider);
   }
 
-  @override
-  void dispose() {
-    storeData();
-    _lifecycleListener.dispose();
-    super.dispose();
+  void stopAll() {
+    if (!_hasData) return;
+    final providers = state.value!;
+    for (final provider in providers) {
+      ref.read(provider.notifier).setPlaying(false);
+    }
   }
 }
 

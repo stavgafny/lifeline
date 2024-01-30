@@ -79,6 +79,7 @@ class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
 
         return true;
       },
+      onData: (dynamic _) => ref.read(goalTrackersProvider.notifier).stopAll(),
       callback: startTask,
       androidNotificationOptions: _androidNotificationOptions,
       iosNotificationOptions: _iosNotificationOptions,
@@ -94,6 +95,7 @@ class _TaskService extends TaskHandler {
   //* Displays information about a playing goal tracker
 
   late final GoalTrackerModel _model;
+  SendPort? _sendPort;
 
   void _update() async {
     await FlutterForegroundTask.updateService(
@@ -106,6 +108,8 @@ class _TaskService extends TaskHandler {
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
+    _sendPort = sendPort;
+
     final goalTrackers = await GoalTrackersStorage.read();
     _model = goalTrackers.thatArePlaying().first;
     _update();
@@ -114,6 +118,8 @@ class _TaskService extends TaskHandler {
   @override
   void onRepeatEvent(DateTime timestamp, SendPort? sendPort) async {
     // Updates notification information if still has a playing goal tracker
+    _sendPort = sendPort;
+
     _update();
     if (await FlutterForegroundTask.isAppOnForeground) {
       await FlutterForegroundTask.stopService();
@@ -130,6 +136,9 @@ class _TaskService extends TaskHandler {
       goalTrackers.stopAll();
       await GoalTrackersStorage.store(goalTrackers);
       await FlutterForegroundTask.stopService();
+
+      // Sending a signal to the main isolate
+      _sendPort?.send(null);
     }
   }
 }
