@@ -1,8 +1,6 @@
 import '../models/goal_tracker_model.dart';
 
 extension GoalTrackersListHelper on List<GoalTrackerModel> {
-  bool hasPlaying() => thatArePlaying().isNotEmpty;
-
   List<GoalTrackerModel> thatArePlaying() {
     return where((goalTracker) => goalTracker.isPlaying).toList();
   }

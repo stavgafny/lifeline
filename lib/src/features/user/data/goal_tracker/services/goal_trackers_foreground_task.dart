@@ -3,10 +3,9 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/goal_tracker_model.dart';
-import '../utils/goal_tracker_info_formatter.dart';
 import '../utils/goal_trackers_list_helper.dart';
 import '../controllers/goal_trackers_controller.dart';
+import '../utils/goal_trackers_notification.dart';
 import './goal_trackers_storage.dart';
 
 @pragma('vm:entry-point')
@@ -72,10 +71,11 @@ class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
         await goalTrackersController.storeData();
 
         final goalTrackers = await GoalTrackersStorage.read();
-        if (!goalTrackers.hasPlaying()) return false;
+        final playingGoalTrackers = goalTrackers.thatArePlaying();
 
-        final multiplePlaying = goalTrackers.thatArePlaying().length > 1;
-        _createStopButton(multiplePlaying: multiplePlaying);
+        if (playingGoalTrackers.isEmpty) return false;
+
+        _createStopButton(multiplePlaying: playingGoalTrackers.length > 1);
 
         return true;
       },
@@ -94,15 +94,13 @@ class GoalTrackersForegroundTaskWrapper extends ConsumerWidget {
 class _TaskService extends TaskHandler {
   //* Displays information about a playing goal tracker
 
-  late final GoalTrackerModel _model;
+  late final GoalTrackersNotification _notification;
   SendPort? _sendPort;
 
   void _update() async {
     await FlutterForegroundTask.updateService(
-      notificationTitle: _model.name,
-      notificationText: "${GoalTrackerInfoFormatter.playtime(_model)}"
-          "${' ' * 4}"
-          "(${GoalTrackerInfoFormatter.progressPrecentage(_model)})",
+      notificationTitle: _notification.title,
+      notificationText: _notification.body,
     );
   }
 
@@ -111,7 +109,13 @@ class _TaskService extends TaskHandler {
     _sendPort = sendPort;
 
     final goalTrackers = await GoalTrackersStorage.read();
-    _model = goalTrackers.thatArePlaying().first;
+    try {
+      _notification = GoalTrackersNotification.createFromGoalTrackers(
+        goalTrackers: goalTrackers,
+      );
+    } on NoPlayingGoalTrackersException {
+      await FlutterForegroundTask.stopService();
+    }
     _update();
   }
 
