@@ -13,11 +13,12 @@ class ShellScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GoalTrackersForegroundTaskWrapper(
       scaffold: Scaffold(
+        resizeToAvoidBottomInset: false,
+        endDrawerEnableOpenDragGesture: false,
         appBar: const TopAppbar(),
         endDrawer: const MenuDrawer(),
         body: body,
         bottomNavigationBar: BottomNavbar(initialRoute: location),
-        endDrawerEnableOpenDragGesture: false,
       ),
     );
   }
