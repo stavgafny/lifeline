@@ -10,10 +10,12 @@ class GoalTrackersListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(goalTrackersProvider).when(
-          data: (goalTrackers) => GTListView(goalTrackers: goalTrackers),
-          error: (error, stackTrace) => GTError(error: error),
-          loading: () => const GTLoading(),
-        );
+    return Expanded(
+      child: ref.watch(goalTrackersProvider).when(
+            data: (goalTrackers) => GTListView(goalTrackers: goalTrackers),
+            error: (error, stackTrace) => GTError(error: error),
+            loading: () => const GTLoading(),
+          ),
+    );
   }
 }
