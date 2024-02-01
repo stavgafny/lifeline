@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/goal_tracker/services/goal_trackers_foreground_task.dart';
+import '../../data/goal_trackers/services/goal_trackers_foreground_task.dart';
 import './widgets/top_appbar.dart';
 import './widgets/bottom_navbar.dart';
 import 'widgets/menu_drawer.dart';

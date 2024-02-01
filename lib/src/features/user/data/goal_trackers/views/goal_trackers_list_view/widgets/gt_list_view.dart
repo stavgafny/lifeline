@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lifeline/src/features/user/data/goal_tracker/models/goal_tracker_model.dart';
 import 'package:lifeline/src/widgets/snackbars.dart';
 import 'package:lifeline/src/widgets/transitions.dart';
+import '../../../models/goal_tracker_model.dart';
 import '../../../controllers/goal_tracker_controller.dart';
 import '../../../controllers/goal_tracker_select_controller.dart';
 import '../../../controllers/goal_trackers_controller.dart';
