@@ -1,28 +1,5 @@
-/// * [absolute] d:hh:mm:ss
-///
-/// * [compact] d > h > m > s > 0s
-///
-/// * [extended] d:h(m?|s?) > h:(m?|s?) > m:s? > s? > 0s
-enum DurationFormatType { absolute, compact, extended }
-
-extension DurationExtension on Duration {
-  String format(DurationFormatType formatType) {
-    final formatted = _formatDuration(this, formatType);
-    return isNegative ? "-$formatted" : formatted;
-  }
-
-  Duration trimSubseconds() {
-    final subSeconds = inMicroseconds.remainder(Duration.microsecondsPerSecond);
-    return this - Duration(microseconds: subSeconds);
-  }
-
-  Duration remainder(Duration other) {
-    if (other == Duration.zero) return this;
-    return Duration(
-      microseconds: inMicroseconds.remainder(other.inMicroseconds),
-    );
-  }
-}
+/// Returns as string with a zero before if only one digit
+String _leadingZero(int value) => value.toString().padLeft(2, "0");
 
 String _formatDuration(Duration duration, DurationFormatType formatType) {
   final days = duration.inDays.abs();
@@ -53,5 +30,38 @@ String _formatDuration(Duration duration, DurationFormatType formatType) {
   }
 }
 
-/// Returns as string with a zero before if only one digit
-String _leadingZero(int value) => value.toString().padLeft(2, "0");
+/// * [absolute] d:hh:mm:ss
+///
+/// * [compact] d > h > m > s > 0s
+///
+/// * [extended] d:h(m?|s?) > h:(m?|s?) > m:s? > s? > 0s
+enum DurationFormatType { absolute, compact, extended }
+
+extension DurationExtension on Duration {
+  String format(DurationFormatType formatType) {
+    final formatted = _formatDuration(this, formatType);
+    return isNegative ? "-$formatted" : formatted;
+  }
+
+  Duration trimSubseconds() {
+    final subSeconds = inMicroseconds.remainder(Duration.microsecondsPerSecond);
+    return this - Duration(microseconds: subSeconds);
+  }
+
+  Duration remainder(Duration other) {
+    if (other == Duration.zero) return this;
+    return Duration(
+      microseconds: inMicroseconds.remainder(other.inMicroseconds),
+    );
+  }
+}
+
+extension DateTimeExtension on DateTime {
+  /// Excluding seconds and sub-seconds.
+  DateTime asFixed() => DateTime(year, month, day, hour, minute);
+
+  /// Excluding time information.
+  DateTime dateOnly() => DateTime(year, month, day);
+
+  String formatDDMMYYYY() => "$day/$month/$year";
+}

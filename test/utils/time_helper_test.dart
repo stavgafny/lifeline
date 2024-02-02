@@ -3,7 +3,7 @@ import 'package:lifeline/src/utils/time_helper.dart';
 
 void main() {
   group('TimeHelper', () {
-    group('Duration.format {extention}', () {
+    group('Duration.format {extension}', () {
       void testFormats({
         required String name,
         required Duration duration,
@@ -255,7 +255,7 @@ void main() {
       });
     });
 
-    group('Duration.trimSubseconds {extention}', () {
+    group('Duration.trimSubseconds {extension}', () {
       test('trimSubseconds removes subseconds correctly', () {
         expect(
           const Duration(seconds: 2, milliseconds: 500).trimSubseconds(),
@@ -286,7 +286,7 @@ void main() {
       });
     });
 
-    group('Duration.remainder {extention}', () {
+    group('Duration.remainder {extension}', () {
       const duration = Duration(days: 1, minutes: 3, seconds: 3);
 
       test('0 modulo', () {
@@ -308,6 +308,26 @@ void main() {
           duration.remainder(const Duration(minutes: 1)),
           const Duration(seconds: 3),
         );
+      });
+    });
+
+    group('DateTime.asFixed {extension}', () {
+      final dateTime = DateTime(2001, 8, 23, 15, 30, 59, 800, 90000);
+      test('isFixed', () {
+        expect(dateTime.asFixed(), DateTime(2001, 8, 23, 15, 30));
+      });
+    });
+
+    group('DateTime.dateOnly {extension}', () {
+      final dateTime = DateTime(2001, 8, 23, 15, 30, 59, 800, 90000);
+      test('is date only', () {
+        expect(dateTime.dateOnly(), DateTime(2001, 8, 23));
+      });
+    });
+    group('DateTime.formatDDMMYYYY {extension}', () {
+      final dateTime = DateTime(2001, 8, 23, 15, 30, 59, 800, 90000);
+      test('format', () {
+        expect(dateTime.formatDDMMYYYY(), "23/8/2001");
       });
     });
   });
