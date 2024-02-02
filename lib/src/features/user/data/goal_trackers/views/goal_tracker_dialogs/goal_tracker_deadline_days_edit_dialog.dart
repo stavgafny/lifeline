@@ -45,22 +45,20 @@ class _GoalTrackerDeadlineDaysEditDialogState
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SizedBox(
-          child: Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text("Days", style: _labelTextStyle),
-                WheelPicker(
-                  builder: (context, index) {
-                    return Text("${index + 1}", style: _wheelTextStyle);
-                  },
-                  controller: _controller,
-                  style: _wheelStyle,
-                  looping: false,
-                ),
-                _buildButtons(),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text("Days", style: _labelTextStyle),
+              WheelPicker(
+                builder: (context, index) {
+                  return Text("${index + 1}", style: _wheelTextStyle);
+                },
+                controller: _controller,
+                style: _wheelStyle,
+                looping: false,
+              ),
+              _buildButtons(),
+            ],
           ),
         ),
       ),
