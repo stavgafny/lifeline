@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:lifeline/src/services/local_storage.dart';
 import '../models/goal_tracker_model.dart';
 
-class GoalTrackersStorage extends LocalStorage<List<GoalTrackerModel>> {
+class GoalTrackersStorage
+    extends SyncedIsolatesLocalStorage<List<GoalTrackerModel>> {
   static final GoalTrackersStorage _instance = GoalTrackersStorage._();
 
   GoalTrackersStorage._()
