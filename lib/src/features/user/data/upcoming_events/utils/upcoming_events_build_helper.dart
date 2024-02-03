@@ -6,11 +6,11 @@ import '../views/upcoming_event_blob/upcoming_event_blob.dart';
 class UpcomingEventsBuildProperties {
   final double maxHeight;
   final double height;
-  final double itemExtent;
+  final double itemSize;
   UpcomingEventsBuildProperties({
     required this.maxHeight,
     required this.height,
-    required this.itemExtent,
+    required this.itemSize,
   });
 }
 
@@ -37,7 +37,7 @@ class UpcomingEventsBuildHelper {
     return UpcomingEventsBuildProperties(
       maxHeight: maxHeight,
       height: size + UpcomingEventBlob.totalTextSize - _viewPadding,
-      itemExtent: size,
+      itemSize: size,
     );
   }
 }
