@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../models/upcoming_event_model.dart';
 
 class EventName extends StatelessWidget {
+  static const double textSize = 20.0;
+
   final UpcomingEventModel model;
 
   const EventName({super.key, required this.model});
@@ -12,7 +14,7 @@ class EventName extends StatelessWidget {
       child: Text(
         model.name,
         style: const TextStyle(
-          fontSize: 20.0,
+          fontSize: textSize,
           fontWeight: FontWeight.bold,
           height: 1.0,
         ),

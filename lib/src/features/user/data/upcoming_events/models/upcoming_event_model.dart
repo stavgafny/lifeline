@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:lifeline/src/utils/time_helper.dart';
 import './upcoming_event_type.dart';
 
 class UpcomingEventModel {
@@ -10,9 +11,9 @@ class UpcomingEventModel {
   UpcomingEventModel({
     required this.name,
     required this.type,
-    required this.date,
+    required DateTime date,
     required this.details,
-  });
+  }) : date = date.asFixed();
 
   UpcomingEventModel copyWith({
     String? name,
@@ -22,7 +23,7 @@ class UpcomingEventModel {
   }) {
     return UpcomingEventModel(
       name: name ?? this.name,
-      date: date ?? this.date,
+      date: date?.asFixed() ?? this.date,
       type: type ?? this.type,
       details: details ?? this.details,
     );

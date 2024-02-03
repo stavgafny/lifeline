@@ -6,6 +6,8 @@ import './widgets/event_type.dart';
 import './widgets/event_name.dart';
 
 class UpcomingEventBlob extends StatelessWidget {
+  static const double totalTextSize = EventDate.textSize + EventName.textSize;
+
   final UpcomingEventModel model;
 
   const UpcomingEventBlob({super.key, required this.model});
