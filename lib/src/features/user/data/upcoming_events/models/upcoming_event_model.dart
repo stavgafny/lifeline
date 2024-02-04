@@ -6,24 +6,29 @@ import './upcoming_event_type.dart';
 class UpcomingEventModel {
   final String name;
   final UpcomingEventType type;
-  final DateTime date;
+  final DateTime datetime;
   final String details;
   UpcomingEventModel({
     required this.name,
     required this.type,
-    required DateTime date,
+    required DateTime datetime,
     required this.details,
-  }) : date = date.asFixed();
+  }) : datetime = datetime.asFixed();
+
+  /// Returns the number of remaining days
+  int get daysRemain {
+    return datetime.dateOnly().difference(DateTime.now().dateOnly()).inDays;
+  }
 
   UpcomingEventModel copyWith({
     String? name,
-    DateTime? date,
+    DateTime? datetime,
     UpcomingEventType? type,
     String? details,
   }) {
     return UpcomingEventModel(
       name: name ?? this.name,
-      date: date?.asFixed() ?? this.date,
+      datetime: datetime?.asFixed() ?? this.datetime,
       type: type ?? this.type,
       details: details ?? this.details,
     );
@@ -32,7 +37,7 @@ class UpcomingEventModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
-      'date': date.millisecondsSinceEpoch,
+      'datetime': datetime.millisecondsSinceEpoch,
       'type': type.toMap(),
       'details': details,
     };
@@ -41,7 +46,7 @@ class UpcomingEventModel {
   factory UpcomingEventModel.fromMap(Map<String, dynamic> map) {
     return UpcomingEventModel(
       name: map['name'] as String,
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      datetime: DateTime.fromMillisecondsSinceEpoch(map['datetime'] as int),
       type: UpcomingEventType.fromMap(map['type'] as String),
       details: map['details'] as String,
     );
@@ -54,7 +59,7 @@ class UpcomingEventModel {
 
   @override
   String toString() {
-    return 'UpcomingEventModel(name: $name, date: $date, type: $type, details: $details)';
+    return 'UpcomingEventModel(name: $name, datetime: $datetime, type: $type, details: $details)';
   }
 
   @override
@@ -62,13 +67,13 @@ class UpcomingEventModel {
     if (identical(this, other)) return true;
 
     return other.name == name &&
-        other.date == date &&
+        other.datetime == datetime &&
         other.type == type &&
         other.details == details;
   }
 
   @override
   int get hashCode {
-    return name.hashCode ^ date.hashCode ^ type.hashCode ^ details.hashCode;
+    return name.hashCode ^ datetime.hashCode ^ type.hashCode ^ details.hashCode;
   }
 }

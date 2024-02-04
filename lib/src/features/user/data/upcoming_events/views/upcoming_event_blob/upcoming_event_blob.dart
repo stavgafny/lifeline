@@ -7,17 +7,18 @@ import './widgets/event_name.dart';
 
 class UpcomingEventBlob extends StatelessWidget {
   static const double totalTextSize = EventDate.textSize + EventName.textSize;
+  final void Function()? onTap;
 
   final UpcomingEventModel model;
 
-  const UpcomingEventBlob({super.key, required this.model});
+  const UpcomingEventBlob({super.key, required this.model, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         EventDate(model: model),
-        EventType(model: model),
+        EventType(model: model, onTap: onTap),
         EventName(model: model),
       ],
     );

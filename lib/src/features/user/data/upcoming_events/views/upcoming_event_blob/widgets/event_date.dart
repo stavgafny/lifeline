@@ -12,7 +12,7 @@ class EventDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      model.date.formatDDMMYYYY(),
+      model.datetime.formatDDMMYYYY(),
       style: const TextStyle(fontSize: textSize),
     );
   }

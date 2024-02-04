@@ -1,6 +1,7 @@
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Base abstract template for persistent local storage
 abstract class _LocalStorageCore<T> {
   final String $key;
   final Future<String?> Function({required String key}) readMethod;
@@ -42,6 +43,7 @@ abstract class _LocalStorageCore<T> {
   }
 }
 
+/// Default persistent local storage
 abstract class LocalStorage<T> extends _LocalStorageCore<T> {
   static const _$baseKey = "\$LocalStorage-@";
 
@@ -73,6 +75,7 @@ abstract class LocalStorage<T> extends _LocalStorageCore<T> {
         );
 }
 
+/// Persistent local storage that is shared across all isolates (slower read/write)
 abstract class SyncedIsolatesLocalStorage<T> extends _LocalStorageCore<T> {
   static const _$baseKey = "\$SyncedIsolatesLocalStorage-@";
 
