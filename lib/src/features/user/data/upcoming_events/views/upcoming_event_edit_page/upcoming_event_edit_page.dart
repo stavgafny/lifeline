@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../models/upcoming_event_model.dart';
+import './widgets/type_edit.dart';
+import './widgets/name_edit.dart';
+import './widgets/date_days_time_edit.dart';
+import './widgets/details_edit.dart';
 
 class UpcomingEventEditPage extends StatelessWidget {
   final UpcomingEventModel model;
@@ -12,22 +16,11 @@ class UpcomingEventEditPage extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
-          AspectRatio(
-            aspectRatio: 1.75,
-            child: Hero(
-              tag: model,
-              transitionOnUserGestures: true,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  image: DecorationImage(
-                    fit: BoxFit.contain,
-                    image: model.type.value,
-                  ),
-                ),
-              ),
-            ),
-          )
+          TypeEdit(model: model),
+          NameEdit(model: model),
+          DateDaysTimeEdit(model: model),
+          DetailsEdit(
+              text: [for (int i = 0; i < 100; i++) "123\r\n"].join(".")),
         ],
       ),
     );

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lifeline/src/widgets/number_picker_dialog.dart';
+import '../../utils/upcoming_event_edit_properties.dart';
 
-class GoalTrackerDeadlineDaysEditDialog extends StatelessWidget {
-  static const int daysRange = 365;
-
+class UpcomingEventDaysEditDialog extends StatelessWidget {
   final int initialDays;
   final void Function() onCancel;
   final void Function(int days) onConfirm;
 
-  const GoalTrackerDeadlineDaysEditDialog({
+  const UpcomingEventDaysEditDialog({
     super.key,
     required this.initialDays,
     required this.onCancel,
@@ -19,7 +18,7 @@ class GoalTrackerDeadlineDaysEditDialog extends StatelessWidget {
     return NumberPickerDialog(
       title: "Days",
       initialNumber: initialDays - 1,
-      range: daysRange,
+      range: UpcomingEventEditProperties.dateRange.inDays,
       builder: (index) => "${index + 1}",
       onCancel: onCancel,
       onConfirm: onConfirm,
