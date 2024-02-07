@@ -51,7 +51,7 @@ class UpcomingEventTypeEditDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog.fullscreen(
+    return Dialog(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0),

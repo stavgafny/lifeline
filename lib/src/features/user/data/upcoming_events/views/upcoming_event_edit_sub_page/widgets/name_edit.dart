@@ -13,7 +13,7 @@ class NameEdit extends StatelessWidget {
       child: TextField(
         controller: TextEditingController(text: model.name),
         textAlign: TextAlign.left,
-        style: const TextStyle(fontSize: 26.0),
+        style: const TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           labelText: "Name",
           enabledBorder: UnderlineInputBorder(

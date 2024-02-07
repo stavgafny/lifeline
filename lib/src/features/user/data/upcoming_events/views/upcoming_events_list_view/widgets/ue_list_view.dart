@@ -4,7 +4,7 @@ import '../../../controllers/upcoming_events_controller.dart';
 import '../../../models/upcoming_event_model.dart';
 import '../../../utils/upcoming_events_build_helper.dart';
 import '../../upcoming_event_blob/upcoming_event_blob.dart';
-import '../../upcoming_event_edit_page/upcoming_event_edit_page.dart';
+import '../../upcoming_event_edit_sub_page/upcoming_event_edit_sub_page.dart';
 
 class UEListView extends ConsumerWidget {
   final List<UpcomingEventModel> upcomingEvents;
@@ -54,11 +54,7 @@ class UEListView extends ConsumerWidget {
     return UpcomingEventBlob(
       model: model,
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => UpcomingEventEditPage(model: model),
-          ),
-        );
+        UpcomingEventEditSubPage.display(context, model);
       },
     );
   }
