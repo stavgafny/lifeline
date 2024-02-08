@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/features/user/data/upcoming_events/controllers/upcoming_events_controller.dart';
+import '../../../controllers/upcoming_event_controller.dart';
 
 class ActionButtons extends StatelessWidget {
   static const double _buttonsSize = 55.0;
@@ -9,7 +12,14 @@ class ActionButtons extends StatelessWidget {
     top: 20.0,
   );
 
-  const ActionButtons({super.key});
+  final UpcomingEventProvider originalModel;
+  final UpcomingEventProvider editModel;
+
+  const ActionButtons({
+    super.key,
+    required this.originalModel,
+    required this.editModel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +30,8 @@ class ActionButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _DeleteButton(onPressed: () {}),
-            _ApplyButton(onPressed: () {}),
+            _DeleteButton(upcomingEvent: originalModel),
+            _ApplyButton(originalModel: originalModel, editModel: editModel),
           ],
         ),
       ),
@@ -29,17 +39,20 @@ class ActionButtons extends StatelessWidget {
   }
 }
 
-class _DeleteButton extends StatelessWidget {
-  final void Function() onPressed;
+class _DeleteButton extends ConsumerWidget {
+  final UpcomingEventProvider upcomingEvent;
 
-  const _DeleteButton({required this.onPressed});
+  const _DeleteButton({required this.upcomingEvent});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AspectRatio(
       aspectRatio: 1.25,
       child: MaterialButton(
-        onPressed: onPressed,
+        onPressed: () {
+          ref.read(upcomingEventsProvider.notifier).remove(upcomingEvent);
+          Navigator.of(context).pop();
+        },
         color: Colors.red,
         padding: EdgeInsets.zero,
         elevation: 10.0,
@@ -64,15 +77,24 @@ class _DeleteButton extends StatelessWidget {
   }
 }
 
-class _ApplyButton extends StatelessWidget {
-  final void Function()? onPressed;
+class _ApplyButton extends ConsumerWidget {
+  static const _textStyle = TextStyle(fontSize: 28.0);
 
-  const _ApplyButton({required this.onPressed});
+  final UpcomingEventProvider originalModel;
+  final UpcomingEventProvider editModel;
+
+  const _ApplyButton({required this.originalModel, required this.editModel});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasChanges = ref.watch(editModel) != ref.watch(originalModel);
+
     return MaterialButton(
-      onPressed: onPressed,
+      onPressed: hasChanges
+          ? () {
+              ref.read(originalModel.notifier).update(ref.read(editModel));
+            }
+          : null,
       height: double.infinity,
       elevation: 10.0,
       color: Theme.of(context).colorScheme.primary.withAlpha(200),
@@ -80,12 +102,7 @@ class _ApplyButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: const Center(
-        child: Text(
-          "Apply",
-          style: TextStyle(fontSize: 28.0),
-        ),
-      ),
+      child: const Center(child: Text("Apply", style: _textStyle)),
     );
   }
 }

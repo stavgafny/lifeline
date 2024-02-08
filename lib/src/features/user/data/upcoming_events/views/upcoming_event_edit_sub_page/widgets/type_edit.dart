@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../models/upcoming_event_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../controllers/upcoming_event_controller.dart';
 import '../../upcoming_event_dialogs/upcoming_event_type_edit_dialog.dart';
 
-class TypeEdit extends StatelessWidget {
-  final UpcomingEventModel model;
+class TypeEdit extends ConsumerWidget {
+  final UpcomingEventProvider editProvider;
 
-  const TypeEdit({super.key, required this.model});
+  const TypeEdit({super.key, required this.editProvider});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final type = ref.watch(editProvider.select((model) => model.type));
+
     return AspectRatio(
       aspectRatio: 1.75,
       child: Container(
@@ -16,7 +19,7 @@ class TypeEdit extends StatelessWidget {
           color: Theme.of(context).colorScheme.secondary,
           image: DecorationImage(
             fit: BoxFit.contain,
-            image: model.type.value,
+            image: type.value,
           ),
         ),
         child: Align(
@@ -26,7 +29,10 @@ class TypeEdit extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => UpcomingEventTypeEditDialog(
-                  onSubmit: (type) {},
+                  onSubmit: (type) {
+                    ref.read(editProvider.notifier).setType(type: type);
+                    Navigator.of(context).pop();
+                  },
                 ),
               );
             },

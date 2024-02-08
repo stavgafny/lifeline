@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Returns as string with a zero before if only one digit
 String _leadingZero(int value) => value.toString().padLeft(2, "0");
 
@@ -64,4 +66,8 @@ extension DateTimeExtension on DateTime {
   DateTime dateOnly() => DateTime(year, month, day);
 
   String formatDDMMYYYY() => "$day/$month/$year";
+
+  DateTime withTime({required TimeOfDay time}) {
+    return DateTime(year, month, day, time.hour, time.minute);
+  }
 }

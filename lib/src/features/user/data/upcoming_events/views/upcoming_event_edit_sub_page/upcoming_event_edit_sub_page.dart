@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/upcoming_event_model.dart';
+import '../../controllers/upcoming_event_controller.dart';
 import './widgets/type_edit.dart';
 import './widgets/name_edit.dart';
 import './widgets/date_days_time_edit.dart';
@@ -7,18 +7,30 @@ import './widgets/details_edit.dart';
 import './widgets/action_buttons.dart';
 
 class UpcomingEventEditSubPage extends StatelessWidget {
-  final UpcomingEventModel model;
-
-  const UpcomingEventEditSubPage({super.key, required this.model});
-
-  static void display(BuildContext context, UpcomingEventModel model) {
+  static void display(
+    BuildContext context,
+    UpcomingEventProvider upcomingEvent,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => UpcomingEventEditSubPage(model: model),
+      builder: (context) => UpcomingEventEditSubPage._(
+        upcomingEvent: upcomingEvent,
+        editProvider: UpcomingEventProvider(
+          (ref) => UpcomingEventController(ref.read(upcomingEvent)),
+        ),
+      ),
       barrierDismissible: false,
       useSafeArea: false,
     );
   }
+
+  final UpcomingEventProvider upcomingEvent;
+  final UpcomingEventProvider editProvider;
+
+  const UpcomingEventEditSubPage._({
+    required this.upcomingEvent,
+    required this.editProvider,
+  });
 
   /// Unfocuses all focus node widgets
   void _unfocus(BuildContext context) => FocusScope.of(context).unfocus();
@@ -33,20 +45,23 @@ class UpcomingEventEditSubPage extends StatelessWidget {
           onTap: () => _unfocus(context),
           child: Column(
             children: [
-              TypeEdit(model: model),
-              NameEdit(model: model),
-              DateDaysTimeEdit(model: model),
+              TypeEdit(editProvider: editProvider),
+              NameEdit(editProvider: editProvider),
+              DateDaysTimeEdit(editProvider: editProvider),
               DetailsEdit.preview(
-                text: "asd",
+                text: "123",
                 onTap: () {
                   DetailsEdit.displayEditPage(
                     context,
-                    title: model.name,
-                    text: "abc",
+                    title: "name",
+                    text: "321",
                   );
                 },
               ),
-              const ActionButtons(),
+              ActionButtons(
+                originalModel: upcomingEvent,
+                editModel: editProvider,
+              ),
             ],
           ),
         ),

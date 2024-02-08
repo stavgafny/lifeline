@@ -15,16 +15,14 @@ class DetailsEdit extends StatefulWidget {
             elevation: 0.0,
             scrolledUnderElevation: 0.0,
             automaticallyImplyLeading: true,
-            title: Row(
-              children: [
-                Text(
-                  "Editing $title",
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            title: Text(
+              "Editing $title",
+              style: const TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
+              maxLines: 1,
             ),
           ),
           body: Column(

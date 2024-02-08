@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
-import '../../../models/upcoming_event_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../controllers/upcoming_event_controller.dart';
 
-class NameEdit extends StatelessWidget {
-  final UpcomingEventModel model;
+class NameEdit extends ConsumerStatefulWidget {
+  final UpcomingEventProvider editProvider;
 
-  const NameEdit({super.key, required this.model});
+  const NameEdit({super.key, required this.editProvider});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _NameEditState();
+}
+
+class _NameEditState extends ConsumerState<NameEdit> {
+  late final _textController = TextEditingController(
+    text: ref.read(widget.editProvider).name,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: TextField(
-        controller: TextEditingController(text: model.name),
+        controller: _textController,
+        onChanged: (value) {
+          ref.read(widget.editProvider.notifier).setName(name: value);
+        },
         textAlign: TextAlign.left,
         style: const TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
@@ -25,5 +38,11 @@ class NameEdit extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 }
