@@ -9,6 +9,8 @@ final upcomingEventsProvider = StateNotifierProvider<UpcomingEventsController,
 
 class UpcomingEventsController
     extends StateNotifier<AsyncValue<List<UpcomingEventProvider>>> {
+  static const bool _autoSort = true;
+
   final Ref ref;
 
   UpcomingEventsController(this.ref) : super(const AsyncValue.loading()) {
@@ -17,14 +19,13 @@ class UpcomingEventsController
 
   bool get _hasData => state.value != null;
 
-  List<UpcomingEventModel> get _asModels {
-    final data = state.value ?? [];
+  List<UpcomingEventModel> _asModels(List<UpcomingEventProvider> data) {
     return data.map((p) => ref.read(p)).toList();
   }
 
   void _setData(List<UpcomingEventProvider> data) {
     state = AsyncValue.data(data);
-    UpcomingEventsStorage.store(_asModels);
+    UpcomingEventsStorage.store(_asModels(state.value!));
   }
 
   Future<void> _loadUpcomingEvents() async {
@@ -35,12 +36,17 @@ class UpcomingEventsController
     });
   }
 
+  int indexOf(UpcomingEventProvider upcomingEvent) {
+    if (!_hasData) return -1;
+    return state.value!.indexOf(upcomingEvent);
+  }
+
   void swap(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) newIndex--;
     if (!_hasData) return;
-    final current = state.value!;
-    current.insert(newIndex, current.removeAt(oldIndex));
-    _setData(current);
+    final data = state.value!;
+    if (newIndex > oldIndex) newIndex--;
+    data.insert(newIndex, data.removeAt(oldIndex));
+    _setData(data);
   }
 
   void remove(UpcomingEventProvider upcomingEvent) {
@@ -49,31 +55,24 @@ class UpcomingEventsController
     if (data.remove(upcomingEvent)) _setData(data);
   }
 
-  int indexOf(UpcomingEventProvider upcomingEvent) {
-    if (!_hasData) return -1;
-    return state.value!.indexOf(upcomingEvent);
-  }
-
   void insert(UpcomingEventProvider upcomingEvent, int index) {
     if (!_hasData) return;
-    final data = [...state.value!];
+    final data = state.value!;
     if (data.contains(upcomingEvent)) return;
     data.insert(index, upcomingEvent);
     _setData(data);
   }
 
-  /// Inserting in an index based on its date
-  void autoInsert(UpcomingEventProvider upcomingEvent) {
+  void updateItemChange(UpcomingEventProvider upcomingEvent) {
     if (!_hasData) return;
-
-    final insertIndex = _getInsertIndex(ref.read(upcomingEvent), _asModels);
-    insert(upcomingEvent, insertIndex);
-  }
-
-  void update(UpcomingEventProvider upcomingEvent) {
-    if (!_hasData) return;
-    remove(upcomingEvent);
-    autoInsert(upcomingEvent);
+    final data = state.value!;
+    int index = 0;
+    if (UpcomingEventsController._autoSort) {
+      data.remove(upcomingEvent);
+      index = _getAutoSortInsertIndex(ref.read(upcomingEvent), _asModels(data));
+    }
+    if (!data.contains(upcomingEvent)) data.insert(index, upcomingEvent);
+    _setData(data);
   }
 }
 
@@ -85,7 +84,8 @@ List<UpcomingEventProvider> _createProviders(List<UpcomingEventModel> models) {
   return models.map((model) => _createProvider(model)).toList();
 }
 
-int _getInsertIndex(UpcomingEventModel model, List<UpcomingEventModel> models) {
+int _getAutoSortInsertIndex(
+    UpcomingEventModel model, List<UpcomingEventModel> models) {
   for (int i = 0; i < models.length; i++) {
     if (model.dateTime.isBefore(models[i].dateTime) && model != models[i]) {
       return i;

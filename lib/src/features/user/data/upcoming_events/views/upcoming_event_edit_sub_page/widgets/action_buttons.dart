@@ -97,9 +97,7 @@ class _ApplyButton extends ConsumerWidget {
 
     onChange() {
       ref.read(upcomingEvent.notifier).update(ref.read(editProvider));
-      if (isNew) {
-        ref.read(upcomingEventsProvider.notifier).autoInsert(upcomingEvent);
-      }
+      ref.read(upcomingEventsProvider.notifier).updateItemChange(upcomingEvent);
     }
 
     return _button(
