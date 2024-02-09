@@ -17,14 +17,14 @@ class UpcomingEventsController
 
   bool get _hasData => state.value != null;
 
-  void _setData(List<UpcomingEventProvider> data) {
-    state = AsyncValue.data(data);
+  List<UpcomingEventModel> get _asModels {
+    final data = state.value ?? [];
+    return data.map((p) => ref.read(p)).toList();
   }
 
-  Future<bool> storeData() async {
-    if (!_hasData) return false;
-    final data = state.value!;
-    return UpcomingEventsStorage.store(data.map((p) => ref.read(p)).toList());
+  void _setData(List<UpcomingEventProvider> data) {
+    state = AsyncValue.data(data);
+    UpcomingEventsStorage.store(_asModels);
   }
 
   Future<void> _loadUpcomingEvents() async {
@@ -46,8 +46,34 @@ class UpcomingEventsController
   void remove(UpcomingEventProvider upcomingEvent) {
     if (!_hasData) return;
     final data = state.value!;
-    data.remove(upcomingEvent);
+    if (data.remove(upcomingEvent)) _setData(data);
+  }
+
+  int indexOf(UpcomingEventProvider upcomingEvent) {
+    if (!_hasData) return -1;
+    return state.value!.indexOf(upcomingEvent);
+  }
+
+  void insert(UpcomingEventProvider upcomingEvent, int index) {
+    if (!_hasData) return;
+    final data = [...state.value!];
+    if (data.contains(upcomingEvent)) return;
+    data.insert(index, upcomingEvent);
     _setData(data);
+  }
+
+  /// Inserting in an index based on its date
+  void autoInsert(UpcomingEventProvider upcomingEvent) {
+    if (!_hasData) return;
+
+    final insertIndex = _getInsertIndex(ref.read(upcomingEvent), _asModels);
+    insert(upcomingEvent, insertIndex);
+  }
+
+  void update(UpcomingEventProvider upcomingEvent) {
+    if (!_hasData) return;
+    remove(upcomingEvent);
+    autoInsert(upcomingEvent);
   }
 }
 
@@ -57,4 +83,13 @@ UpcomingEventProvider _createProvider(UpcomingEventModel model) {
 
 List<UpcomingEventProvider> _createProviders(List<UpcomingEventModel> models) {
   return models.map((model) => _createProvider(model)).toList();
+}
+
+int _getInsertIndex(UpcomingEventModel model, List<UpcomingEventModel> models) {
+  for (int i = 0; i < models.length; i++) {
+    if (model.dateTime.isBefore(models[i].dateTime) && model != models[i]) {
+      return i;
+    }
+  }
+  return models.length;
 }

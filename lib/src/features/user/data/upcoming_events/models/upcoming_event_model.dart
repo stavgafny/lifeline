@@ -15,6 +15,12 @@ class UpcomingEventModel {
     required this.details,
   }) : dateTime = dateTime.asFixed();
 
+  UpcomingEventModel.empty()
+      : name = "Event",
+        type = UpcomingEventType.defaultType,
+        dateTime = DateTime.now().dateOnly(),
+        details = "";
+
   /// Returns the number of remaining days
   int get daysRemain {
     return dateTime.dateOnly().difference(DateTime.now().dateOnly()).inDays;

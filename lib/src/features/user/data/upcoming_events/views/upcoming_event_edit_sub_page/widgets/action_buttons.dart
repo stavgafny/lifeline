@@ -12,13 +12,15 @@ class ActionButtons extends StatelessWidget {
     top: 20.0,
   );
 
-  final UpcomingEventProvider originalModel;
-  final UpcomingEventProvider editModel;
+  final UpcomingEventProvider upcomingEvent;
+  final UpcomingEventProvider editProvider;
+  final void Function() onDelete;
 
   const ActionButtons({
     super.key,
-    required this.originalModel,
-    required this.editModel,
+    required this.upcomingEvent,
+    required this.editProvider,
+    required this.onDelete,
   });
 
   @override
@@ -30,8 +32,8 @@ class ActionButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _DeleteButton(upcomingEvent: originalModel),
-            _ApplyButton(originalModel: originalModel, editModel: editModel),
+            _DeleteButton(onDelete),
+            _ApplyButton(upcomingEvent, editProvider),
           ],
         ),
       ),
@@ -39,18 +41,18 @@ class ActionButtons extends StatelessWidget {
   }
 }
 
-class _DeleteButton extends ConsumerWidget {
-  final UpcomingEventProvider upcomingEvent;
+class _DeleteButton extends StatelessWidget {
+  final void Function() onDelete;
 
-  const _DeleteButton({required this.upcomingEvent});
+  const _DeleteButton(this.onDelete);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.25,
       child: MaterialButton(
         onPressed: () {
-          ref.read(upcomingEventsProvider.notifier).remove(upcomingEvent);
+          onDelete.call();
           Navigator.of(context).pop();
         },
         color: Colors.red,
@@ -80,21 +82,40 @@ class _DeleteButton extends ConsumerWidget {
 class _ApplyButton extends ConsumerWidget {
   static const _textStyle = TextStyle(fontSize: 28.0);
 
-  final UpcomingEventProvider originalModel;
-  final UpcomingEventProvider editModel;
+  final UpcomingEventProvider upcomingEvent;
+  final UpcomingEventProvider editProvider;
 
-  const _ApplyButton({required this.originalModel, required this.editModel});
+  const _ApplyButton(this.upcomingEvent, this.editProvider);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasChanges = ref.watch(editModel) != ref.watch(originalModel);
+    final upcomingEvents = ref.watch(upcomingEventsProvider).value ?? [];
+    final isNew = !upcomingEvents.contains(upcomingEvent);
 
+    final hasChanges =
+        isNew ? true : ref.watch(editProvider) != ref.watch(upcomingEvent);
+
+    onChange() {
+      ref.read(upcomingEvent.notifier).update(ref.read(editProvider));
+      if (isNew) {
+        ref.read(upcomingEventsProvider.notifier).autoInsert(upcomingEvent);
+      }
+    }
+
+    return _button(
+      context,
+      text: isNew ? "Save" : "Apply",
+      onPressed: hasChanges ? onChange : null,
+    );
+  }
+
+  Widget _button(
+    BuildContext context, {
+    required String text,
+    required final void Function()? onPressed,
+  }) {
     return MaterialButton(
-      onPressed: hasChanges
-          ? () {
-              ref.read(originalModel.notifier).update(ref.read(editModel));
-            }
-          : null,
+      onPressed: onPressed,
       height: double.infinity,
       elevation: 10.0,
       color: Theme.of(context).colorScheme.primary.withAlpha(200),
@@ -102,7 +123,7 @@ class _ApplyButton extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: const Center(child: Text("Apply", style: _textStyle)),
+      child: Center(child: Text(text, style: _textStyle)),
     );
   }
 }

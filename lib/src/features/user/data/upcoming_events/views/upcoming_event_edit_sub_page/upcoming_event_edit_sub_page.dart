@@ -8,17 +8,21 @@ import './widgets/action_buttons.dart';
 
 class UpcomingEventEditSubPage extends StatelessWidget {
   static void display(
-    BuildContext context,
-    UpcomingEventProvider upcomingEvent,
-  ) {
+    BuildContext context, {
+    required UpcomingEventProvider upcomingEvent,
+    required final void Function() onDelete,
+  }) {
+    final editPage = UpcomingEventEditSubPage._(
+      upcomingEvent: upcomingEvent,
+      editProvider: UpcomingEventProvider((ref) {
+        return UpcomingEventController(ref.read(upcomingEvent));
+      }),
+      onDelete: onDelete,
+    );
+
     showDialog(
       context: context,
-      builder: (context) => UpcomingEventEditSubPage._(
-        upcomingEvent: upcomingEvent,
-        editProvider: UpcomingEventProvider(
-          (ref) => UpcomingEventController(ref.read(upcomingEvent)),
-        ),
-      ),
+      builder: (context) => editPage,
       barrierDismissible: false,
       useSafeArea: false,
     );
@@ -26,10 +30,12 @@ class UpcomingEventEditSubPage extends StatelessWidget {
 
   final UpcomingEventProvider upcomingEvent;
   final UpcomingEventProvider editProvider;
+  final void Function() onDelete;
 
   const UpcomingEventEditSubPage._({
     required this.upcomingEvent,
     required this.editProvider,
+    required this.onDelete,
   });
 
   /// Unfocuses all focus node widgets
@@ -59,8 +65,9 @@ class UpcomingEventEditSubPage extends StatelessWidget {
                 },
               ),
               ActionButtons(
-                originalModel: upcomingEvent,
-                editModel: editProvider,
+                upcomingEvent: upcomingEvent,
+                editProvider: editProvider,
+                onDelete: onDelete,
               ),
             ],
           ),
