@@ -10,4 +10,15 @@ class GlobalTime {
       await Future.delayed(const Duration(seconds: 1));
     }
   }
+
+  /// yields every time the clock strikes at midnight
+  static Stream<void> atMidnight() async* {
+    while (true) {
+      final now = DateTime.now();
+      final midnight =
+          DateTime(now.year, now.month, now.day + 1).difference(now);
+      await Future.delayed(midnight);
+      yield null;
+    }
+  }
 }

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/utils/global_time.dart';
 import 'package:lifeline/src/widgets/snackbars.dart';
 import '../../../controllers/upcoming_event_controller.dart';
 import '../../../controllers/upcoming_events_controller.dart';
@@ -18,8 +21,16 @@ class UEListView extends ConsumerStatefulWidget {
 }
 
 class _UEListViewState extends ConsumerState<UEListView> {
+  StreamSubscription<void>? _midnightListener;
+
   UpcomingEventsController get _upcomingEventsController =>
       ref.read(upcomingEventsProvider.notifier);
+
+  @override
+  void initState() {
+    super.initState();
+    _midnightListener = GlobalTime.atMidnight().listen((_) => setState(() {}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +126,7 @@ class _UEListViewState extends ConsumerState<UEListView> {
   @override
   void dispose() {
     UndoSnackBar.clear();
+    _midnightListener?.cancel();
     super.dispose();
   }
 }
