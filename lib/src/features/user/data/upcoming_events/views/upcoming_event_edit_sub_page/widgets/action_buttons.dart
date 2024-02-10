@@ -32,7 +32,7 @@ class ActionButtons extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _DeleteButton(onDelete),
+            _DeleteButton(upcomingEvent, onDelete),
             _ApplyButton(upcomingEvent, editProvider),
           ],
         ),
@@ -41,21 +41,29 @@ class ActionButtons extends StatelessWidget {
   }
 }
 
-class _DeleteButton extends StatelessWidget {
+class _DeleteButton extends ConsumerWidget {
+  final UpcomingEventProvider upcomingEvent;
+
   final void Function() onDelete;
 
-  const _DeleteButton(this.onDelete);
+  const _DeleteButton(this.upcomingEvent, this.onDelete);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final upcomingEvents = ref.watch(upcomingEventsProvider).value ?? [];
+    final isNew = !upcomingEvents.contains(upcomingEvent);
+
     return AspectRatio(
       aspectRatio: 1.25,
       child: MaterialButton(
-        onPressed: () {
-          onDelete.call();
-          Navigator.of(context).pop();
-        },
+        onPressed: isNew
+            ? null
+            : () {
+                onDelete.call();
+                Navigator.of(context).pop();
+              },
         color: Colors.red,
+        disabledColor: Theme.of(context).colorScheme.secondary,
         padding: EdgeInsets.zero,
         elevation: 10.0,
         shape: RoundedRectangleBorder(
