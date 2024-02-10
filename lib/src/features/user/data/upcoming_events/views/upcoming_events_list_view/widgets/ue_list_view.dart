@@ -34,6 +34,22 @@ class _UEListViewState extends ConsumerState<UEListView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.upcomingEvents.isEmpty) {
+      return SizedBox(
+        width: double.infinity,
+        child: UpcomingEventBlob.addButton(
+          onTap: () {
+            final newUpcomingEvent = UpcomingEventProvider(
+              (ref) => UpcomingEventController(
+                UpcomingEventModel.empty(),
+              ),
+            );
+            _editUpcomingEvent(newUpcomingEvent);
+          },
+        ),
+      );
+    }
+
     final buildProperties = UpcomingEventsBuildHelper.getBuildProperties(
       context,
       upcomingEventsNumber: widget.upcomingEvents.length,
