@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class ExpandedSection extends StatefulWidget {
   final bool expand;
+  final bool noInitialAnimation;
   final Widget? child;
   const ExpandedSection({
     super.key,
     this.expand = false,
+    this.noInitialAnimation = false,
     this.child,
   });
 
@@ -22,7 +24,11 @@ class _ExpandedSectionState extends State<ExpandedSection>
   void initState() {
     super.initState();
     prepareAnimations();
-    _runExpandCheck();
+    if (widget.noInitialAnimation && widget.expand) {
+      expandController.forward(from: 1.0);
+    } else {
+      _runExpandCheck();
+    }
   }
 
   /// Setting up the animation

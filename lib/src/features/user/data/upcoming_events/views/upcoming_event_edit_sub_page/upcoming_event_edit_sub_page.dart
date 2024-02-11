@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lifeline/src/widgets/expanded_section.dart';
 import '../../controllers/upcoming_event_controller.dart';
 import './widgets/type_edit.dart';
 import './widgets/name_edit.dart';
@@ -38,41 +39,71 @@ class UpcomingEventEditSubPage extends StatelessWidget {
     required this.onDelete,
   });
 
-  /// Unfocuses all focus node widgets
-  void _unfocus(BuildContext context) => FocusScope.of(context).unfocus();
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        dividerTheme: const DividerThemeData(color: Colors.transparent),
+      ),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(forceMaterialTransparency: true),
+        body: _EditSubPageContent(
+          upcomingEvent: upcomingEvent,
+          editProvider: editProvider,
+        ),
+        persistentFooterButtons: [
+          ActionButtons(
+            upcomingEvent: upcomingEvent,
+            editProvider: editProvider,
+            onDelete: onDelete,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditSubPageContent extends StatefulWidget {
+  final UpcomingEventProvider upcomingEvent;
+  final UpcomingEventProvider editProvider;
+
+  const _EditSubPageContent({
+    required this.upcomingEvent,
+    required this.editProvider,
+  });
+
+  @override
+  State<_EditSubPageContent> createState() => _EditSubPageContentState();
+}
+
+class _EditSubPageContentState extends State<_EditSubPageContent> {
+  bool _isDetailsExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        bottom: false,
-        child: GestureDetector(
-          onTap: () => _unfocus(context),
+    return Column(
+      children: [
+        ExpandedSection(
+          expand: !_isDetailsExpanded,
+          noInitialAnimation: true,
           child: Column(
             children: [
-              TypeEdit(editProvider: editProvider),
-              NameEdit(editProvider: editProvider),
-              DateDaysTimeEdit(editProvider: editProvider),
-              DetailsEdit.preview(
-                text: "123",
-                onTap: () {
-                  DetailsEdit.displayEditPage(
-                    context,
-                    title: "name",
-                    text: "321",
-                  );
-                },
-              ),
-              ActionButtons(
-                upcomingEvent: upcomingEvent,
-                editProvider: editProvider,
-                onDelete: onDelete,
-              ),
+              TypeEdit(editProvider: widget.editProvider),
+              NameEdit(editProvider: widget.editProvider),
+              DateDaysTimeEdit(editProvider: widget.editProvider),
             ],
           ),
         ),
-      ),
+        DetailsEdit(
+          editProvider: widget.editProvider,
+          onFocusChange: (isFocused) {
+            if (_isDetailsExpanded != isFocused) {
+              setState(() => _isDetailsExpanded = isFocused);
+            }
+          },
+        )
+      ],
     );
   }
 }

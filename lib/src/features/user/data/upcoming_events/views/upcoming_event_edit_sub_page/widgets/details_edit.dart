@@ -1,86 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../controllers/upcoming_event_controller.dart';
 
-class DetailsEdit extends StatefulWidget {
-  static void displayEditPage(
-    BuildContext context, {
-    required String title,
-    required String text,
-  }) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            scrolledUnderElevation: 0.0,
-            automaticallyImplyLeading: true,
-            title: Text(
-              "Editing $title",
-              style: const TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-                overflow: TextOverflow.ellipsis,
-              ),
-              maxLines: 1,
-            ),
-          ),
-          body: Column(
-            children: [
-              DetailsEdit._(text: text, enabled: true, onTap: null),
-            ],
-          ),
-        );
-      },
-    );
-  }
+class DetailsEdit extends ConsumerStatefulWidget {
+  final UpcomingEventProvider editProvider;
+  final void Function(bool isFocused) onFocusChange;
 
-  final String text;
-  final bool enabled;
-  final void Function()? onTap;
-  const DetailsEdit._({
-    required this.text,
-    required this.enabled,
-    required this.onTap,
+  const DetailsEdit({
+    super.key,
+    required this.editProvider,
+    required this.onFocusChange,
   });
 
-  const DetailsEdit.preview({super.key, required this.text, this.onTap})
-      : enabled = false;
-
   @override
-  State<DetailsEdit> createState() => _DetailsEditState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _DetailsEditState();
 }
 
-class _DetailsEditState extends State<DetailsEdit> {
-  late final _controller = TextEditingController(text: widget.text);
+class _DetailsEditState extends ConsumerState<DetailsEdit> {
   final _focusNode = FocusNode();
+  late final _controller = TextEditingController(
+    text: ref.read(widget.editProvider).details,
+  );
+
+  void _onFocusChanges() => widget.onFocusChange.call(_focusNode.hasFocus);
 
   @override
   void initState() {
-    _focusNode.requestFocus();
     super.initState();
+    _focusNode.addListener(_onFocusChanges);
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Scrollbar(
-        child: TextField(
+        child: TextFormField(
           focusNode: _focusNode,
-          onTap: widget.enabled ? null : widget.onTap,
+          controller: _controller,
+          onChanged: (value) {
+            ref.read(widget.editProvider.notifier).setDetails(details: value);
+          },
           maxLines: null,
           minLines: null,
-          readOnly: !widget.enabled,
-          enableInteractiveSelection: widget.enabled,
-          magnifierConfiguration: TextMagnifierConfiguration.disabled,
           expands: true,
-          controller: _controller,
-          style: TextStyle(
-            fontSize: 18.0,
-            color: Theme.of(context).textTheme.bodyMedium?.color,
-          ),
+          keyboardType: TextInputType.multiline,
+          magnifierConfiguration: TextMagnifierConfiguration.disabled,
+          style: const TextStyle(fontSize: 16.0),
           decoration: const InputDecoration(
-            hintText: 'Event details',
+            hintText: 'Add event details here...',
             contentPadding: EdgeInsets.all(10.0),
             border: InputBorder.none,
           ),
@@ -91,8 +58,9 @@ class _DetailsEditState extends State<DetailsEdit> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _focusNode.removeListener(_onFocusChanges);
     _focusNode.dispose();
+    _controller.dispose();
     super.dispose();
   }
 }

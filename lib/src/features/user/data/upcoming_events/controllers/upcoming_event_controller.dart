@@ -25,6 +25,7 @@ class UpcomingEventController extends StateNotifier<UpcomingEventModel> {
   void setType({required UpcomingEventType type}) => _update(type: type);
   void setName({required String name}) => _update(name: name);
   void setDatetime({required DateTime dateTime}) => _update(dateTime: dateTime);
+  void setDetails({required String details}) => _update(details: details);
   void update(UpcomingEventModel model) {
     state = model;
   }

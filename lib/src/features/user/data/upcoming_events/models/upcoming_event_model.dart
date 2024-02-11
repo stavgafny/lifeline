@@ -16,7 +16,7 @@ class UpcomingEventModel {
   }) : dateTime = dateTime.asFixed();
 
   UpcomingEventModel.empty()
-      : name = "Event",
+      : name = "",
         type = UpcomingEventType.defaultType,
         dateTime = DateTime.now().dateOnly(),
         details = "";
