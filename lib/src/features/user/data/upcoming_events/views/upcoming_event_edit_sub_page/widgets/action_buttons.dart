@@ -100,8 +100,12 @@ class _ApplyButton extends ConsumerWidget {
     final upcomingEvents = ref.watch(upcomingEventsProvider).value ?? [];
     final isNew = !upcomingEvents.contains(upcomingEvent);
 
-    final hasChanges =
-        isNew ? true : ref.watch(editProvider) != ref.watch(upcomingEvent);
+    final originalModel = ref.watch(upcomingEvent);
+    final areEqual = ref.watch(
+      editProvider.select((model) => model == originalModel),
+    );
+
+    final hasChanges = isNew ? true : !areEqual;
 
     onChange() {
       ref.read(upcomingEvent.notifier).update(ref.read(editProvider));

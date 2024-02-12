@@ -6,6 +6,7 @@ import './widgets/name_edit.dart';
 import './widgets/date_days_time_edit.dart';
 import './widgets/details_edit.dart';
 import './widgets/action_buttons.dart';
+import './widgets/unsaved_changes_wrapper.dart';
 
 class UpcomingEventEditSubPage extends StatelessWidget {
   static void display(
@@ -45,20 +46,25 @@ class UpcomingEventEditSubPage extends StatelessWidget {
       data: Theme.of(context).copyWith(
         dividerTheme: const DividerThemeData(color: Colors.transparent),
       ),
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(forceMaterialTransparency: true),
-        body: _EditSubPageContent(
-          upcomingEvent: upcomingEvent,
-          editProvider: editProvider,
-        ),
-        persistentFooterButtons: [
-          ActionButtons(
-            upcomingEvent: upcomingEvent,
-            editProvider: editProvider,
-            onDelete: onDelete,
+      child: UnsavedChangesWrapper(
+        upcomingEvent: upcomingEvent,
+        editProvider: editProvider,
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: SafeArea(
+            child: _EditSubPageContent(
+              upcomingEvent: upcomingEvent,
+              editProvider: editProvider,
+            ),
           ),
-        ],
+          persistentFooterButtons: [
+            ActionButtons(
+              upcomingEvent: upcomingEvent,
+              editProvider: editProvider,
+              onDelete: onDelete,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -80,30 +86,50 @@ class _EditSubPageContent extends StatefulWidget {
 class _EditSubPageContentState extends State<_EditSubPageContent> {
   bool _isDetailsExpanded = false;
 
+  late final _editFields = Column(
+    children: [
+      TypeEdit(editProvider: widget.editProvider),
+      NameEdit(editProvider: widget.editProvider),
+      DateDaysTimeEdit(editProvider: widget.editProvider),
+    ],
+  );
+
+  /// Unfocuses all focus node widgets
+  void _unfocus(BuildContext context) => FocusScope.of(context).unfocus();
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ExpandedSection(
-          expand: !_isDetailsExpanded,
-          noInitialAnimation: true,
-          child: Column(
-            children: [
-              TypeEdit(editProvider: widget.editProvider),
-              NameEdit(editProvider: widget.editProvider),
-              DateDaysTimeEdit(editProvider: widget.editProvider),
-            ],
+    return GestureDetector(
+      onTap: () => _unfocus(context),
+      child: Column(
+        children: [
+          AppBar(
+            forceMaterialTransparency: true,
+            leading: BackButton(
+              onPressed: () {
+                if (_isDetailsExpanded) {
+                  _unfocus(context);
+                } else {
+                  Navigator.of(context).maybePop();
+                }
+              },
+            ),
           ),
-        ),
-        DetailsEdit(
-          editProvider: widget.editProvider,
-          onFocusChange: (isFocused) {
-            if (_isDetailsExpanded != isFocused) {
-              setState(() => _isDetailsExpanded = isFocused);
-            }
-          },
-        )
-      ],
+          ExpandedSection(
+            expand: !_isDetailsExpanded,
+            noInitialAnimation: true,
+            child: _editFields,
+          ),
+          DetailsEdit(
+            editProvider: widget.editProvider,
+            onFocusChange: (isFocused) {
+              if (_isDetailsExpanded != isFocused) {
+                setState(() => _isDetailsExpanded = isFocused);
+              }
+            },
+          )
+        ],
+      ),
     );
   }
 }

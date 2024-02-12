@@ -22,7 +22,14 @@ class _DetailsEditState extends ConsumerState<DetailsEdit> {
     text: ref.read(widget.editProvider).details,
   );
 
-  void _onFocusChanges() => widget.onFocusChange.call(_focusNode.hasFocus);
+  void _onFocusChanges() {
+    widget.onFocusChange.call(_focusNode.hasFocus);
+    if (!_focusNode.hasFocus) {
+      ref
+          .read(widget.editProvider.notifier)
+          .setDetails(details: _controller.text);
+    }
+  }
 
   @override
   void initState() {
@@ -37,9 +44,6 @@ class _DetailsEditState extends ConsumerState<DetailsEdit> {
         child: TextFormField(
           focusNode: _focusNode,
           controller: _controller,
-          onChanged: (value) {
-            ref.read(widget.editProvider.notifier).setDetails(details: value);
-          },
           maxLines: null,
           minLines: null,
           expands: true,
