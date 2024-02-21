@@ -1,14 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.lifeline">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.lifeline">
 
     <!-- Foreground service premissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />        
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> -->
-   
 
-   <application
+    <application
         android:label="Lifeline"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
@@ -43,6 +41,17 @@
 
         <!-- Foreground service task -->
         <service android:name="com.pravera.flutter_foreground_task.service.ForegroundService" android:stopWithTask="false"/>
-
+            
     </application>
+    <!-- Required to query activities that can process text, see:
+         https://developer.android.com/training/package-visibility?hl=en and
+         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+
+         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
 </manifest>
