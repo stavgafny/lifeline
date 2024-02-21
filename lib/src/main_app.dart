@@ -7,7 +7,7 @@ import './providers/theme_mode_provider.dart';
 class MainApp extends ConsumerWidget {
   static const title = "Lifeline";
 
-  const MainApp({Key? key}) : super(key: key);
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

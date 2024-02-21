@@ -6,7 +6,7 @@ typedef UpcomingEventProvider
     = StateNotifierProvider<UpcomingEventController, UpcomingEventModel>;
 
 class UpcomingEventController extends StateNotifier<UpcomingEventModel> {
-  UpcomingEventController(UpcomingEventModel model) : super(model);
+  UpcomingEventController(super.model);
 
   void _update({
     String? name,

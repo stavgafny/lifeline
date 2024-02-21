@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import './verify_explanation_dialog.dart';
 
 class WhyVerifyTappableText extends StatelessWidget {
-  const WhyVerifyTappableText({
-    Key? key,
-  }) : super(key: key);
+  const WhyVerifyTappableText({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -5,11 +5,11 @@ class TappableText extends StatelessWidget {
   final void Function()? onTap;
   final TextStyle style;
   const TappableText({
+    super.key,
     required this.text,
     this.onTap,
     this.style = const TextStyle(),
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ import './goal_tracker_controller.dart';
 
 final goalTrackersProvider = StateNotifierProvider.autoDispose<
     GoalTrackersController, AsyncValue<List<GoalTrackerProvider>>>((ref) {
-  ref.maintainState = true;
+  ref.keepAlive();
   return GoalTrackersController(ref: ref);
 });
 

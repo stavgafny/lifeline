@@ -15,7 +15,7 @@ class GoalTrackerController extends StateNotifier<GoalTrackerModel> {
 
   Timer? _nextDeadlineTimer;
 
-  GoalTrackerController(GoalTrackerModel model) : super(model) {
+  GoalTrackerController(super.model) {
     _handleDeadline();
   }
 

@@ -4,10 +4,7 @@ import '../../models/upcoming_event_type.dart';
 class UpcomingEventTypeEditDialog extends StatelessWidget {
   final Function(UpcomingEventType type) onSubmit;
 
-  const UpcomingEventTypeEditDialog({
-    required this.onSubmit,
-    Key? key,
-  }) : super(key: key);
+  const UpcomingEventTypeEditDialog({required this.onSubmit, super.key});
 
   Widget _buildType(BuildContext context, UpcomingEventType type) {
     return Column(
