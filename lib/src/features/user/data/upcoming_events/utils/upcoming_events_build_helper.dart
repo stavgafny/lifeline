@@ -28,11 +28,11 @@ class UpcomingEventsBuildHelper {
     BuildContext context, {
     required int upcomingEventsNumber,
   }) {
-    assert(
-      upcomingEventsNumber != 0,
-      throw const UpcomingEventsBuildPropertiesException(
-          "Can't build with 0 upcoming events"),
-    );
+    // assert(
+    //   upcomingEventsNumber != 0,
+    //   throw const UpcomingEventsBuildPropertiesException(
+    //       "Can't build with 0 upcoming events"),
+    // );
 
     // Gets screen dimensions
     final screenSize = MediaQuery.of(context).size;
@@ -43,7 +43,9 @@ class UpcomingEventsBuildHelper {
     // Number of upcoming events that can be displayed at once
     final presentedNumber = screenSize.width ~/ _upcomingEventBlobMinSize;
 
-    final size = screenSize.width / min(presentedNumber, upcomingEventsNumber);
+    final size = upcomingEventsNumber > 0
+        ? screenSize.width / min(presentedNumber, upcomingEventsNumber)
+        : screenSize.width;
 
     return UpcomingEventsBuildProperties(
       maxHeight: maxHeight,

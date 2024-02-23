@@ -34,25 +34,17 @@ class _UEListViewState extends ConsumerState<UEListView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.upcomingEvents.isEmpty) {
-      return SizedBox(
-        width: double.infinity,
-        child: UpcomingEventBlob.addButton(
-          onTap: () {
-            final newUpcomingEvent = UpcomingEventProvider(
-              (ref) => UpcomingEventController(
-                UpcomingEventModel.empty(),
-              ),
-            );
-            _editUpcomingEvent(newUpcomingEvent);
-          },
-        ),
-      );
-    }
-
     final buildProperties = UpcomingEventsBuildHelper.getBuildProperties(
       context,
       upcomingEventsNumber: widget.upcomingEvents.length,
+    );
+
+    final addButton = SizedBox(
+      width: buildProperties.itemSize,
+      child: UpcomingEventBlob.addButton(
+        onTap: _createUpcomingEvent,
+        standalone: widget.upcomingEvents.isEmpty,
+      ),
     );
 
     return Theme(
@@ -70,19 +62,7 @@ class _UEListViewState extends ConsumerState<UEListView> {
             onReorder: (oldIndex, newIndex) {
               _upcomingEventsController.swap(oldIndex, newIndex);
             },
-            footer: SizedBox(
-              width: buildProperties.itemSize,
-              child: UpcomingEventBlob.addButton(
-                onTap: () {
-                  final newUpcomingEvent = UpcomingEventProvider(
-                    (ref) => UpcomingEventController(
-                      UpcomingEventModel.empty(),
-                    ),
-                  );
-                  _editUpcomingEvent(newUpcomingEvent);
-                },
-              ),
-            ),
+            footer: addButton,
             children: [
               for (final upcomingEvent in widget.upcomingEvents)
                 _buildUpcomingEvent(
@@ -118,11 +98,18 @@ class _UEListViewState extends ConsumerState<UEListView> {
     UpcomingEventEditSubPage.display(
       context,
       upcomingEvent: upcomingEvent,
-      onDelete: () => _onDeleteUpcomingEvent(upcomingEvent),
+      onDelete: () => _deleteUpcomingEvent(upcomingEvent),
     );
   }
 
-  void _onDeleteUpcomingEvent(UpcomingEventProvider upcomingEvent) {
+  void _createUpcomingEvent() {
+    final newUpcomingEvent = UpcomingEventProvider(
+      (ref) => UpcomingEventController(UpcomingEventModel.empty()),
+    );
+    _editUpcomingEvent(newUpcomingEvent);
+  }
+
+  void _deleteUpcomingEvent(UpcomingEventProvider upcomingEvent) {
     final index = _upcomingEventsController.indexOf(upcomingEvent);
     if (index == -1) return;
     final name = ref.read(upcomingEvent).name;
