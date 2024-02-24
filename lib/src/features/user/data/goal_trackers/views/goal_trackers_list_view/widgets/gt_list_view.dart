@@ -27,9 +27,34 @@ class _GTListViewState extends ConsumerState<GTListView> {
 
   @override
   Widget build(BuildContext context) {
+    return widget.goalTrackers.isEmpty
+        ? _emptyGoalTrackers(context)
+        : _goalTrackers(context);
+  }
+
+  Widget _goalTrackers(BuildContext context) {
     return Stack(
+      children: [_goalTrackersList(context), _createGoalTrackerButton(context)],
+    );
+  }
+
+  Widget _emptyGoalTrackers(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        _goalTrackersList(context),
+        Transitions.sizeFade(
+          controller: TransitionController(animateOnStart: true),
+          child: const Center(
+            child: Column(
+              children: [
+                Text("No Goal Trackers", style: TextStyle(fontSize: 24)),
+                SizedBox(height: 10.0),
+                Text("Add one below", style: TextStyle(fontSize: 16)),
+                Icon(Icons.arrow_downward_rounded, size: 30.0),
+              ],
+            ),
+          ),
+        ),
         _createGoalTrackerButton(context),
       ],
     );
