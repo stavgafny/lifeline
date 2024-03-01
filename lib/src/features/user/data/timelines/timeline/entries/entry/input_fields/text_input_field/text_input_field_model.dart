@@ -1,10 +1,9 @@
 import '../core/input_field_model.dart';
 
 class TextInputFieldModel extends InputFieldModel<String> {
-  TextInputFieldModel({
-    super.type = InputFieldModelType.text,
+  const TextInputFieldModel({
     required super.value,
-  });
+  }) : super(type: InputFieldModelType.text);
 
   @override
   String serialize() => value;

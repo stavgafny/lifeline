@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import '../text_input_field/text_input_field_model.dart';
+import '../number_input_field/number_input_field_model.dart';
 
-enum InputFieldModelType { text }
+enum InputFieldModelType { text, number }
 
 abstract class InputFieldModel<T> {
   final InputFieldModelType type;
@@ -20,6 +21,8 @@ abstract class InputFieldModel<T> {
     switch (type) {
       case InputFieldModelType.text:
         return TextInputFieldModel.deserialize(map['value']);
+      case InputFieldModelType.number:
+        return NumberInputFieldModel.deserialize(map['value']);
     }
   }
 
