@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import '../text_input_field/text_input_field_model.dart';
 import '../number_input_field/number_input_field_model.dart';
+import '../weight_input_field/weight_input_field_model.dart';
+import '../stars_input_field/stars_input_field_model.dart';
 
-enum InputFieldModelType { text, number }
+enum InputFieldModelType { text, number, weight, stars }
 
 abstract class InputFieldModel<T> {
   final InputFieldModelType type;
@@ -23,6 +25,10 @@ abstract class InputFieldModel<T> {
         return TextInputFieldModel.deserialize(map['value']);
       case InputFieldModelType.number:
         return NumberInputFieldModel.deserialize(map['value']);
+      case InputFieldModelType.weight:
+        return WeightInputFieldModel.deserialize(map['value']);
+      case InputFieldModelType.stars:
+        return StarsInputFieldModel.deserialize(map['value']);
     }
   }
 

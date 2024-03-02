@@ -15,6 +15,7 @@ class TextInputFieldWidget extends InputFieldWidget<TextInputFieldModel> {
   Widget build(BuildContext context) {
     final inputBorder = OutlineInputBorder(
       borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface),
+      borderRadius: BorderRadius.circular(15.0),
     );
 
     return ConstrainedBox(
@@ -22,8 +23,11 @@ class TextInputFieldWidget extends InputFieldWidget<TextInputFieldModel> {
         maxHeight: MediaQuery.of(context).size.height * _maxHeightFromScreen,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Scrollbar(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: RawScrollbar(
+          thumbColor: Theme.of(context).colorScheme.onSurface,
+          mainAxisMargin: 10.0,
+          thickness: 4.0,
           child: TextFormField(
             initialValue: model.value,
             onChanged: (value) => onChange(
