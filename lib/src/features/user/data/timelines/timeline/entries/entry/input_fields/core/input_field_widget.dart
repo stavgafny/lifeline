@@ -12,3 +12,15 @@ abstract class InputFieldWidget<Model extends InputFieldModel>
     required this.onChange,
   });
 }
+
+abstract class StatefulInputFieldWidget<Model extends InputFieldModel>
+    extends StatefulWidget {
+  final Model model;
+  final void Function(Model snapshot) onChange;
+
+  const StatefulInputFieldWidget({
+    super.key,
+    required this.model,
+    required this.onChange,
+  });
+}

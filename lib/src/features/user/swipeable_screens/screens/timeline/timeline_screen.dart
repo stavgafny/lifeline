@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/image_input_field/image_input_field_model.dart';
+import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/image_input_field/image_input_field_widget.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/number_input_field/number_input_field_model.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/number_input_field/number_input_field_widget.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/stars_input_field/stars_input_field_model.dart';
@@ -17,6 +19,10 @@ class TimelineScreen extends StatelessWidget {
     const modelN = NumberInputFieldModel(value: 17.5);
     const modelW = WeightInputFieldModel(value: 63.4);
     const modelS = StarsInputFieldModel(value: 2.5);
+    const modelI = ImageInputFieldModel(
+      value:
+          "/data/user/0/com.example.lifeline/cache/16cdb0d7-ffb5-4cf4-9a19-845ba64a022c/1000037053.png",
+    );
 
     return const Scaffold(
       body: SingleChildScrollView(
@@ -32,6 +38,7 @@ class TimelineScreen extends StatelessWidget {
             ),
             SizedBox(height: 10.0),
             StarsInputFieldWidget(model: modelS, onChange: print),
+            ImageInputFieldWidget(model: modelI, onChange: print),
           ],
         ),
       ),

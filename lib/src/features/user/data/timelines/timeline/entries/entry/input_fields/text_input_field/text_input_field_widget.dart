@@ -3,7 +3,7 @@ import '../core/input_field_widget.dart';
 import './text_input_field_model.dart';
 
 class TextInputFieldWidget extends InputFieldWidget<TextInputFieldModel> {
-  static const double _maxHeightFromScreen = .5;
+  static const double _maxHeightFromScreen = .35;
 
   const TextInputFieldWidget({
     super.key,

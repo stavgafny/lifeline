@@ -4,8 +4,9 @@ import '../text_input_field/text_input_field_model.dart';
 import '../number_input_field/number_input_field_model.dart';
 import '../weight_input_field/weight_input_field_model.dart';
 import '../stars_input_field/stars_input_field_model.dart';
+import '../image_input_field/image_input_field_model.dart';
 
-enum InputFieldModelType { text, number, weight, stars }
+enum InputFieldModelType { text, number, weight, stars, image }
 
 abstract class InputFieldModel<T> {
   final InputFieldModelType type;
@@ -29,6 +30,8 @@ abstract class InputFieldModel<T> {
         return WeightInputFieldModel.deserialize(map['value']);
       case InputFieldModelType.stars:
         return StarsInputFieldModel.deserialize(map['value']);
+      case InputFieldModelType.image:
+        return ImageInputFieldModel.deserialize(map['value']);
     }
   }
 
