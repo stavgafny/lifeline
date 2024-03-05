@@ -52,23 +52,23 @@ class _InputFieldImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildImage(context);
-  }
-
-  Widget _buildImage(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15.0),
-        child: Image.file(
-          File(model.value),
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildError(context);
-          },
-        ),
+        child: (model.value.isEmpty ? _buildEmpty : _buildImage).call(context),
       ),
+    );
+  }
+
+  Widget _buildImage(BuildContext context) {
+    return Image.file(
+      File(model.value),
+      fit: BoxFit.cover,
+      alignment: Alignment.center,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildError(context);
+      },
     );
   }
 
@@ -80,6 +80,19 @@ class _InputFieldImage extends StatelessWidget {
         children: [
           Icon(Icons.error_outline_outlined, size: 80.0),
           Text("Failed to load image", style: TextStyle(fontSize: 24.0)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmpty(BuildContext context) {
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.add_photo_alternate_outlined, size: 80.0),
+          Text("No image selected", style: TextStyle(fontSize: 24.0)),
         ],
       ),
     );
