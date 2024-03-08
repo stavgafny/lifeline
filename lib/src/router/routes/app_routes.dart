@@ -53,30 +53,45 @@ class AppRoutes {
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     ShellRoute(
-        navigatorKey: _userShellNavigatorKey,
-        builder: (context, state, child) {
-          return user_swipeable_shell.ShellScreen(
-            body: child,
-            location: state.location,
-          );
-        },
-        routes: [
-          GoRoute(
-            path: home,
-            builder: (context, state) => const HomeScreen(),
-            parentNavigatorKey: _userShellNavigatorKey,
+      navigatorKey: _userShellNavigatorKey,
+      pageBuilder: (context, state, child) => _buildShellTransitionPage(
+        context: context,
+        state: state,
+        child: user_swipeable_shell.ShellScreen(
+          body: child,
+          location: state.location,
+        ),
+      ),
+      routes: [
+        GoRoute(
+          path: home,
+          pageBuilder: (context, state) => _buildShellTransitionPage(
+            context: context,
+            state: state,
+            child: const HomeScreen(),
           ),
-          GoRoute(
-            path: dashboard,
-            builder: (context, state) => const DashboardScreen(),
-            parentNavigatorKey: _userShellNavigatorKey,
+          parentNavigatorKey: _userShellNavigatorKey,
+        ),
+        GoRoute(
+          path: dashboard,
+          pageBuilder: (context, state) => _buildShellTransitionPage(
+            context: context,
+            state: state,
+            child: const DashboardScreen(),
           ),
-          GoRoute(
-            path: timeline,
-            builder: (context, state) => const TimelineScreen(),
-            parentNavigatorKey: _userShellNavigatorKey,
+          parentNavigatorKey: _userShellNavigatorKey,
+        ),
+        GoRoute(
+          path: timeline,
+          pageBuilder: (context, state) => _buildShellTransitionPage(
+            context: context,
+            state: state,
+            child: const TimelineScreen(),
           ),
-        ]),
+          parentNavigatorKey: _userShellNavigatorKey,
+        ),
+      ],
+    ),
   ];
 }
 
@@ -91,4 +106,22 @@ class _Splash extends StatelessWidget {
       ),
     );
   }
+}
+
+CustomTransitionPage _buildShellTransitionPage<T>({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<T>(
+    key: state.pageKey,
+    transitionDuration: const Duration(milliseconds: 300),
+    barrierColor: Theme.of(context).scaffoldBackgroundColor,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
+      opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+      child: child,
+    ),
+  );
 }

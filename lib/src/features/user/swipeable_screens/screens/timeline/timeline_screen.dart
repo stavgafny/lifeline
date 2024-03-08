@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/image_input_field/image_input_field_model.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/number_input_field/number_input_field_model.dart';
 import 'package:lifeline/src/features/user/data/timelines/timeline/entries/entry/input_fields/stars_input_field/stars_input_field_model.dart';
@@ -27,24 +26,22 @@ class TimelineScreen extends StatelessWidget {
       tags: [],
     );
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return const EntryPageView(model: model);
-                },
-              ),
-            );
-          },
-          child: const SizedBox(
-            width: double.infinity,
-            height: 150,
-            child: EntryCardView(model: model),
-          ),
+    return SingleChildScrollView(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const EntryPageView(model: model);
+              },
+            ),
+          );
+        },
+        child: const SizedBox(
+          width: double.infinity,
+          height: 150,
+          child: EntryCardView(model: model),
         ),
       ),
     );
