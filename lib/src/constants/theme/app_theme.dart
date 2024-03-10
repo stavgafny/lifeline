@@ -39,6 +39,7 @@ final ThemeData lightTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFB895FF),
   ),
+  dividerTheme: const DividerThemeData(color: Color(0xFF3B343D)),
   extensions: _extensions.light,
 );
 
@@ -79,6 +80,7 @@ final ThemeData darkTheme = ThemeData(
     contentTextStyle: TextStyle(color: Color(0xFFD3C4E2)),
     actionTextColor: Color(0xFFFFA7E6),
   ),
+  dividerTheme: const DividerThemeData(color: Color(0xFFDDCDEE)),
   extensions: _extensions.dark,
 );
 
