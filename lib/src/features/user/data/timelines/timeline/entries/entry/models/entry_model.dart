@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
-
 import '../input_fields/core/input_field_model.dart';
 
 class EntryModel {
@@ -19,28 +16,23 @@ class EntryModel {
     );
   }
 
-  Map<String, List<dynamic>> toMap() {
+  Map<String, List<dynamic>> toJson() {
     return <String, List<dynamic>>{
-      'inputFields': inputFields.map((x) => x.toMap()).toList(),
+      'inputFields': inputFields.map((iField) => iField.toJson()).toList(),
       'tags': tags,
     };
   }
 
-  factory EntryModel.fromMap(Map<String, dynamic> map) {
+  factory EntryModel.fromJson(dynamic map) {
     return EntryModel(
       inputFields: List<InputFieldModel>.from(
         (map['inputFields'] as List<dynamic>).map(
-          (x) => InputFieldModel.fromMap(x),
+          (iField) => InputFieldModel.fromJson(iField),
         ),
       ),
       tags: List<String>.from(map['tags']),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory EntryModel.fromJson(String source) =>
-      EntryModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() => 'EntryModel(inputFields: $inputFields, tags: $tags)';

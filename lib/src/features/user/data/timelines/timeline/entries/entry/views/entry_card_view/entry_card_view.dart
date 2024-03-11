@@ -5,13 +5,17 @@ import '../../utils/input_field_builder.dart';
 
 class EntryCardView extends StatelessWidget {
   final EntryModel model;
+  final void Function()? onTap;
 
-  const EntryCardView({super.key, required this.model});
+  const EntryCardView({super.key, required this.model, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: _buildPreview(context),
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        child: _buildPreview(context),
+      ),
     );
   }
 

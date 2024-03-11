@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../text_input_field/text_input_field_model.dart';
 import '../number_input_field/number_input_field_model.dart';
 import '../weight_input_field/weight_input_field_model.dart';
@@ -16,9 +14,9 @@ abstract class InputFieldModel<T> {
 
   dynamic serialize();
 
-  Map<String, dynamic> toMap() => {'type': type.name, 'value': serialize()};
+  Map<String, dynamic> toJson() => {'type': type.name, 'value': serialize()};
 
-  static InputFieldModel fromMap(Map<String, dynamic> map) {
+  static InputFieldModel fromJson(dynamic map) {
     final type = InputFieldModelType.values.byName(map['type']);
 
     switch (type) {
@@ -34,11 +32,6 @@ abstract class InputFieldModel<T> {
         return ImageInputFieldModel.deserialize(map['value']);
     }
   }
-
-  String toJson() => json.encode(toMap());
-
-  static fromJson(String source) =>
-      InputFieldModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() => 'InputFieldModel[${type.name}](value: $value)';

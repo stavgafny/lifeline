@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import '../entries/entry/input_fields/core/input_field_model.dart';
 import '../entries/entry/models/entry_model.dart';
@@ -31,21 +29,21 @@ class TimelineModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'entries': entries.map((entry) => entry.toMap()).toList(),
+      'entries': entries.map((entry) => entry.toJson()).toList(),
       'template': template.map((entryType) => entryType.name).toList(),
       'lastModified': lastModified.millisecondsSinceEpoch,
     };
   }
 
-  factory TimelineModel.fromMap(Map<String, dynamic> map) {
+  factory TimelineModel.fromJson(dynamic map) {
     return TimelineModel(
       name: map['name'] as String,
       entries: List<EntryModel>.from(
         (map['entries'] as List<dynamic>).map<EntryModel>(
-          (entry) => EntryModel.fromMap(entry as Map<String, dynamic>),
+          (entry) => EntryModel.fromJson(entry as Map<String, dynamic>),
         ),
       ),
       template: List<InputFieldModelType>.from(
@@ -57,11 +55,6 @@ class TimelineModel {
           DateTime.fromMillisecondsSinceEpoch(map['lastModified'] as int),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory TimelineModel.fromJson(String source) =>
-      TimelineModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

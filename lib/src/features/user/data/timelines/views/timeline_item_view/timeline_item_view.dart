@@ -1,40 +1,29 @@
 import 'package:flutter/material.dart';
+import '../../timeline/models/timeline_model.dart';
+import './widgets/timeline_item_footer.dart';
 
 class TimelineItemView extends StatelessWidget {
-  const TimelineItemView({super.key});
+  static const _borderRadius = BorderRadius.all(Radius.circular(6.0));
+
+  final TimelineModel timeline;
+  final void Function()? onTap;
+
+  const TimelineItemView({super.key, required this.timeline, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(6.0),
-      ),
-      child: const Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Divider(),
-          Padding(
-            padding: EdgeInsets.fromLTRB(6.0, 0.0, 6.0, 6.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    "Namasddsadasdsae",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                Icon(Icons.more_vert_rounded),
-              ],
-            ),
-          ),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: _borderRadius,
+        ),
+        child: Column(
+          children: [
+            TimelineItemFooter(timeline: timeline),
+          ],
+        ),
       ),
     );
   }
