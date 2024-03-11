@@ -19,6 +19,7 @@ class StarsInputFieldWidget extends InputFieldWidget<StarsInputFieldModel> {
     final iconSize = width / 11.0;
     return Row(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text("Rating:", style: TextStyle(fontSize: textSize)),
         const SizedBox(width: 12.0),

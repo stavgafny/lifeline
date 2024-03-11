@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../controllers/timeline_controllers.dart';
+import '../../controllers/timelines_controllers.dart';
 import '../../timeline/views/timeline_page_view.dart/timeline_page_view.dart';
 import '../timeline_item_view/timeline_item_view.dart';
 

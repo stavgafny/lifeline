@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/widgets/dialogs/name_edit_dialog.dart';
 import 'package:lifeline/src/widgets/snackbars.dart';
 import 'package:lifeline/src/widgets/transitions.dart';
 import '../../../models/goal_tracker_model.dart';
@@ -8,7 +9,6 @@ import '../../../controllers/goal_tracker_controller.dart';
 import '../../../controllers/goal_tracker_select_controller.dart';
 import '../../../controllers/goal_trackers_controller.dart';
 import '../../goal_tracker_card/goal_tracker_card.dart';
-import '../../goal_tracker_dialogs/goal_tracker_name_edit_dialog.dart';
 
 class GTListView extends ConsumerStatefulWidget {
   final List<GoalTrackerProvider> goalTrackers;
@@ -111,7 +111,7 @@ class _GTListViewState extends ConsumerState<GTListView> {
   void _onCreateGoalTracker() {
     showDialog(
       context: context,
-      builder: (context) => GoalTrackerNameEditDialog(
+      builder: (context) => NameEditDialog(
         name: "",
         onCancel: () => context.pop(),
         onConfirm: (name) {

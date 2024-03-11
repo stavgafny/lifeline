@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class GoalTrackerNameEditDialog extends StatefulWidget {
+class NameEditDialog extends StatefulWidget {
   final String name;
   final void Function() onCancel;
   final void Function(String modifiedName) onConfirm;
   final bool startSelected;
 
-  const GoalTrackerNameEditDialog({
+  const NameEditDialog({
     super.key,
     required this.name,
     required this.onCancel,
@@ -15,11 +15,10 @@ class GoalTrackerNameEditDialog extends StatefulWidget {
   });
 
   @override
-  State<GoalTrackerNameEditDialog> createState() =>
-      _GoalTrackerNameEditDialogState();
+  State<NameEditDialog> createState() => _NameEditDialogState();
 }
 
-class _GoalTrackerNameEditDialogState extends State<GoalTrackerNameEditDialog> {
+class _NameEditDialogState extends State<NameEditDialog> {
   static const _textStyle = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.w700,

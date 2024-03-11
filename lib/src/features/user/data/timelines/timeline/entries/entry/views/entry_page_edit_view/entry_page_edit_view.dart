@@ -10,8 +10,14 @@ class EntryPageEditView extends StatelessWidget {
   static void display(
     BuildContext context, {
     required EntryModel entry,
+    required String title,
+    required void Function(EntryModel updatedEntry) onUpdate,
   }) {
-    final page = EntryPageEditView._(entry: entry);
+    final page = EntryPageEditView._(
+      entry: entry,
+      title: title,
+      onUpdate: onUpdate,
+    );
 
     showDialog(
       context: context,
@@ -22,27 +28,39 @@ class EntryPageEditView extends StatelessWidget {
   }
 
   final EntryModel entry;
+  final String title;
+  final void Function(EntryModel updatedEntry) onUpdate;
 
-  const EntryPageEditView._({required this.entry});
+  const EntryPageEditView._({
+    required this.entry,
+    required this.title,
+    required this.onUpdate,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
-        title: const Text(
-          "Entry",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
         padding: _padding,
         child: ListView(
           children: [
-            for (final inputFieldModel in entry.inputFields)
+            for (final inputField in entry.inputFields)
               InputFieldBuilder.buildWidget(
-                model: inputFieldModel,
-                onChange: (snapshot) {},
+                model: inputField,
+                onChange: (snapshot) {
+                  if (inputField.value == snapshot.value) return;
+                  final index = entry.inputFields.indexOf(inputField);
+                  final updatedInputFields = [...entry.inputFields];
+                  updatedInputFields[index] = snapshot;
+                  onUpdate(entry.copyWith(inputFields: updatedInputFields));
+                },
               )
           ].withSpaceBetween(height: _itemGap),
         ),

@@ -26,4 +26,18 @@ class TimelinesDatabase {
   }
 
   static bool exists(String name) => _db.containsKey(name);
+
+  static bool rename(String from, String to, {bool override = false}) {
+    if (exists(to) && !override) return false;
+
+    final timeline = _db.get(from);
+    if (timeline == null) return false;
+    _db.write(() {
+      _db.put(to, timeline.copyWith(name: to));
+      _db.delete(from);
+    });
+    return true;
+  }
+
+  static bool delete(String name) => _db.delete(name);
 }

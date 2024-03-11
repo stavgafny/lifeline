@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/widgets/dialogs/name_edit_dialog.dart';
 import '../../../controllers/goal_tracker_controller.dart';
-import '../../goal_tracker_dialogs/goal_tracker_name_edit_dialog.dart';
 import './helper/selected_wrapper.dart';
 
 class GoalName extends ConsumerWidget {
@@ -22,7 +22,7 @@ class GoalName extends ConsumerWidget {
               if (isSelected) {
                 showDialog(
                   context: context,
-                  builder: (context) => GoalTrackerNameEditDialog(
+                  builder: (context) => NameEditDialog(
                     name: name,
                     onCancel: () => context.pop(),
                     onConfirm: (modifiedName) {
