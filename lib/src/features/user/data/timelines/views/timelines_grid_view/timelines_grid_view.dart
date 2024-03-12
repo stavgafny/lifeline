@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/features/user/data/timelines/utils/timelines_list_extension.dart';
 import '../../controllers/timelines_controllers.dart';
 import '../../timeline/views/timeline_page_view.dart/timeline_page_view.dart';
 import '../timeline_item_view/timeline_item_view.dart';
@@ -12,7 +13,7 @@ class TimelinesGridView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final timelines = ref.watch(timelinesProvider);
+    final timelines = ref.watch(timelinesProvider)..sortByTimelineName();
 
     return GridView.count(
       crossAxisCount: 2,

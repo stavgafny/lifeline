@@ -26,8 +26,7 @@ class TimelinesController extends StateNotifier<List<TimelineModel>> {
     if (deleted) _refreshFromDB();
   }
 
-  void store(TimelineModel timeline) {
-    TimelinesDatabase.store(timeline);
-    _refreshFromDB();
+  void updateTimeline(TimelineModel timeline) {
+    TimelinesDatabase.store(timeline.copyWith(lastModified: DateTime.now()));
   }
 }

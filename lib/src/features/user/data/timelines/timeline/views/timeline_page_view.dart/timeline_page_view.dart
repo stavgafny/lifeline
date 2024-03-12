@@ -5,9 +5,7 @@ import '../../entries/entry/views/entry_card_view/entry_card_view.dart';
 import '../../entries/entry/views/entry_page_edit_view/entry_page_edit_view.dart';
 import '../../models/timeline_model.dart';
 
-class TimelinePageView extends ConsumerStatefulWidget {
-  static const double _cardsHeight = 150.0;
-
+class TimelinePageView extends StatelessWidget {
   static void display(
     BuildContext context, {
     required TimelineModel timeline,
@@ -27,19 +25,7 @@ class TimelinePageView extends ConsumerStatefulWidget {
   const TimelinePageView._({required this.timeline});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _TimelinePageViewState();
-}
-
-class _TimelinePageViewState extends ConsumerState<TimelinePageView> {
-  TimelinesController get _timelinesController =>
-      ref.read(timelinesProvider.notifier);
-
-  String _entryTitle(int index) => '${widget.timeline.name} #${index + 1}';
-
-  @override
   Widget build(BuildContext context) {
-    final timeline = widget.timeline;
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,27 +34,51 @@ class _TimelinePageViewState extends ConsumerState<TimelinePageView> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: ListView.builder(
-        itemCount: timeline.entries.length,
-        itemExtent: TimelinePageView._cardsHeight,
-        itemBuilder: (context, index) {
-          final entry = timeline.entries.elementAt(index);
-          return EntryCardView(
-            model: entry,
-            onTap: () => EntryPageEditView.display(
-              context,
-              entry: entry,
-              title: _entryTitle(index),
-              onUpdate: (updatedEntry) {
-                final entries = timeline.entries;
-                entries[index] = updatedEntry;
-                _timelinesController.store(timeline.copyWith(entries: entries));
-                setState(() {});
-              },
-            ),
-          );
-        },
-      ),
+      body: _TimelineEntries(timeline),
+    );
+  }
+}
+
+class _TimelineEntries extends ConsumerStatefulWidget {
+  static const double _cardsHeight = 150.0;
+
+  final TimelineModel timeline;
+
+  const _TimelineEntries(this.timeline);
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _TimelineEntriesState();
+}
+
+class _TimelineEntriesState extends ConsumerState<_TimelineEntries> {
+  TimelinesController get _timelinesController =>
+      ref.read(timelinesProvider.notifier);
+
+  String _entryTitle(int index) => '${widget.timeline.name} #${index + 1}';
+
+  @override
+  Widget build(BuildContext context) {
+    final timeline = widget.timeline;
+
+    return ListView.builder(
+      itemCount: timeline.entries.length,
+      itemExtent: _TimelineEntries._cardsHeight,
+      itemBuilder: (context, index) {
+        final entry = timeline.entries.elementAt(index);
+        return EntryCardView(
+          model: entry,
+          onTap: () => EntryPageEditView.display(
+            context,
+            entry: entry,
+            title: _entryTitle(index),
+            onUpdate: () {
+              _timelinesController.updateTimeline(timeline);
+              setState(() {});
+            },
+          ),
+        );
+      },
     );
   }
 }
