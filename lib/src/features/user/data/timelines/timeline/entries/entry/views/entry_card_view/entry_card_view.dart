@@ -2,19 +2,30 @@ import 'package:flutter/material.dart';
 import '../../input_fields/core/input_field_model.dart';
 import '../../models/entry_model.dart';
 import '../../utils/input_field_builder.dart';
+import './widgets/entry_index_banner.dart';
 
 class EntryCardView extends StatelessWidget {
   final EntryModel model;
+  final int entryIndex;
   final void Function()? onTap;
 
-  const EntryCardView({super.key, required this.model, this.onTap});
+  const EntryCardView({
+    super.key,
+    required this.model,
+    required this.entryIndex,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        child: _buildPreview(context),
+        clipBehavior: Clip.hardEdge,
+        child: EntryIndexBanner(
+          index: entryIndex,
+          child: _buildPreview(context),
+        ),
       ),
     );
   }

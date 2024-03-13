@@ -5,6 +5,8 @@ import '../core/input_field_preview.dart';
 import './image_input_field_model.dart';
 
 class ImageInputFieldPreview extends InputFieldPreview<ImageInputFieldModel> {
+  static const _borderRadius = BorderRadius.all(Radius.circular(12.0));
+
   const ImageInputFieldPreview({super.key, required super.model});
 
   @override
@@ -14,6 +16,9 @@ class ImageInputFieldPreview extends InputFieldPreview<ImageInputFieldModel> {
 }
 
 class _InputFieldImage extends StatelessWidget {
+  static const _emptyImage = _NonImage(Icons.image);
+  static const _errorImage = _NonImage(Icons.broken_image_rounded);
+
   final ImageInputFieldModel model;
   const _InputFieldImage({required this.model});
 
@@ -22,8 +27,8 @@ class _InputFieldImage extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 1,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15.0),
-        child: (model.value.isEmpty ? _buildEmpty : _buildImage).call(context),
+        borderRadius: ImageInputFieldPreview._borderRadius,
+        child: model.value.isEmpty ? _emptyImage : _buildImage(context),
       ),
     );
   }
@@ -34,28 +39,21 @@ class _InputFieldImage extends StatelessWidget {
       fit: BoxFit.cover,
       alignment: Alignment.center,
       errorBuilder: (context, error, stackTrace) {
-        return _buildError(context);
+        return _errorImage;
       },
     );
   }
+}
 
-  Widget _buildError(BuildContext context) {
-    return Transform.scale(
-      scale: .5,
-      child: const FittedBox(
-        fit: BoxFit.contain,
-        child: Expanded(child: Icon(Icons.image)),
-      ),
-    );
-  }
+class _NonImage extends StatelessWidget {
+  final IconData icon;
+  const _NonImage(this.icon);
 
-  Widget _buildEmpty(BuildContext context) {
-    return Transform.scale(
-      scale: .5,
-      child: const FittedBox(
-        fit: BoxFit.contain,
-        child: Expanded(child: Icon(Icons.image_not_supported_rounded)),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.contain,
+      child: Expanded(child: Icon(icon)),
     );
   }
 }

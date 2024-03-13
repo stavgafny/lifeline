@@ -21,6 +21,7 @@ class TimelineItemView extends StatelessWidget {
         ),
         child: Column(
           children: [
+            Text(timeline.lastModified.toString()),
             TimelineItemFooter(timeline: timeline),
           ],
         ),
