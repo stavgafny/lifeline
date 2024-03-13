@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/upcoming_event_controller.dart';
+import './dialogs/upcoming_event_unsaved_changes_dialog.dart';
 
 class UnsavedChangesWrapper extends ConsumerWidget {
   final UpcomingEventProvider upcomingEvent;
@@ -27,7 +28,7 @@ class UnsavedChangesWrapper extends ConsumerWidget {
         if (!didPop) {
           showDialog(
             context: context,
-            builder: (context) => _UnsavedChangesDialog(
+            builder: (context) => UpcomingEventUnsavedChangesDialog(
               onCancel: () => Navigator.of(context).pop(),
               onDiscard: () {
                 Navigator.of(context)
@@ -39,68 +40,6 @@ class UnsavedChangesWrapper extends ConsumerWidget {
         }
       },
       child: child,
-    );
-  }
-}
-
-// enum _ConfirmState
-
-class _UnsavedChangesDialog extends Dialog {
-  final void Function() onCancel;
-  final void Function() onDiscard;
-
-  const _UnsavedChangesDialog({
-    required this.onCancel,
-    required this.onDiscard,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cancelButton = OutlinedButton(
-      onPressed: onCancel,
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 2.0,
-        ),
-      ),
-      child: const Text(
-        'Cancel',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-
-    final discardButton = ElevatedButton(
-      onPressed: onDiscard,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      child: Text(
-        "Discard",
-        style: TextStyle(
-          color: Theme.of(context).dialogBackgroundColor,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-
-    return AlertDialog(
-      title: const Text(
-        "Unsaved Changes",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      content: const Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text("You have made changes."),
-          Text("Do you want to discard them?"),
-        ],
-      ),
-      actionsAlignment: MainAxisAlignment.spaceEvenly,
-      actions: [cancelButton, discardButton],
     );
   }
 }

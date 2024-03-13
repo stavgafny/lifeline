@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wheel_picker/wheel_picker.dart';
+import './core/dialog_action_buttons_builder.dart';
 
 class NumberPickerDialog extends StatefulWidget {
   final String? title;
@@ -26,7 +27,6 @@ class NumberPickerDialog extends StatefulWidget {
 class _NumberPickerDialogState extends State<NumberPickerDialog> {
   static const _labelTextStyle = TextStyle(fontSize: 16.0);
   static const _wheelTextStyle = TextStyle(fontSize: 20.0, height: 2.5);
-  static const _buttonsTextStyle = TextStyle(fontSize: 16.0);
   final _wheelStyle = WheelPickerStyle(
     itemExtent: _wheelTextStyle.fontSize! * _wheelTextStyle.height!,
     size: 150.0,
@@ -73,15 +73,13 @@ class _NumberPickerDialogState extends State<NumberPickerDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        MaterialButton(
-          onPressed: widget.onCancel,
-          textColor: Theme.of(context).colorScheme.primary,
-          child: const Text("Cancel", style: _buttonsTextStyle),
+        DialogActionButtonsBuilder.buildMaterialAction(
+          text: "Cancel",
+          onAction: widget.onCancel,
         ),
-        MaterialButton(
-          onPressed: () => widget.onConfirm(_controller.selected + 1),
-          textColor: Theme.of(context).colorScheme.primary,
-          child: const Text("OK", style: _buttonsTextStyle),
+        DialogActionButtonsBuilder.buildMaterialAction(
+          text: "OK",
+          onAction: () => widget.onConfirm(_controller.selected + 1),
         ),
       ],
     );

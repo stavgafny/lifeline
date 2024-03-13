@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/upcoming_event_type.dart';
+import '../../../../models/upcoming_event_type.dart';
 
 class UpcomingEventTypeEditDialog extends StatelessWidget {
   final Function(UpcomingEventType type) onSubmit;

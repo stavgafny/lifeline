@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lifeline/src/widgets/number_picker_dialog.dart';
-import '../../utils/upcoming_event_edit_properties.dart';
+import 'package:lifeline/src/widgets/dialogs/number_picker_dialog.dart';
+import '../../../../utils/upcoming_event_edit_properties.dart';
 
 class UpcomingEventDaysEditDialog extends StatelessWidget {
   final int initialDays;

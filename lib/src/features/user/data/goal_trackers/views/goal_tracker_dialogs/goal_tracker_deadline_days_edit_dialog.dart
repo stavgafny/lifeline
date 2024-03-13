@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lifeline/src/widgets/number_picker_dialog.dart';
+import 'package:lifeline/src/widgets/dialogs/number_picker_dialog.dart';
 
 class GoalTrackerDeadlineDaysEditDialog extends StatelessWidget {
   static const int daysRange = 365;

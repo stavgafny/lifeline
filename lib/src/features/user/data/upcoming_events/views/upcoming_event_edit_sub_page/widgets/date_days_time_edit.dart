@@ -5,7 +5,7 @@ import 'package:lifeline/src/constants/theme/extensions/upcoming_event_edit_page
 import 'package:lifeline/src/utils/time_helper.dart';
 import '../../../controllers/upcoming_event_controller.dart';
 import '../../../utils/upcoming_event_edit_properties.dart';
-import '../../upcoming_event_dialogs/upcoming_event_days_edit_dialog.dart';
+import './dialogs/upcoming_event_days_edit_dialog.dart';
 
 class DateDaysTimeEdit extends StatelessWidget {
   static const _editFieldsHeight = 100.0;

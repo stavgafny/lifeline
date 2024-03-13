@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/widgets/dialogs/name_edit_dialog.dart';
 import '../../../controllers/timelines_controllers.dart';
 import '../../../timeline/models/timeline_model.dart';
+import './dialogs/delete_timeline_dialog.dart';
 
 class TimelineItemFooter extends ConsumerWidget {
   static const EdgeInsets _padding = EdgeInsets.fromLTRB(10.0, 0.0, 2.0, 6.0);
@@ -62,9 +63,18 @@ class TimelineItemFooter extends ConsumerWidget {
                       text: "Delete",
                       icon: Icons.delete_outline,
                       onTap: () {
-                        ref
-                            .read(timelinesProvider.notifier)
-                            .delete(timeline.name);
+                        showDialog(
+                          context: context,
+                          builder: (context) => DeleteTimelineDialog(
+                            timelineName: timeline.name,
+                            onDelete: () {
+                              ref
+                                  .read(timelinesProvider.notifier)
+                                  .delete(timeline.name);
+                            },
+                            onCancel: () => Navigator.of(context).pop(),
+                          ),
+                        );
                       },
                     ),
                   ],

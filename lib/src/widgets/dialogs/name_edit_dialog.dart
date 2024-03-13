@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './core/dialog_action_buttons_builder.dart';
 
 class NameEditDialog extends StatefulWidget {
   final String name;
@@ -19,6 +20,7 @@ class NameEditDialog extends StatefulWidget {
 }
 
 class _NameEditDialogState extends State<NameEditDialog> {
+  static const _borderRadius = BorderRadius.all(Radius.circular(12.5));
   static const _textStyle = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.w700,
@@ -56,6 +58,7 @@ class _NameEditDialogState extends State<NameEditDialog> {
   @override
   Widget build(BuildContext context) {
     final textFieldInputBorder = OutlineInputBorder(
+      borderRadius: _borderRadius,
       borderSide: BorderSide(
         color: Theme.of(context).colorScheme.primary,
         width: 2.0,
@@ -79,18 +82,15 @@ class _NameEditDialogState extends State<NameEditDialog> {
       ),
       actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
-        MaterialButton(
-          onPressed: widget.onCancel,
-          textColor: Theme.of(context).colorScheme.primary,
-          child: const Text("Cancel", style: _textStyle),
+        DialogActionButtonsBuilder.buildMaterialAction(
+          text: "Cancel",
+          onAction: widget.onCancel,
         ),
-        MaterialButton(
-          onPressed: _enabled
+        DialogActionButtonsBuilder.buildMaterialAction(
+          text: "OK",
+          onAction: _enabled
               ? () => widget.onConfirm.call(_controller.text.trim())
               : null,
-          textColor: _enabled ? Theme.of(context).colorScheme.primary : null,
-          disabledTextColor: Theme.of(context).disabledColor,
-          child: const Text("OK", style: _textStyle),
         ),
       ],
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../controllers/upcoming_event_controller.dart';
-import '../../upcoming_event_dialogs/upcoming_event_type_edit_dialog.dart';
+import './dialogs/upcoming_event_type_edit_dialog.dart';
 
 class TypeEdit extends ConsumerWidget {
   final UpcomingEventProvider editProvider;

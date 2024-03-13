@@ -26,6 +26,7 @@ class GoalName extends ConsumerWidget {
                     name: name,
                     onCancel: () => context.pop(),
                     onConfirm: (modifiedName) {
+                      if (modifiedName == name) return;
                       ref.read(provider.notifier).setName(modifiedName);
                       context.pop();
                     },
