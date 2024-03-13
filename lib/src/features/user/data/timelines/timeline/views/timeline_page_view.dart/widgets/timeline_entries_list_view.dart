@@ -19,34 +19,59 @@ class TimelineEntriesListView extends ConsumerStatefulWidget {
 
 class _TimelineEntriesListViewState
     extends ConsumerState<TimelineEntriesListView> {
-  TimelinesController get _timelinesController =>
-      ref.read(timelinesProvider.notifier);
-
   String _entryTitle(int index) => '${widget.timeline.name} #${index + 1}';
+
+  void _updateTimeline() {
+    ref.read(timelinesProvider.notifier).updateTimeline(widget.timeline);
+    setState(() {});
+  }
+
+  int _normalizeIndex(int index) => widget.timeline.entries.length - 1 - index;
 
   @override
   Widget build(BuildContext context) {
-    final timeline = widget.timeline;
+    return Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+      ),
+      child: ReorderableListView.builder(
+        reverse: true,
+        shrinkWrap: true,
+        itemCount: widget.timeline.entries.length,
+        itemBuilder: (context, index) {
+          return _buildEntry(context, _normalizeIndex(index));
+        },
+        onReorder: (oldIndex, newIndex) {
+          if (newIndex > oldIndex) newIndex--;
 
-    return ListView.builder(
-      itemCount: timeline.entries.length,
-      itemExtent: TimelineEntriesListView._cardsHeight,
-      itemBuilder: (context, index) {
-        final entry = timeline.entries.elementAt(index);
-        return EntryCardView(
-          model: entry,
-          entryIndex: index,
-          onTap: () => EntryPageEditView.display(
-            context,
-            entry: entry,
-            title: _entryTitle(index),
-            onUpdate: () {
-              _timelinesController.updateTimeline(timeline);
-              setState(() {});
-            },
-          ),
-        );
-      },
+          oldIndex = _normalizeIndex(oldIndex);
+          newIndex = _normalizeIndex(newIndex);
+          final entries = widget.timeline.entries;
+          entries.insert(newIndex, entries.removeAt(oldIndex));
+          _updateTimeline();
+        },
+        proxyDecorator: (child, i, a) => Material(child: child),
+      ),
+    );
+  }
+
+  Widget _buildEntry(BuildContext context, int index) {
+    final entry = widget.timeline.entries.elementAt(index);
+
+    return SizedBox(
+      key: ValueKey(entry),
+      height: TimelineEntriesListView._cardsHeight,
+      child: EntryCardView(
+        model: entry,
+        entryIndex: index,
+        onTap: () => EntryPageEditView.display(
+          context,
+          entry: entry,
+          title: _entryTitle(index),
+          onUpdate: _updateTimeline,
+        ),
+      ),
     );
   }
 }
