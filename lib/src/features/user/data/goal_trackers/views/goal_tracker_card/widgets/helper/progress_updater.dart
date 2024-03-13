@@ -29,10 +29,12 @@ class _ProgressUpdaterState extends ConsumerState<ProgressUpdater> {
   static const _tickDuration = Duration(seconds: 1);
   Timer? _tickTimer;
 
+  void _tryUpdate() => mounted ? setState(() {}) : null;
+
   void _handlePlayStateChanges() {
     final isPlaying = ref.read(widget.provider).isPlaying;
     isPlaying
-        ? _tickTimer = Timer.periodic(_tickDuration, (_) => setState(() {}))
+        ? _tickTimer = Timer.periodic(_tickDuration, (_) => _tryUpdate())
         : _tickTimer?.cancel();
   }
 
