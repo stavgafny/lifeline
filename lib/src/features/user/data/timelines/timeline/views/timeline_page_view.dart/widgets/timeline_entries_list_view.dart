@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../controllers/timelines_controllers.dart';
+import '../../../entries/entry/models/entry_model.dart';
 import '../../../entries/entry/views/entry_card_view/entry_card_view.dart';
-import '../../../entries/entry/views/entry_page_edit_view/entry_page_edit_view.dart';
+import '../../../entries/entry/views/entry_page_view/entry_page_view.dart';
 import '../../../models/timeline_model.dart';
 
 class TimelineEntriesListView extends ConsumerStatefulWidget {
@@ -24,6 +25,11 @@ class _TimelineEntriesListViewState
   void _updateTimeline() {
     ref.read(timelinesProvider.notifier).updateTimeline(widget.timeline);
     setState(() {});
+  }
+
+  void _deleteEntry(EntryModel entry) {
+    widget.timeline.entries.remove(entry);
+    _updateTimeline();
   }
 
   int _normalizeIndex(int index) => widget.timeline.entries.length - 1 - index;
@@ -65,11 +71,12 @@ class _TimelineEntriesListViewState
       child: EntryCardView(
         model: entry,
         entryIndex: index,
-        onTap: () => EntryPageEditView.display(
+        onTap: () => EntryPageView.display(
           context,
           entry: entry,
           title: _entryTitle(index),
           onUpdate: _updateTimeline,
+          onDelete: () => _deleteEntry(entry),
         ),
       ),
     );
