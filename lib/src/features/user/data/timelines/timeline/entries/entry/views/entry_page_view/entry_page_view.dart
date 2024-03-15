@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/entry_model.dart';
 import './widgets/entry_input_fields_view.dart';
+import './widgets/entry_delete_action.dart';
 
 class EntryPageView extends StatelessWidget {
   static const _padding = EdgeInsets.all(10.0);
@@ -45,15 +46,7 @@ class EntryPageView extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              onDelete.call();
-            },
-            icon: const Icon(Icons.delete_forever),
-          ),
-        ],
+        actions: [EntryDeleteAction(onDelete: onDelete)],
       ),
       body: Padding(
         padding: EntryPageView._padding,

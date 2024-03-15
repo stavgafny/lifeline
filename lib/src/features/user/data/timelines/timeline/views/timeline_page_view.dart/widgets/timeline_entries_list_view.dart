@@ -22,17 +22,19 @@ class _TimelineEntriesListViewState
     extends ConsumerState<TimelineEntriesListView> {
   String _entryTitle(int index) => '${widget.timeline.name} #${index + 1}';
 
+  List<EntryModel> get entries => widget.timeline.entries;
+
   void _updateTimeline() {
     ref.read(timelinesProvider.notifier).updateTimeline(widget.timeline);
     setState(() {});
   }
 
   void _deleteEntry(EntryModel entry) {
-    widget.timeline.entries.remove(entry);
+    entries.remove(entry);
     _updateTimeline();
   }
 
-  int _normalizeIndex(int index) => widget.timeline.entries.length - 1 - index;
+  int _normalizeIndex(int index) => entries.length - index - 1;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class _TimelineEntriesListViewState
       child: ReorderableListView.builder(
         reverse: true,
         shrinkWrap: true,
-        itemCount: widget.timeline.entries.length,
+        itemCount: entries.length,
         itemBuilder: (context, index) {
           return _buildEntry(context, _normalizeIndex(index));
         },
@@ -53,7 +55,6 @@ class _TimelineEntriesListViewState
 
           oldIndex = _normalizeIndex(oldIndex);
           newIndex = _normalizeIndex(newIndex);
-          final entries = widget.timeline.entries;
           entries.insert(newIndex, entries.removeAt(oldIndex));
           _updateTimeline();
         },
