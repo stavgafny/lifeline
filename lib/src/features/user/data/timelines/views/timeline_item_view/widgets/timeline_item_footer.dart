@@ -71,6 +71,7 @@ class TimelineItemFooter extends ConsumerWidget {
                               ref
                                   .read(timelinesProvider.notifier)
                                   .delete(timeline.name);
+                              Navigator.of(context).pop();
                             },
                             onCancel: () => Navigator.of(context).pop(),
                           ),
