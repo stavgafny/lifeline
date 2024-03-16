@@ -37,7 +37,11 @@ class _TimelineEntriesListViewState
     _updateTimeline();
   }
 
-  void _addEntry() {}
+  void _addEntry() {
+    final entry = EntryModel.createNew(widget.timeline.template);
+    entries.add(entry);
+    _updateTimeline();
+  }
 
   void _onReorder(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex--;
@@ -79,7 +83,7 @@ class _TimelineEntriesListViewState
     final entry = widget.timeline.entries.elementAt(index);
 
     return SizedBox(
-      key: ValueKey(entry),
+      key: ValueKey(index),
       height: TimelineEntriesListView._cardsHeight,
       child: EntryCardView(
         model: entry,

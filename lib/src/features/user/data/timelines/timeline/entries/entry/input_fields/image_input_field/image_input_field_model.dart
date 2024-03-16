@@ -5,6 +5,9 @@ class ImageInputFieldModel extends InputFieldModel<String> {
     required super.value,
   }) : super(type: InputFieldModelType.image);
 
+  const ImageInputFieldModel.empty()
+      : super(type: InputFieldModelType.image, value: "");
+
   @override
   String serialize() => value;
 

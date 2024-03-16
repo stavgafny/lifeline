@@ -51,9 +51,6 @@ class _NonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.contain,
-      child: Expanded(child: Icon(icon)),
-    );
+    return FittedBox(fit: BoxFit.contain, child: Icon(icon));
   }
 }

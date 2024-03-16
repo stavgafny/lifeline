@@ -5,6 +5,9 @@ class TextInputFieldModel extends InputFieldModel<String> {
     required super.value,
   }) : super(type: InputFieldModelType.text);
 
+  const TextInputFieldModel.empty()
+      : super(type: InputFieldModelType.text, value: "");
+
   @override
   String serialize() => value;
 

@@ -33,6 +33,21 @@ abstract class InputFieldModel<T> {
     }
   }
 
+  static InputFieldModel empty(InputFieldModelType type) {
+    switch (type) {
+      case InputFieldModelType.text:
+        return const TextInputFieldModel.empty();
+      case InputFieldModelType.number:
+        return const NumberInputFieldModel.empty();
+      case InputFieldModelType.weight:
+        return const WeightInputFieldModel.empty();
+      case InputFieldModelType.stars:
+        return const StarsInputFieldModel.empty();
+      case InputFieldModelType.image:
+        return const ImageInputFieldModel.empty();
+    }
+  }
+
   @override
   String toString() => 'InputFieldModel[${type.name}](value: $value)';
 }

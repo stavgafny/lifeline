@@ -5,6 +5,9 @@ class WeightInputFieldModel extends MeasurableInputFieldModel<num> {
     required super.value,
   }) : super(type: InputFieldModelType.weight);
 
+  const WeightInputFieldModel.empty()
+      : super(type: InputFieldModelType.weight, value: 0);
+
   @override
   double get measurableValue => value.toDouble();
 

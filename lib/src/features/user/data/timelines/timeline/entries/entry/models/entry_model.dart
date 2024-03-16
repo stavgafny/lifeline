@@ -6,6 +6,13 @@ class EntryModel {
   final List<String> tags;
   const EntryModel({required this.inputFields, required this.tags});
 
+  factory EntryModel.createNew(List<InputFieldModelType> types) {
+    final inputFields = [
+      for (final inputFieldType in types) InputFieldModel.empty(inputFieldType)
+    ];
+    return EntryModel(inputFields: inputFields, tags: []);
+  }
+
   EntryModel copyWith({
     List<InputFieldModel>? inputFields,
     List<String>? tags,

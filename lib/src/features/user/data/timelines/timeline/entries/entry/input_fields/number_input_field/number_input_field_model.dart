@@ -6,6 +6,9 @@ class NumberInputFieldModel extends MeasurableInputFieldModel<num> {
     required super.value,
   }) : super(type: InputFieldModelType.number);
 
+  const NumberInputFieldModel.empty()
+      : super(type: InputFieldModelType.number, value: 0);
+
   @override
   double get measurableValue => value.toDouble();
 

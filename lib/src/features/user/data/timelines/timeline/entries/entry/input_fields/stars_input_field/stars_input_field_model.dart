@@ -8,6 +8,9 @@ class StarsInputFieldModel extends MeasurableInputFieldModel<double> {
     required super.value,
   }) : super(type: InputFieldModelType.stars);
 
+  const StarsInputFieldModel.empty()
+      : super(type: InputFieldModelType.stars, value: 0);
+
   @override
   double get measurableValue => value;
 
