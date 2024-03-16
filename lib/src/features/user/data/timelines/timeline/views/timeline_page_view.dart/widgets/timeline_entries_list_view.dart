@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../controllers/timelines_controllers.dart';
@@ -5,6 +7,7 @@ import '../../../entries/entry/models/entry_model.dart';
 import '../../../entries/entry/views/entry_card_view/entry_card_view.dart';
 import '../../../entries/entry/views/entry_page_view/entry_page_view.dart';
 import '../../../models/timeline_model.dart';
+import './timeline_add_entry_button.dart';
 
 class TimelineEntriesListView extends ConsumerStatefulWidget {
   static const double _cardsHeight = 150.0;
@@ -34,32 +37,41 @@ class _TimelineEntriesListViewState
     _updateTimeline();
   }
 
+  void _addEntry() {}
+
+  void _onReorder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex--;
+
+    oldIndex = _normalizeIndex(oldIndex);
+    newIndex = _normalizeIndex(newIndex);
+    entries.insert(newIndex, entries.removeAt(oldIndex));
+    _updateTimeline();
+  }
+
   int _normalizeIndex(int index) => entries.length - index - 1;
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        canvasColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-      ),
-      child: ReorderableListView.builder(
-        reverse: true,
-        shrinkWrap: true,
-        itemCount: entries.length,
-        itemBuilder: (context, index) {
-          return _buildEntry(context, _normalizeIndex(index));
-        },
-        onReorder: (oldIndex, newIndex) {
-          if (newIndex > oldIndex) newIndex--;
-
-          oldIndex = _normalizeIndex(oldIndex);
-          newIndex = _normalizeIndex(newIndex);
-          entries.insert(newIndex, entries.removeAt(oldIndex));
-          _updateTimeline();
-        },
-        proxyDecorator: (child, i, a) => Material(child: child),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            canvasColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+          ),
+          child: ReorderableListView.builder(
+            reverse: true,
+            shrinkWrap: true,
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              return _buildEntry(context, _normalizeIndex(index));
+            },
+            onReorder: _onReorder,
+            header: _buildAddEntryButton(context, constraints),
+            proxyDecorator: (child, i, a) => Material(child: child),
+          ),
+        );
+      },
     );
   }
 
@@ -78,6 +90,34 @@ class _TimelineEntriesListViewState
           title: _entryTitle(index),
           onUpdate: _updateTimeline,
           onDelete: () => _deleteEntry(entry),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddEntryButton(
+      BuildContext context, BoxConstraints constraints) {
+    final mediaQueryPadding = MediaQuery.of(context).padding;
+    final entriesHeight = entries.length * TimelineEntriesListView._cardsHeight;
+
+    final double remainingScreenHeight = max(
+      constraints.maxHeight -
+          mediaQueryPadding.top -
+          mediaQueryPadding.bottom -
+          entriesHeight,
+      TimelineAddEntryButton.height,
+    );
+
+    return SizedBox(
+      height: remainingScreenHeight,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          height: TimelineAddEntryButton.height,
+          child: TimelineAddEntryButton(
+            entryNumber: entries.length + 1,
+            onTap: _addEntry,
+          ),
         ),
       ),
     );
