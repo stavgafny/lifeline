@@ -20,6 +20,7 @@ class TextInputFieldPreview extends InputFieldPreview<TextInputFieldModel> {
         child: Text(
           model.value.isEmpty ? "Empty text" : model.value,
           overflow: TextOverflow.ellipsis,
+          maxLines: 1,
           style: const TextStyle(fontSize: 11.0),
           textAlign: model.value.isEmpty ? TextAlign.center : TextAlign.justify,
         ),
