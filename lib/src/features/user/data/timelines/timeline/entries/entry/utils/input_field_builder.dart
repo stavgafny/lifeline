@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 import '../input_fields/core/input_field_model.dart';
 import '../input_fields/core/input_field_preview.dart';
+import '../input_fields/core/input_field_widget.dart';
 
 import '../input_fields/image_input_field/image_input_field_model.dart';
 import '../input_fields/image_input_field/image_input_field_preview.dart';
@@ -40,7 +39,7 @@ class InputFieldBuilder {
     }
   }
 
-  static Widget buildWidget({
+  static InputFieldWidget buildWidget({
     required InputFieldModel model,
     required final void Function(InputFieldModel snapshot) onChange,
   }) {

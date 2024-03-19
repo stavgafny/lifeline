@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lifeline/src/widgets/helper/widget_list_extension.dart';
 import '../../../input_fields/core/input_field_model.dart';
+import '../../../utils/entry_layout_builder.dart';
 import '../../../utils/input_field_builder.dart';
 
-class EntryInputFieldsView extends StatefulWidget {
-  static const _itemGap = 15.0;
-
+class EntryInputFieldsView extends StatelessWidget {
   final List<InputFieldModel> inputFields;
   final void Function() onUpdate;
 
@@ -15,28 +13,21 @@ class EntryInputFieldsView extends StatefulWidget {
     required this.onUpdate,
   });
 
-  @override
-  State<EntryInputFieldsView> createState() => _EntryInputFieldsViewState();
-}
+  void _updateInputField(int index, InputFieldModel updatedInputField) {
+    inputFields[index] = updatedInputField;
+    onUpdate.call();
+  }
 
-class _EntryInputFieldsViewState extends State<EntryInputFieldsView> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        for (final inputField in widget.inputFields)
+    return EntryLayoutBuilder.of(context).buildLayout(
+      inputFieldsWidgets: [
+        for (int i = 0; i < inputFields.length; i++)
           InputFieldBuilder.buildWidget(
-            model: inputField,
-            onChange: (snapshot) {
-              final index = widget.inputFields.indexOf(inputField);
-              if (inputField.value == snapshot.value || index == -1) return;
-              setState(() {
-                widget.inputFields[index] = snapshot;
-                widget.onUpdate();
-              });
-            },
+            model: inputFields[i],
+            onChange: (snapshot) => _updateInputField(i, snapshot),
           )
-      ].withSpaceBetween(height: EntryInputFieldsView._itemGap),
+      ],
     );
   }
 }

@@ -6,7 +6,7 @@ import './widgets/entry_delete_action.dart';
 class EntryPageView extends StatelessWidget {
   static const _padding = EdgeInsets.all(10.0);
 
-  static void display(
+  static Future<void> display(
     BuildContext context, {
     required EntryModel entry,
     required String title,
@@ -20,7 +20,7 @@ class EntryPageView extends StatelessWidget {
       onDelete: onDelete,
     );
 
-    showDialog(
+    return showDialog(
       context: context,
       builder: (context) => page,
       barrierDismissible: false,

@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import '../../../../../services/timelines_images_storage.dart';
 import '../core/input_field_widget.dart';
 import './image_input_field_model.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../../services/timelines_images_storage.dart';
 
-class ImageInputFieldWidget
-    extends StatefulInputFieldWidget<ImageInputFieldModel> {
+class ImageInputFieldWidget extends InputFieldWidget<ImageInputFieldModel> {
   const ImageInputFieldWidget({
     super.key,
     required super.model,
@@ -15,10 +14,26 @@ class ImageInputFieldWidget
   });
 
   @override
-  State<ImageInputFieldWidget> createState() => _ImageInputFieldWidgetState();
+  Widget build(BuildContext context) {
+    return _ImageInputFieldWidget(key: key, model: model, onChange: onChange);
+  }
 }
 
-class _ImageInputFieldWidgetState extends State<ImageInputFieldWidget> {
+class _ImageInputFieldWidget extends StatefulWidget {
+  final ImageInputFieldModel model;
+  final void Function(ImageInputFieldModel) onChange;
+
+  const _ImageInputFieldWidget({
+    super.key,
+    required this.model,
+    required this.onChange,
+  });
+
+  @override
+  State<_ImageInputFieldWidget> createState() => _ImageInputFieldWidgetState();
+}
+
+class _ImageInputFieldWidgetState extends State<_ImageInputFieldWidget> {
   late ImageInputFieldModel _current = widget.model;
 
   void _handlePickImage() async {
@@ -41,14 +56,14 @@ class _ImageInputFieldWidgetState extends State<ImageInputFieldWidget> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _handlePickImage,
-      child: _InputFieldImage(model: _current),
+      child: _ImageField(model: _current),
     );
   }
 }
 
-class _InputFieldImage extends StatelessWidget {
+class _ImageField extends StatelessWidget {
   final ImageInputFieldModel model;
-  const _InputFieldImage({required this.model});
+  const _ImageField({required this.model});
 
   @override
   Widget build(BuildContext context) {

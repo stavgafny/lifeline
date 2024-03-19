@@ -37,10 +37,11 @@ class _TimelineEntriesListViewState
     _updateTimeline();
   }
 
-  void _addEntry() {
+  void _addEntry() async {
     final entry = EntryModel.createNew(widget.timeline.template);
     entries.add(entry);
-    _updateTimeline();
+    await _displayEntry(context, entry, entries.length - 1);
+    if (mounted) _updateTimeline();
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -50,6 +51,20 @@ class _TimelineEntriesListViewState
     newIndex = _normalizeIndex(newIndex);
     entries.insert(newIndex, entries.removeAt(oldIndex));
     _updateTimeline();
+  }
+
+  Future<void> _displayEntry(
+    BuildContext context,
+    EntryModel entry,
+    int index,
+  ) {
+    return EntryPageView.display(
+      context,
+      entry: entry,
+      title: _entryTitle(index),
+      onUpdate: _updateTimeline,
+      onDelete: () => _deleteEntry(entry),
+    );
   }
 
   int _normalizeIndex(int index) => entries.length - index - 1;
@@ -88,13 +103,7 @@ class _TimelineEntriesListViewState
       child: EntryCardView(
         model: entry,
         entryIndex: index,
-        onTap: () => EntryPageView.display(
-          context,
-          entry: entry,
-          title: _entryTitle(index),
-          onUpdate: _updateTimeline,
-          onDelete: () => _deleteEntry(entry),
-        ),
+        onTap: () => _displayEntry(context, entry, index),
       ),
     );
   }
