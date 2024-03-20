@@ -12,8 +12,8 @@ class TimelinesController extends StateNotifier<List<TimelineModel>> {
 
   void _refreshFromDB() => state = TimelinesDatabase.getAll();
 
-  bool canCreate(String name) {
-    return !TimelinesDatabase.exists(name);
+  bool nameExists(String name) {
+    return TimelinesDatabase.exists(name);
   }
 
   void rename({required String from, required String to}) {
@@ -28,5 +28,15 @@ class TimelinesController extends StateNotifier<List<TimelineModel>> {
 
   void updateTimeline(TimelineModel timeline) {
     TimelinesDatabase.store(timeline.copyWith(lastModified: DateTime.now()));
+  }
+
+  String getSuggestedNewName() {
+    int index = state.length;
+    String timelineName;
+    do {
+      timelineName = "${(++index).toString().padLeft(2, '0')}. My Timeline";
+    } while (nameExists(timelineName));
+
+    return timelineName;
   }
 }

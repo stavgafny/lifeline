@@ -2,13 +2,17 @@ import 'package:flutter/foundation.dart';
 import '../entries/entry/input_fields/core/input_field_model.dart';
 import '../entries/entry/models/entry_model.dart';
 
+part 'timeline_create_model.dart';
+
+typedef TimelineTemplate = List<InputFieldModelType>;
+
 class TimelineModel {
   final String name;
   final List<EntryModel> entries;
-  final List<InputFieldModelType> template;
+  final TimelineTemplate template;
   final DateTime lastModified;
 
-  TimelineModel({
+  const TimelineModel({
     required this.name,
     required this.entries,
     required this.template,
