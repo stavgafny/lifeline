@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import '../../../controllers/timelines_controllers.dart';
 import '../../controllers/timeline_create_controller.dart';
 import './widgets/timeline_name_text_field.dart';
+import './widgets/timeline_template_selection.dart';
 
 class TimelineCreatePageView extends StatelessWidget {
+  static const _padding = EdgeInsets.all(10.0);
+  static const _gap = SizedBox(height: 40.0);
+
   static void display(BuildContext context) async {
     final timeline = TimelineCreateProvider(
       (ref) {
@@ -36,10 +40,15 @@ class TimelineCreatePageView extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Column(
-        children: [
-          TimelineNameTextField(timeline: timeline),
-        ],
+      body: Padding(
+        padding: _padding,
+        child: Column(
+          children: [
+            TimelineNameTextField(timeline: timeline),
+            _gap,
+            TimelineTemplateSelection(timeline: timeline),
+          ],
+        ),
       ),
     );
   }

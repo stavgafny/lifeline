@@ -17,30 +17,27 @@ class TimelineNameTextField extends ConsumerWidget {
     final name = ref.watch(timeline.select((t) => t.name));
     final nameExists = ref.watch(timelinesProvider.notifier).nameExists(name);
 
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _nameLabel(context),
-          const SizedBox(width: 8.0),
-          Expanded(
-            child: TextFormField(
-              autofocus: true,
-              initialValue: ref.read(timeline).name,
-              onChanged: (name) => ref.read(timeline.notifier).setName(name),
-              style: _textStyle,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsetsDirectional.zero,
-                enabledBorder: border,
-                focusedBorder: border,
-                errorText: nameExists ? "Name already exists" : null,
-                isDense: true,
-              ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _nameLabel(context),
+        const SizedBox(width: 8.0),
+        Expanded(
+          child: TextFormField(
+            autofocus: true,
+            initialValue: ref.read(timeline).name,
+            onChanged: (name) => ref.read(timeline.notifier).setName(name),
+            style: _textStyle,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsetsDirectional.zero,
+              enabledBorder: border,
+              focusedBorder: border,
+              errorText: nameExists ? "Name already exists" : null,
+              isDense: true,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
