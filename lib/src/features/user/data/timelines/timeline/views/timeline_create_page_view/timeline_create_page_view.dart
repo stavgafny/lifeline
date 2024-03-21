@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../../controllers/timelines_controllers.dart';
 import '../../controllers/timeline_create_controller.dart';
-import './widgets/timeline_name_text_field.dart';
-import './widgets/timeline_template_selection.dart';
+import './widgets/timeline_create_name_text_field.dart';
+import './widgets/timeline_create_template_selection.dart';
+import './widgets/timeline_create_fab.dart';
 
 class TimelineCreatePageView extends StatelessWidget {
   static const _padding = EdgeInsets.all(10.0);
   static const _gap = SizedBox(height: 40.0);
 
   static void display(BuildContext context) async {
-    final timeline = TimelineCreateProvider(
-      (ref) {
-        final name = ref.read(timelinesProvider.notifier).getSuggestedNewName();
-        return TimelineCreateController(initialName: name);
-      },
+    final timelineCreate = TimelineCreateProvider(
+      (ref) => TimelineCreateController(ref),
     );
 
-    final page = TimelineCreatePageView._(timeline);
+    final page = TimelineCreatePageView._(timelineCreate);
 
     await showDialog(
       context: context,
@@ -26,13 +23,14 @@ class TimelineCreatePageView extends StatelessWidget {
     );
   }
 
-  final TimelineCreateProvider timeline;
+  final TimelineCreateProvider timelineCreate;
 
-  const TimelineCreatePageView._(this.timeline);
+  const TimelineCreatePageView._(this.timelineCreate);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: const Text(
@@ -44,12 +42,14 @@ class TimelineCreatePageView extends StatelessWidget {
         padding: _padding,
         child: Column(
           children: [
-            TimelineNameTextField(timeline: timeline),
+            TimelineCreateNameTextField(timelineCreate: timelineCreate),
             _gap,
-            TimelineTemplateSelection(timeline: timeline),
+            TimelineCreateTemplateSelection(timelineCreate: timelineCreate),
           ],
         ),
       ),
+      floatingActionButton: TimelineCreateFAB(timelineCreate: timelineCreate),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

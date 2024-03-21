@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../controllers/timelines_controllers.dart';
 import '../../../controllers/timeline_create_controller.dart';
 
-class TimelineNameTextField extends ConsumerWidget {
+class TimelineCreateNameTextField extends ConsumerWidget {
   static const _textStyle = TextStyle(fontSize: 24.0);
 
-  final TimelineCreateProvider timeline;
+  final TimelineCreateProvider timelineCreate;
 
-  const TimelineNameTextField({super.key, required this.timeline});
+  const TimelineCreateNameTextField({super.key, required this.timelineCreate});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final nameExists = ref.watch(timelineCreate.select((t) => t.nameExists));
+
     final border = _inputBorder(context);
-
-    final name = ref.watch(timeline.select((t) => t.name));
-    final nameExists = ref.watch(timelinesProvider.notifier).nameExists(name);
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -24,9 +21,9 @@ class TimelineNameTextField extends ConsumerWidget {
         const SizedBox(width: 8.0),
         Expanded(
           child: TextFormField(
-            autofocus: true,
-            initialValue: ref.read(timeline).name,
-            onChanged: (name) => ref.read(timeline.notifier).setName(name),
+            initialValue: ref.read(timelineCreate).name,
+            onChanged: (name) =>
+                ref.read(timelineCreate.notifier).setName(name),
             style: _textStyle,
             decoration: InputDecoration(
               contentPadding: EdgeInsetsDirectional.zero,

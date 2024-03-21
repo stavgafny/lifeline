@@ -30,6 +30,18 @@ class TimelinesController extends StateNotifier<List<TimelineModel>> {
     TimelinesDatabase.store(timeline.copyWith(lastModified: DateTime.now()));
   }
 
+  TimelineModel? createTimeline(TimelineCreateModel createModel) {
+    if (createModel.name.isEmpty ||
+        nameExists(createModel.name) ||
+        createModel.template.isEmpty) {
+      return null;
+    }
+    final timeline = TimelineModel.create(createModel);
+    updateTimeline(timeline);
+    _refreshFromDB();
+    return timeline;
+  }
+
   String getSuggestedNewName() {
     int index = state.length;
     String timelineName;

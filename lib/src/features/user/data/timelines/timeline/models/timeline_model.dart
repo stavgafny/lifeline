@@ -19,6 +19,12 @@ class TimelineModel {
     required this.lastModified,
   });
 
+  TimelineModel.create(TimelineCreateModel createModel)
+      : name = createModel.name,
+        entries = [],
+        template = createModel.template,
+        lastModified = DateTime.now();
+
   TimelineModel copyWith({
     String? name,
     List<EntryModel>? entries,

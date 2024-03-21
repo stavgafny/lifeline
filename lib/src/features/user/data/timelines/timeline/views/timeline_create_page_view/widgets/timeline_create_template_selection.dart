@@ -31,14 +31,17 @@ class _TypeChip {
   }
 }
 
-class TimelineTemplateSelection extends ConsumerWidget {
-  final TimelineCreateProvider timeline;
+class TimelineCreateTemplateSelection extends ConsumerWidget {
+  final TimelineCreateProvider timelineCreate;
 
-  const TimelineTemplateSelection({super.key, required this.timeline});
+  const TimelineCreateTemplateSelection({
+    super.key,
+    required this.timelineCreate,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final template = ref.watch(timeline.select((t) => t.template));
+    final template = ref.watch(timelineCreate.select((t) => t.template));
 
     return Expanded(
       child: SizedBox(
@@ -58,7 +61,7 @@ class TimelineTemplateSelection extends ConsumerWidget {
                         template.contains(type),
                         (selected) {
                           ref
-                              .read(timeline.notifier)
+                              .read(timelineCreate.notifier)
                               .setTypeOnTemplate(type, selected);
                         },
                       )

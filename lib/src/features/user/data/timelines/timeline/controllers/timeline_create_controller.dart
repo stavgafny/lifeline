@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../controllers/timelines_controllers.dart';
 import '../../timeline/models/timeline_model.dart';
 import '../entries/entry/input_fields/core/input_field_model.dart';
 
@@ -6,12 +7,22 @@ typedef TimelineCreateProvider = AutoDisposeStateNotifierProvider<
     TimelineCreateController, TimelineCreateModel>;
 
 class TimelineCreateController extends StateNotifier<TimelineCreateModel> {
-  TimelineCreateController({
-    required String initialName,
-    TimelineTemplate? template,
-  }) : super(TimelineCreateModel(name: initialName, template: template));
+  final Ref _ref;
 
-  void setName(String name) => state = state.copyWith(name: name);
+  TimelineCreateController(this._ref)
+      : super(
+          TimelineCreateModel(
+            name: _ref.read(timelinesProvider.notifier).getSuggestedNewName(),
+            template: [],
+          ),
+        );
+
+  void setName(String name) {
+    state = state.copyWith(
+      name: name,
+      nameExists: _ref.read(timelinesProvider.notifier).nameExists(name),
+    );
+  }
 
   void setTypeOnTemplate(InputFieldModelType type, bool isSet) {
     final template = [...state.template];
@@ -25,5 +36,9 @@ class TimelineCreateController extends StateNotifier<TimelineCreateModel> {
       return;
     }
     state = state.copyWith(template: template);
+  }
+
+  TimelineModel? createTimeline() {
+    return _ref.read(timelinesProvider.notifier).createTimeline(state);
   }
 }
