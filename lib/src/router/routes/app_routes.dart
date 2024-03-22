@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import './core/splash_screen.dart';
+import './core/custom_page_transitions.dart';
 import '../../features/authentication/signin/signin_screen.dart';
 import '../../features/authentication/signup/signup_screen.dart';
 import '../../features/authentication/email_verification/email_verification_screen.dart';
@@ -10,9 +12,18 @@ import '../../features/user/swipeable_screens/screens/home/home_screen.dart';
 import '../../features/user/swipeable_screens/screens/dashboard/dashboard_screen.dart';
 import '../../features/user/swipeable_screens/screens/timeline/timeline_screen.dart';
 
-final _userShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'u_shell');
+class _NavigatorKeys {
+  static _NavigatorKeys instance = _NavigatorKeys._();
+
+  final root = GlobalKey<NavigatorState>(debugLabel: 'root');
+  final userShell = GlobalKey<NavigatorState>(debugLabel: 'u_shell');
+
+  _NavigatorKeys._();
+}
 
 class AppRoutes {
+  static final navigatorKeys = _NavigatorKeys.instance;
+
   static const String initial = "/";
   static const String error = "/error";
   static const String signin = "/signin";
@@ -33,28 +44,33 @@ class AppRoutes {
 
   static List<RouteBase> routes = [
     GoRoute(
+      parentNavigatorKey: navigatorKeys.root,
       path: initial,
-      builder: (context, state) => const _Splash(),
+      builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
+      parentNavigatorKey: navigatorKeys.root,
       path: signin,
       builder: (context, state) => const SigninScreen(),
     ),
     GoRoute(
+      parentNavigatorKey: navigatorKeys.root,
       path: signup,
       builder: (context, state) => const SignupScreen(),
     ),
     GoRoute(
+      parentNavigatorKey: navigatorKeys.root,
       path: emailVerification,
       builder: (context, state) => const EmailVerificationScreen(),
     ),
     GoRoute(
+      parentNavigatorKey: navigatorKeys.root,
       path: forgotPassword,
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     ShellRoute(
-      navigatorKey: _userShellNavigatorKey,
-      pageBuilder: (context, state, child) => _buildShellTransitionPage(
+      navigatorKey: navigatorKeys.userShell,
+      pageBuilder: (context, state, child) => CustomPageTransitions.shell(
         context: context,
         state: state,
         child: user_swipeable_shell.ShellScreen(
@@ -64,64 +80,33 @@ class AppRoutes {
       ),
       routes: [
         GoRoute(
+          parentNavigatorKey: navigatorKeys.userShell,
           path: home,
-          pageBuilder: (context, state) => _buildShellTransitionPage(
+          pageBuilder: (context, state) => CustomPageTransitions.shell(
             context: context,
             state: state,
             child: const HomeScreen(),
           ),
-          parentNavigatorKey: _userShellNavigatorKey,
         ),
         GoRoute(
+          parentNavigatorKey: navigatorKeys.userShell,
           path: dashboard,
-          pageBuilder: (context, state) => _buildShellTransitionPage(
+          pageBuilder: (context, state) => CustomPageTransitions.shell(
             context: context,
             state: state,
             child: const DashboardScreen(),
           ),
-          parentNavigatorKey: _userShellNavigatorKey,
         ),
         GoRoute(
+          parentNavigatorKey: navigatorKeys.userShell,
           path: timeline,
-          pageBuilder: (context, state) => _buildShellTransitionPage(
+          pageBuilder: (context, state) => CustomPageTransitions.shell(
             context: context,
             state: state,
             child: const TimelineScreen(),
           ),
-          parentNavigatorKey: _userShellNavigatorKey,
         ),
       ],
     ),
   ];
-}
-
-class _Splash extends StatelessWidget {
-  const _Splash();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
-CustomTransitionPage _buildShellTransitionPage<T>({
-  required BuildContext context,
-  required GoRouterState state,
-  required Widget child,
-}) {
-  return CustomTransitionPage<T>(
-    key: state.pageKey,
-    transitionDuration: const Duration(milliseconds: 300),
-    barrierColor: Theme.of(context).scaffoldBackgroundColor,
-    child: child,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        FadeTransition(
-      opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
-      child: child,
-    ),
-  );
 }
