@@ -1,13 +1,14 @@
-import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:lifeline/src/utils/time_helper.dart';
-import './upcoming_event_type.dart';
+
+part './upcoming_event_type.dart';
 
 class UpcomingEventModel {
   final String name;
   final UpcomingEventType type;
   final DateTime dateTime;
   final String details;
+
   UpcomingEventModel({
     required this.name,
     required this.type,
@@ -40,28 +41,23 @@ class UpcomingEventModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
       'dateTime': dateTime.millisecondsSinceEpoch,
-      'type': type.toMap(),
+      'type': type.toJson(),
       'details': details,
     };
   }
 
-  factory UpcomingEventModel.fromMap(Map<String, dynamic> map) {
+  factory UpcomingEventModel.fromJson(dynamic map) {
     return UpcomingEventModel(
       name: map['name'] as String,
       dateTime: DateTime.fromMillisecondsSinceEpoch(map['dateTime'] as int),
-      type: UpcomingEventType.fromMap(map['type'] as String),
+      type: UpcomingEventType.fromJson(map['type'] as String),
       details: map['details'] as String,
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory UpcomingEventModel.fromJson(String source) =>
-      UpcomingEventModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

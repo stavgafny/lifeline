@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/upcoming_event_model.dart';
-import '../models/upcoming_event_type.dart';
 
 typedef UpcomingEventProvider
     = StateNotifierProvider<UpcomingEventController, UpcomingEventModel>;

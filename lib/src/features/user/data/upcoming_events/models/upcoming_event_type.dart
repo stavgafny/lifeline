@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of './upcoming_event_model.dart';
 
 // Path to all upcoming_events assets
 const _assetsPath = "assets/upcoming_events/";
@@ -23,13 +23,11 @@ enum UpcomingEventType {
   const UpcomingEventType(this.value);
   final AssetImage value;
 
-  String toMap() {
-    return name;
-  }
+  String toJson() => name;
 
-  factory UpcomingEventType.fromMap(String mappedType) {
+  factory UpcomingEventType.fromJson(dynamic typeName) {
     try {
-      return UpcomingEventType.values.byName(mappedType);
+      return UpcomingEventType.values.byName(typeName);
     } catch (_) {
       return defaultType;
     }
