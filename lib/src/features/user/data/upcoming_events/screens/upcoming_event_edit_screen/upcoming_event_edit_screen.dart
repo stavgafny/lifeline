@@ -11,23 +11,30 @@ import './widgets/details_edit.dart';
 import './widgets/action_buttons.dart';
 import './widgets/unsaved_changes_wrapper.dart';
 
-class UpcomingEventEditScreen extends ConsumerWidget {
+class UpcomingEventEditScreen extends ConsumerStatefulWidget {
   final int upcomingEventIndex;
 
   const UpcomingEventEditScreen({super.key, required this.upcomingEventIndex});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final upcomingEvent = upcomingEventIndex != -1
-        ? ref.read(upcomingEventsProvider)[upcomingEventIndex]
-        : UpcomingEventProvider(
-            (ref) => UpcomingEventController(UpcomingEventModel.empty()),
-          );
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _UpcomingEventEditScreenState();
+}
 
-    final editProvider = UpcomingEventProvider((ref) {
-      return UpcomingEventController(ref.read(upcomingEvent));
-    });
+class _UpcomingEventEditScreenState
+    extends ConsumerState<UpcomingEventEditScreen> {
+  late final upcomingEvent = widget.upcomingEventIndex != -1
+      ? ref.read(upcomingEventsProvider)[widget.upcomingEventIndex]
+      : UpcomingEventProvider(
+          (ref) => UpcomingEventController(UpcomingEventModel.empty()),
+        );
 
+  late final editProvider = UpcomingEventProvider((ref) {
+    return UpcomingEventController(ref.read(upcomingEvent));
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Theme(
       data: Theme.of(context).copyWith(
         dividerTheme: const DividerThemeData(color: Colors.transparent),
