@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/router/routes/app_routes.dart';
 import '../../upcoming_event_blob/widgets/event_date.dart';
 import '../../upcoming_event_blob/widgets/event_name.dart';
 
 class AddUpcomingEventButton extends StatelessWidget {
   final double size;
   final bool standalone;
-  final void Function() onTap;
+
+  static void _onAddTap(BuildContext context) {
+    context.pushNamed(
+      AppRoutes.upcomingEvent,
+      pathParameters: {'ue': "create"},
+    );
+  }
 
   const AddUpcomingEventButton({
     super.key,
     required this.size,
     required this.standalone,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    onTap() => _onAddTap(context);
     return SizedBox(
       width: size,
       child: standalone ? _AddButtonStandalone(onTap) : _AddButton(onTap),

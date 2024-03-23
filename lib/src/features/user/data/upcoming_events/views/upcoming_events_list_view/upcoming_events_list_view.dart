@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/router/routes/app_routes.dart';
 
 import '../../controllers/upcoming_event_controller.dart';
 import '../../controllers/upcoming_events_controller.dart';
@@ -38,15 +40,22 @@ class UpcomingEventsListView extends ConsumerWidget {
             },
             footer: AddUpcomingEventButton(
               size: buildProperties.itemSize,
-              onTap: () {},
               standalone: upcomingEvents.isEmpty,
             ),
             children: [
-              for (final upcomingEvent in upcomingEvents)
+              for (int i = 0; i < upcomingEvents.length; i++)
                 _buildUpcomingEvent(
                   context,
                   size: buildProperties.itemSize,
-                  upcomingEvent: upcomingEvent,
+                  upcomingEvent: upcomingEvents[i],
+                  onTap: () {
+                    {
+                      context.pushNamed(
+                        AppRoutes.upcomingEvent,
+                        pathParameters: {'ue': "$i"},
+                      );
+                    }
+                  },
                 )
             ],
             proxyDecorator: (child, i, a) => Material(child: child),
@@ -60,13 +69,14 @@ class UpcomingEventsListView extends ConsumerWidget {
     BuildContext context, {
     required double size,
     required UpcomingEventProvider upcomingEvent,
+    required void Function() onTap,
   }) {
     return SizedBox(
       key: ValueKey(upcomingEvent),
       width: size,
       child: UpcomingEventBlob(
         provider: upcomingEvent,
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }

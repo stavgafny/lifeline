@@ -14,6 +14,11 @@ class UpcomingEventsDatabase {
 
   static List<UpcomingEventModel> get() => _db.getRange(0, _db.length);
 
+  static void set(List<UpcomingEventModel> models) {
+    clear();
+    _db.addAll(models);
+  }
+
   static void swap(int oldIndex, int newIndex) {
     _db.write(() {
       final oldModel = _db.getAt(oldIndex);

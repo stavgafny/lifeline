@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/upcoming_event_model.dart';
 
-typedef UpcomingEventProvider
-    = StateNotifierProvider<UpcomingEventController, UpcomingEventModel>;
+typedef UpcomingEventProvider = AutoDisposeStateNotifierProvider<
+    UpcomingEventController, UpcomingEventModel>;
 
 class UpcomingEventController extends StateNotifier<UpcomingEventModel> {
   UpcomingEventController(super.model);
@@ -25,7 +25,5 @@ class UpcomingEventController extends StateNotifier<UpcomingEventModel> {
   void setName({required String name}) => _update(name: name);
   void setDatetime({required DateTime dateTime}) => _update(dateTime: dateTime);
   void setDetails({required String details}) => _update(details: details);
-  void update(UpcomingEventModel model) {
-    state = model;
-  }
+  void update(UpcomingEventModel model) => state = model;
 }

@@ -14,7 +14,7 @@ final upcomingEventsProvider =
 typedef UpcomingEvents = List<UpcomingEventProvider>;
 
 class UpcomingEventsController extends StateNotifier<UpcomingEvents> {
-  // static const bool _autoSort = true;
+  static const bool _autoSort = true;
 
   final Ref _ref;
 
@@ -24,6 +24,9 @@ class UpcomingEventsController extends StateNotifier<UpcomingEvents> {
     _loadUpcomingEvents();
     _updateOnMidnight();
   }
+
+  List<UpcomingEventModel> get _asModels =>
+      state.map((ue) => _ref.read(ue)).toList();
 
   void _loadUpcomingEvents() {
     final models = UpcomingEventsDatabase.get();
@@ -38,17 +41,31 @@ class UpcomingEventsController extends StateNotifier<UpcomingEvents> {
     });
   }
 
-  // void _updateDB() {
-  //   UpcomingEventsDatabase.set(
-  //     [for (final upcomingEvent in state) ref.read(upcomingEvent)],
-  //   );
-  // }
+  void _updateDB() => UpcomingEventsDatabase.set(_asModels);
 
   void swap(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) newIndex--;
     state.insert(newIndex, state.removeAt(oldIndex));
     UpcomingEventsDatabase.swap(oldIndex, newIndex);
     _ref.notifyListeners();
+  }
+
+  void updateItemChange(UpcomingEventProvider upcomingEvent) {
+    int index = 0;
+    if (UpcomingEventsController._autoSort) {
+      state.remove(upcomingEvent);
+      index = _getAutoSortInsertIndex(_ref.read(upcomingEvent), _asModels);
+    }
+    if (!state.contains(upcomingEvent)) state.insert(index, upcomingEvent);
+    _ref.notifyListeners();
+    _updateDB();
+  }
+
+  void remove(UpcomingEventProvider upcomingEvent) {
+    if (state.remove(upcomingEvent)) {
+      _ref.notifyListeners();
+      _updateDB();
+    }
   }
 
   @override
@@ -64,4 +81,14 @@ UpcomingEventProvider _createProvider(UpcomingEventModel model) {
 
 List<UpcomingEventProvider> _createProviders(List<UpcomingEventModel> models) {
   return models.map((model) => _createProvider(model)).toList();
+}
+
+int _getAutoSortInsertIndex(
+    UpcomingEventModel model, List<UpcomingEventModel> models) {
+  for (int i = 0; i < models.length; i++) {
+    if (model.dateTime.isBefore(models[i].dateTime) && model != models[i]) {
+      return i;
+    }
+  }
+  return models.length;
 }

@@ -12,6 +12,9 @@ import '../../features/user/swipeable_screens/screens/home/home_screen.dart';
 import '../../features/user/swipeable_screens/screens/dashboard/dashboard_screen.dart';
 import '../../features/user/swipeable_screens/screens/timeline/timeline_screen.dart';
 
+// Sub routes
+import '../../features/user/data/upcoming_events/screens/upcoming_event_edit_screen/upcoming_event_edit_screen.dart';
+
 class _NavigatorKeys {
   static _NavigatorKeys instance = _NavigatorKeys._();
 
@@ -33,6 +36,9 @@ class AppRoutes {
   static const String home = "/home";
   static const String dashboard = "/dashboard";
   static const String timeline = "/timeline";
+
+  // Sub routes
+  static const String upcomingEvent = "upcoming-events/:ue";
 
   static const _nonAuthAllowed = <String>[
     signin,
@@ -87,6 +93,22 @@ class AppRoutes {
             state: state,
             child: const HomeScreen(),
           ),
+          routes: [
+            GoRoute(
+              parentNavigatorKey: navigatorKeys.root,
+              path: upcomingEvent,
+              name: upcomingEvent,
+              pageBuilder: (context, state) {
+                final ue = state.pathParameters['ue']!;
+                final index = ue == "create" ? -1 : int.parse(ue);
+                return CustomPageTransitions.shell(
+                  context: context,
+                  state: state,
+                  child: UpcomingEventEditScreen(upcomingEventIndex: index),
+                );
+              },
+            ),
+          ],
         ),
         GoRoute(
           parentNavigatorKey: navigatorKeys.userShell,
