@@ -108,10 +108,13 @@ class _ApplyButton extends ConsumerWidget {
       ref.read(upcomingEventsProvider.notifier).updateItemChange(upcomingEvent);
     }
 
+    final isDeleting =
+        ref.watch(upcomingEventsUndoProvider.select((undo) => undo != null));
+
     return _button(
       context,
-      text: isNew ? "Save" : "Apply",
-      onPressed: hasChanges ? onChange : null,
+      text: isNew && !isDeleting ? "Save" : "Apply",
+      onPressed: hasChanges && !isDeleting ? onChange : null,
     );
   }
 

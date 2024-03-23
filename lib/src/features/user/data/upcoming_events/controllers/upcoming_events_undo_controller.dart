@@ -22,11 +22,12 @@ class UpcomingEventsUndoController extends StateNotifier<UndoData?> {
   }
 
   void onUndoPressed(bool undoPressed) {
-    if (state == null || !undoPressed) return;
-    final undoData = state!;
-    _ref
-        .read(upcomingEventsProvider.notifier)
-        .insert(undoData.provider, undoData.index);
+    if (state != null && undoPressed) {
+      final undoData = state!;
+      _ref
+          .read(upcomingEventsProvider.notifier)
+          .insert(undoData.provider, undoData.index);
+    }
     state = null;
   }
 }
