@@ -19,7 +19,7 @@ class UpcomingEventBlob extends ConsumerWidget {
     return Column(
       children: [
         EventDate(model: model),
-        EventType(model: model, onTap: onTap),
+        EventType(provider: provider, onTap: onTap),
         EventName(model: model),
       ],
     );

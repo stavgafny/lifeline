@@ -77,7 +77,10 @@ class _EditSubPageContentState extends State<_EditSubPageContent> {
 
   late final _editFields = Column(
     children: [
-      TypeEdit(editProvider: widget.editProvider),
+      Hero(
+        tag: widget.upcomingEvent,
+        child: TypeEdit(editProvider: widget.editProvider),
+      ),
       NameEdit(editProvider: widget.editProvider),
       DateDaysTimeEdit(editProvider: widget.editProvider),
     ],
