@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifeline/src/utils/global_time.dart';
 import '../models/upcoming_event_model.dart';
 import '../services/upcoming_events_database.dart';
 import './upcoming_event_controller.dart';
+
+part './upcoming_events_undo_controller.dart';
 
 final upcomingEventsProvider =
     StateNotifierProvider<UpcomingEventsController, UpcomingEvents>(
@@ -52,20 +55,38 @@ class UpcomingEventsController extends StateNotifier<UpcomingEvents> {
 
   void updateItemChange(UpcomingEventProvider upcomingEvent) {
     int index = 0;
+    final data = [...state];
     if (UpcomingEventsController._autoSort) {
-      state.remove(upcomingEvent);
+      data.remove(upcomingEvent);
       index = _getAutoSortInsertIndex(_ref.read(upcomingEvent), _asModels);
     }
-    if (!state.contains(upcomingEvent)) state.insert(index, upcomingEvent);
-    _ref.notifyListeners();
-    _updateDB();
+    if (!data.contains(upcomingEvent)) {
+      data.insert(min(index, data.length), upcomingEvent);
+      state = [...data];
+      _updateDB();
+    }
   }
 
   void remove(UpcomingEventProvider upcomingEvent) {
-    if (state.remove(upcomingEvent)) {
-      _ref.notifyListeners();
+    final data = [...state];
+    if (data.remove(upcomingEvent)) {
+      final undo = UndoData(
+        provider: _createProvider(_ref.read(upcomingEvent)),
+        index: state.indexOf(upcomingEvent),
+      );
+      _ref.read(upcomingEventsUndoProvider.notifier)._setUndo(undo);
+      state = data;
       _updateDB();
     }
+  }
+
+  void insert(UpcomingEventProvider upcomingEvent, int index) {
+    final data = [...state];
+
+    if (data.contains(upcomingEvent)) return;
+    data.insert(index, upcomingEvent);
+    state = [...data];
+    _updateDB();
   }
 
   @override

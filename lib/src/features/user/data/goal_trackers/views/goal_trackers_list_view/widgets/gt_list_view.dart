@@ -153,10 +153,4 @@ class _GTListViewState extends ConsumerState<GTListView> {
     _goalTrackersSelectController.select(null);
     _goalTrackersController.remove(goalTracker);
   }
-
-  @override
-  void dispose() {
-    UndoSnackBar.clear();
-    super.dispose();
-  }
 }

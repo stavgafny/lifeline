@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UndoSnackBar {
   static const _defaultDuration = Duration(milliseconds: 2500);
   static const _defaultShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
   );
-
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
-      _lastInstance;
-
-  static void clear() {
-    _lastInstance?.close();
-    _lastInstance = null;
-  }
 
   final String text;
   final void Function(bool undoPressed) onUndoResult;
@@ -47,18 +40,24 @@ class UndoSnackBar {
     if (override) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
+
+    void clearOnContextChange() {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    }
+
+    GoRouter.of(context).addListener(clearOnContextChange);
+
     final snackbar = ScaffoldMessenger.of(context).showSnackBar(_snackBar);
     snackbar.closed.then((SnackBarClosedReason reason) {
-      // If last instance closed then remove it
-      _lastInstance = null;
-
       // If undo was pressed, restore goal tracker
       // else, remove goal tracker completely and dispose it after
       if (reason != SnackBarClosedReason.action) {
         onUndoResult(false);
       }
+
+      GoRouter.of(context).removeListener(clearOnContextChange);
     });
-    _lastInstance = snackbar;
+
     return snackbar;
   }
 }
