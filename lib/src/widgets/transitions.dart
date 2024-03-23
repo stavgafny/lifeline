@@ -31,10 +31,12 @@ class Transitions extends StatefulWidget {
   });
 
   factory Transitions.sizeFade({
+    Key? key,
     required TransitionController controller,
     required Widget child,
   }) {
     return Transitions.custom(
+      key: key,
       controller: controller,
       duration: const Duration(milliseconds: 325),
       curve: Curves.easeInOutSine,
@@ -45,6 +47,25 @@ class Transitions extends StatefulWidget {
             opacity: animation,
             child: child,
           ),
+        );
+      },
+    );
+  }
+
+  factory Transitions.scale({
+    Key? key,
+    required TransitionController controller,
+    required Widget child,
+  }) {
+    return Transitions.custom(
+      key: key,
+      controller: controller,
+      duration: const Duration(milliseconds: 325),
+      curve: Curves.easeInOutSine,
+      builder: (animation) {
+        return ScaleTransition(
+          scale: animation,
+          child: child,
         );
       },
     );
