@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../entries/entry/input_fields/core/input_field_model.dart';
 import '../entries/entry/models/entry_model.dart';
+import '../entries/entry/input_fields/core/input_fields_helper.dart';
 
 part 'timeline_create_model.dart';
 
@@ -22,8 +23,10 @@ class TimelineModel {
   TimelineModel.create(TimelineCreateModel createModel)
       : name = createModel.name,
         entries = [],
-        template = createModel.template,
-        lastModified = DateTime.now();
+        template = createModel.template..sortInputFieldsByOrder(),
+        lastModified = DateTime.now() {
+    print(template);
+  }
 
   TimelineModel copyWith({
     String? name,

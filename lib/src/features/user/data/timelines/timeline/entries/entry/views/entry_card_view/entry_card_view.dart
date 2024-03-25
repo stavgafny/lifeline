@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../input_fields/core/input_fields_helper.dart';
 import '../../input_fields/core/input_field_model.dart';
 import '../../models/entry_model.dart';
 import '../../utils/input_field_builder.dart';
@@ -33,29 +34,28 @@ class EntryCardView extends StatelessWidget {
   Widget _buildPreview(BuildContext context) {
     if (model.inputFields.isEmpty) return const SizedBox();
 
-    final image = model.inputFields
-        .where((inputField) => inputField.type == InputFieldModelType.image)
-        .firstOrNull;
-
-    final previewInputFields = model.inputFields
-        .where((inputField) => inputField.type != InputFieldModelType.image)
-        .toList();
-
-    final previewSection = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        for (final inputField in previewInputFields)
-          InputFieldBuilder.buildPreview(model: inputField)
-      ],
+    final imageScope = model.inputFields.getModelByType(
+      InputFieldModelType.image,
     );
 
-    if (image == null) {
+    final previewSection = SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          for (final inputField in imageScope.rest)
+            InputFieldBuilder.buildPreview(model: inputField)
+        ],
+      ),
+    );
+
+    if (imageScope.notFound) {
       return previewSection;
     }
 
     return Row(
       children: [
-        InputFieldBuilder.buildPreview(model: image),
+        InputFieldBuilder.buildPreview(model: imageScope.model!),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(4.0),
