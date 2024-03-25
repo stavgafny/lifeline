@@ -6,21 +6,29 @@ class UndoSnackBar {
   static const _defaultShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
   );
+  static const _defaultTextAlign = TextAlign.justify;
 
   final String text;
   final void Function(bool undoPressed) onUndoResult;
   final Duration duration;
   final ShapeBorder shape;
+  final TextAlign textAlign;
 
   const UndoSnackBar({
     required this.text,
     required this.onUndoResult,
     this.duration = _defaultDuration,
     this.shape = _defaultShape,
+    this.textAlign = _defaultTextAlign,
   });
 
   SnackBar get _snackBar => SnackBar(
-        content: Text(text, overflow: TextOverflow.ellipsis, maxLines: 1),
+        content: Text(
+          text,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textAlign: textAlign,
+        ),
         duration: duration,
         shape: shape,
         action: SnackBarAction(
@@ -55,6 +63,63 @@ class UndoSnackBar {
         onUndoResult(false);
       }
 
+      GoRouter.of(context).removeListener(clearOnContextChange);
+    });
+
+    return snackbar;
+  }
+}
+
+class InfoSnackBar {
+  static const _defaultDuration = Duration(milliseconds: 2500);
+  static const _defaultShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+  );
+  static const _defaultTextAlign = TextAlign.justify;
+
+  final String text;
+  final Duration duration;
+  final ShapeBorder shape;
+  final TextAlign textAlign;
+
+  const InfoSnackBar({
+    required this.text,
+    this.duration = _defaultDuration,
+    this.shape = _defaultShape,
+    this.textAlign = _defaultTextAlign,
+  });
+
+  SnackBar get _snackBar => SnackBar(
+        content: Text(
+          text,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textAlign: textAlign,
+        ),
+        duration: duration,
+        shape: shape,
+      );
+
+  /// Display snack bar widget built from instance properties
+  ///
+  /// If override is set to true, override and remove current shown snack bar
+  ///
+  /// Returns snack bar widget controller for closed reason callbacks
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> display(
+      BuildContext context,
+      {bool override = false}) {
+    if (override) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    }
+
+    void clearOnContextChange() {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    }
+
+    GoRouter.of(context).addListener(clearOnContextChange);
+
+    final snackbar = ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+    snackbar.closed.then((_) {
       GoRouter.of(context).removeListener(clearOnContextChange);
     });
 

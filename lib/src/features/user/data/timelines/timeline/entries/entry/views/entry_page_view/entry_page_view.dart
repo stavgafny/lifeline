@@ -12,12 +12,14 @@ class EntryPageView extends StatelessWidget {
     required String title,
     required void Function() onUpdate,
     required void Function() onDelete,
+    required bool isNew,
   }) {
     final page = EntryPageView._(
       entry: entry,
       title: title,
       onUpdate: onUpdate,
       onDelete: onDelete,
+      isNew: isNew,
     );
 
     return showDialog(
@@ -32,12 +34,14 @@ class EntryPageView extends StatelessWidget {
   final String title;
   final void Function() onUpdate;
   final void Function() onDelete;
+  final bool isNew;
 
   const EntryPageView._({
     required this.entry,
     required this.title,
     required this.onUpdate,
     required this.onDelete,
+    required this.isNew,
   });
 
   @override
@@ -46,7 +50,7 @@ class EntryPageView extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        actions: [EntryDeleteAction(onDelete: onDelete)],
+        actions: [if (!isNew) EntryDeleteAction(onDelete: onDelete)],
       ),
       body: Padding(
         padding: EntryPageView._padding,

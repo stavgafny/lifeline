@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifeline/src/widgets/snackbars.dart';
 import '../../../../../controllers/timelines_controllers.dart';
 import '../../../../entries/entry/models/entry_model.dart';
 import '../../../../entries/entry/views/entry_card_view/entry_card_view.dart';
@@ -39,9 +40,14 @@ class _TimelineEntriesListViewState
 
   void _addEntry() async {
     final entry = EntryModel.createNew(widget.timeline.template);
-    entries.add(entry);
-    await _displayEntry(context, entry, entries.length - 1);
-    if (mounted) _updateTimeline();
+    await _displayEntry(context, entry, entries.length, true);
+    if (!mounted) return;
+    if (entry.hasChanges) {
+      entries.add(entry);
+      _updateTimeline();
+    } else {
+      _showBlankEntrySnackbar(context);
+    }
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -57,6 +63,7 @@ class _TimelineEntriesListViewState
     BuildContext context,
     EntryModel entry,
     int index,
+    bool isNew,
   ) {
     return EntryPageView.display(
       context,
@@ -64,6 +71,7 @@ class _TimelineEntriesListViewState
       title: _entryTitle(index),
       onUpdate: _updateTimeline,
       onDelete: () => _deleteEntry(entry),
+      isNew: isNew,
     );
   }
 
@@ -103,7 +111,7 @@ class _TimelineEntriesListViewState
       child: EntryCardView(
         model: entry,
         entryIndex: index,
-        onTap: () => _displayEntry(context, entry, index),
+        onTap: () => _displayEntry(context, entry, index, false),
       ),
     );
   }
@@ -135,4 +143,14 @@ class _TimelineEntriesListViewState
       ),
     );
   }
+}
+
+void _showBlankEntrySnackbar(BuildContext context) {
+  const InfoSnackBar(
+    text: "Blank entry not saved",
+    textAlign: TextAlign.center,
+  ).display(
+    context,
+    override: true,
+  );
 }

@@ -24,7 +24,7 @@ class TimelineScreen extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: TimelineEntriesListView(timeline: timeline),
+      body: SafeArea(child: TimelineEntriesListView(timeline: timeline)),
     );
   }
 }

@@ -13,6 +13,16 @@ class EntryModel {
     return EntryModel(inputFields: inputFields, tags: []);
   }
 
+  bool get hasChanges {
+    if (tags.isNotEmpty) return true;
+    for (final inputField in inputFields) {
+      if (inputField != InputFieldModel.empty(inputField.type)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   EntryModel copyWith({
     List<InputFieldModel>? inputFields,
     List<String>? tags,

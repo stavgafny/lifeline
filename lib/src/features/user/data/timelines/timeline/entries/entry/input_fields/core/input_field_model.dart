@@ -1,8 +1,8 @@
-import '../text_input_field/text_input_field_model.dart';
-import '../number_input_field/number_input_field_model.dart';
-import '../weight_input_field/weight_input_field_model.dart';
-import '../stars_input_field/stars_input_field_model.dart';
 import '../image_input_field/image_input_field_model.dart';
+import '../number_input_field/number_input_field_model.dart';
+import '../stars_input_field/stars_input_field_model.dart';
+import '../text_input_field/text_input_field_model.dart';
+import '../weight_input_field/weight_input_field_model.dart';
 
 enum InputFieldModelType { text, number, weight, stars, image }
 
@@ -50,6 +50,16 @@ abstract class InputFieldModel<T> {
 
   @override
   String toString() => 'InputFieldModel[${type.name}](value: $value)';
+
+  @override
+  bool operator ==(covariant InputFieldModel<T> other) {
+    if (identical(this, other)) return true;
+
+    return other.type == type && other.value == value;
+  }
+
+  @override
+  int get hashCode => type.hashCode ^ value.hashCode;
 }
 
 abstract class MeasurableInputFieldModel<T> extends InputFieldModel<T> {
