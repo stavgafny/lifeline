@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../controllers/timelines_controllers.dart';
-import '../../../entries/entry/models/entry_model.dart';
-import '../../../entries/entry/views/entry_card_view/entry_card_view.dart';
-import '../../../entries/entry/views/entry_page_view/entry_page_view.dart';
-import '../../../models/timeline_model.dart';
-import './timeline_add_entry_button.dart';
+import '../../../../../controllers/timelines_controllers.dart';
+import '../../../../entries/entry/models/entry_model.dart';
+import '../../../../entries/entry/views/entry_card_view/entry_card_view.dart';
+import '../../../../entries/entry/views/entry_page_view/entry_page_view.dart';
+import '../../../../models/timeline_model.dart';
+import './widgets/timeline_add_entry_button.dart';
 
 class TimelineEntriesListView extends ConsumerStatefulWidget {
   static const double _cardsHeight = 150.0;

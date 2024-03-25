@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lifeline/src/features/user/data/timelines/utils/timelines_list_extension.dart';
+import 'package:lifeline/src/router/routes/app_routes.dart';
 import '../../../controllers/timelines_controllers.dart';
-import '../../../timeline/views/timeline_page_view.dart/timeline_page_view.dart';
 import '../../timeline_item_view/timeline_item_view.dart';
 
 class TimelinesGrid extends ConsumerWidget {
@@ -24,7 +25,12 @@ class TimelinesGrid extends ConsumerWidget {
         for (final timeline in timelines)
           TimelineItemView(
             timeline: timeline,
-            onTap: () => TimelinePageView.display(context, timeline: timeline),
+            onTap: () {
+              context.pushNamed(
+                AppRoutes.timeline,
+                pathParameters: {"timeline": timeline.name},
+              );
+            },
           )
       ],
     );

@@ -51,4 +51,13 @@ class TimelinesController extends StateNotifier<List<TimelineModel>> {
 
     return timelineName;
   }
+
+  TimelineModel? getTimelineByName(String name) {
+    for (final timeline in state) {
+      if (timeline.name == name) {
+        return timeline;
+      }
+    }
+    return null;
+  }
 }

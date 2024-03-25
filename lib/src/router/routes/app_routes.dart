@@ -10,10 +10,11 @@ import '../../features/user/swipeable_screens/shell/shell_screen.dart'
     as user_swipeable_shell;
 import '../../features/user/swipeable_screens/screens/home/home_screen.dart';
 import '../../features/user/swipeable_screens/screens/dashboard/dashboard_screen.dart';
-import '../../features/user/swipeable_screens/screens/timeline/timeline_screen.dart';
+import '../../features/user/swipeable_screens/screens/timelines/timelines_screen.dart';
 
 // Sub routes
 import '../../features/user/data/upcoming_events/screens/upcoming_event_edit_screen/upcoming_event_edit_screen.dart';
+import '../../features/user/data/timelines/timeline/screens/timeline_screen/timeline_screen.dart';
 
 class _NavigatorKeys {
   static _NavigatorKeys instance = _NavigatorKeys._();
@@ -35,10 +36,11 @@ class AppRoutes {
   static const String forgotPassword = "/forgot-password";
   static const String home = "/home";
   static const String dashboard = "/dashboard";
-  static const String timeline = "/timeline";
+  static const String timelines = "/timelines";
 
   // Sub routes
   static const String upcomingEvent = "upcoming-events/:ue";
+  static const String timeline = ":timeline";
 
   static const _nonAuthAllowed = <String>[
     signin,
@@ -121,12 +123,27 @@ class AppRoutes {
         ),
         GoRoute(
           parentNavigatorKey: navigatorKeys.userShell,
-          path: timeline,
+          path: timelines,
           pageBuilder: (context, state) => CustomPageTransitions.shell(
             context: context,
             state: state,
-            child: const TimelineScreen(),
+            child: const TimelinesScreen(),
           ),
+          routes: [
+            GoRoute(
+              parentNavigatorKey: navigatorKeys.root,
+              path: timeline,
+              name: timeline,
+              pageBuilder: (context, state) {
+                final timelineName = state.pathParameters['timeline'] as String;
+                return CustomPageTransitions.shell(
+                  context: context,
+                  state: state,
+                  child: TimelineScreen(timelineName: timelineName),
+                );
+              },
+            ),
+          ],
         ),
       ],
     ),

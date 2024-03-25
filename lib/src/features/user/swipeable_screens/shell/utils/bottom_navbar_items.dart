@@ -18,7 +18,7 @@ class BottomNavbarItems {
       icon: Icon(Icons.home, color: Colors.white),
     ),
     BottomNavbarItem(
-      route: AppRoutes.timeline,
+      route: AppRoutes.timelines,
       icon: Icon(Icons.timeline, color: Colors.white),
     ),
   ];
