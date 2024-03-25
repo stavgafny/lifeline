@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class TimelineAddEntryButton extends StatelessWidget {
   static const double height = 120.0;
 
-  static const TextStyle _textStyle = TextStyle(
+  static const _margin = EdgeInsets.symmetric(horizontal: 4.0);
+  static const _borderRadius = BorderRadius.all(Radius.circular(12.0));
+  static const _textStyle = TextStyle(
     fontSize: 16.0,
     fontWeight: FontWeight.bold,
   );
@@ -19,10 +21,15 @@ class TimelineAddEntryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Card(
+    return Padding(
+      padding: _margin,
+      child: SizedBox.expand(
+        child: MaterialButton(
+          color: Theme.of(context).colorScheme.background,
+          shape: const RoundedRectangleBorder(
+            borderRadius: _borderRadius,
+          ),
+          onPressed: onTap,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
