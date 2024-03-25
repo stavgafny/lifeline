@@ -78,7 +78,7 @@ class AppRoutes {
     ),
     ShellRoute(
       navigatorKey: navigatorKeys.userShell,
-      pageBuilder: (context, state, child) => CustomPageTransitions.shell(
+      pageBuilder: (context, state, child) => CustomPageTransitions.fade300(
         context: context,
         state: state,
         child: user_swipeable_shell.ShellScreen(
@@ -90,7 +90,7 @@ class AppRoutes {
         GoRoute(
           parentNavigatorKey: navigatorKeys.userShell,
           path: home,
-          pageBuilder: (context, state) => CustomPageTransitions.shell(
+          pageBuilder: (context, state) => CustomPageTransitions.fade300(
             context: context,
             state: state,
             child: const HomeScreen(),
@@ -103,7 +103,7 @@ class AppRoutes {
               pageBuilder: (context, state) {
                 final ue = state.pathParameters['ue']!;
                 final index = ue == "create" ? -1 : int.parse(ue);
-                return CustomPageTransitions.shell(
+                return CustomPageTransitions.fade300(
                   context: context,
                   state: state,
                   child: UpcomingEventEditScreen(upcomingEventIndex: index),
@@ -115,7 +115,7 @@ class AppRoutes {
         GoRoute(
           parentNavigatorKey: navigatorKeys.userShell,
           path: dashboard,
-          pageBuilder: (context, state) => CustomPageTransitions.shell(
+          pageBuilder: (context, state) => CustomPageTransitions.fade300(
             context: context,
             state: state,
             child: const DashboardScreen(),
@@ -124,7 +124,7 @@ class AppRoutes {
         GoRoute(
           parentNavigatorKey: navigatorKeys.userShell,
           path: timelines,
-          pageBuilder: (context, state) => CustomPageTransitions.shell(
+          pageBuilder: (context, state) => CustomPageTransitions.fade300(
             context: context,
             state: state,
             child: const TimelinesScreen(),
@@ -136,7 +136,7 @@ class AppRoutes {
               name: timeline,
               pageBuilder: (context, state) {
                 final timelineName = state.pathParameters['timeline'] as String;
-                return CustomPageTransitions.shell(
+                return CustomPageTransitions.fade300(
                   context: context,
                   state: state,
                   child: TimelineScreen(timelineName: timelineName),
