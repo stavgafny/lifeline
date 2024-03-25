@@ -69,7 +69,7 @@ class _AddButton extends StatelessWidget {
 }
 
 class _AddButtonStandalone extends StatelessWidget {
-  static const _borderRadius = BorderRadius.all(Radius.circular(75));
+  static const _borderRadius = BorderRadius.all(Radius.circular(25.0));
 
   final void Function() onTap;
 
@@ -97,7 +97,7 @@ class _AddButtonStandalone extends StatelessWidget {
                   Text("Really...? Efficient or lazy mastermind?"),
                   Padding(
                     padding: EdgeInsets.only(top: 20.0),
-                    child: Icon(Icons.add, size: 40),
+                    child: Icon(Icons.add, size: 35.0),
                   ),
                 ],
               ),
