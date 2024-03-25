@@ -6,6 +6,8 @@ import '../../utils/input_field_builder.dart';
 import './widgets/entry_index_banner.dart';
 
 class EntryCardView extends StatelessWidget {
+  static const double cardHeight = 150.0;
+
   final EntryModel model;
   final int entryIndex;
   final void Function()? onTap;

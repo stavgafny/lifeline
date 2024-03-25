@@ -11,8 +11,6 @@ import '../../../../models/timeline_model.dart';
 import './widgets/timeline_add_entry_button.dart';
 
 class TimelineEntriesListView extends ConsumerStatefulWidget {
-  static const double _cardsHeight = 150.0;
-
   final TimelineModel timeline;
 
   const TimelineEntriesListView({super.key, required this.timeline});
@@ -91,7 +89,7 @@ class _TimelineEntriesListViewState
             shrinkWrap: true,
             itemCount: entries.length,
             itemBuilder: (context, index) {
-              return _buildEntry(context, _normalizeIndex(index));
+              return _buildEntryCard(context, _normalizeIndex(index));
             },
             onReorder: _onReorder,
             header: _buildAddEntryButton(context, constraints),
@@ -102,12 +100,12 @@ class _TimelineEntriesListViewState
     );
   }
 
-  Widget _buildEntry(BuildContext context, int index) {
+  Widget _buildEntryCard(BuildContext context, int index) {
     final entry = widget.timeline.entries.elementAt(index);
 
     return SizedBox(
       key: ValueKey(index),
-      height: TimelineEntriesListView._cardsHeight,
+      height: EntryCardView.cardHeight,
       child: EntryCardView(
         model: entry,
         entryIndex: index,
@@ -119,7 +117,7 @@ class _TimelineEntriesListViewState
   Widget _buildAddEntryButton(
       BuildContext context, BoxConstraints constraints) {
     final mediaQueryPadding = MediaQuery.of(context).padding;
-    final entriesHeight = entries.length * TimelineEntriesListView._cardsHeight;
+    final entriesHeight = entries.length * EntryCardView.cardHeight;
 
     final double remainingScreenHeight = max(
       constraints.maxHeight -

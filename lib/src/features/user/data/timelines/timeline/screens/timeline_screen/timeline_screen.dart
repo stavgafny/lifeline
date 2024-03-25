@@ -5,6 +5,8 @@ import './widgets/no_timeline_error.dart';
 import './widgets/timeline_entries_list_view/timeline_entries_list_view.dart';
 
 class TimelineScreen extends ConsumerWidget {
+  static const _bottomPadding = EdgeInsets.only(bottom: 30.0);
+
   final String timelineName;
 
   const TimelineScreen({super.key, required this.timelineName});
@@ -24,7 +26,10 @@ class TimelineScreen extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: SafeArea(child: TimelineEntriesListView(timeline: timeline)),
+      body: SafeArea(
+        minimum: _bottomPadding,
+        child: TimelineEntriesListView(timeline: timeline),
+      ),
     );
   }
 }

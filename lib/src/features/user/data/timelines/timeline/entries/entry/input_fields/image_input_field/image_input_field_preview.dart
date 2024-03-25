@@ -1,26 +1,34 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import '../core/input_field_preview.dart';
 import './image_input_field_model.dart';
+import './helper/preview_images_cache.dart';
 
 class ImageInputFieldPreview extends InputFieldPreview<ImageInputFieldModel> {
   static const _borderRadius = BorderRadius.all(Radius.circular(12.0));
 
-  const ImageInputFieldPreview({super.key, required super.model});
-
-  @override
-  Widget build(BuildContext context) {
-    return _InputFieldImage(model: model);
-  }
-}
-
-class _InputFieldImage extends StatelessWidget {
   static const _emptyImage = _NonImage(Icons.image);
   static const _errorImage = _NonImage(Icons.broken_image_rounded);
 
-  final ImageInputFieldModel model;
-  const _InputFieldImage({required this.model});
+  static int _getCacheSize(BuildContext context) {
+    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    return (devicePixelRatio * PreviewImagesCache.previewSize).toInt();
+  }
+
+  static Image? _buildImage(BuildContext context, MemoryImage? imageProvider) {
+    final cacheSize = _getCacheSize(context);
+    if (imageProvider == null) return null;
+    return Image.memory(
+      imageProvider.bytes,
+      fit: BoxFit.cover,
+      alignment: Alignment.center,
+      cacheWidth: cacheSize,
+      cacheHeight: cacheSize,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) => _errorImage,
+    );
+  }
+
+  const ImageInputFieldPreview({super.key, required super.model});
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +36,15 @@ class _InputFieldImage extends StatelessWidget {
       aspectRatio: 1,
       child: ClipRRect(
         borderRadius: ImageInputFieldPreview._borderRadius,
-        child: model.value.isEmpty ? _emptyImage : _buildImage(context),
+        child: _buildImageView(context),
       ),
     );
   }
 
-  Widget _buildImage(BuildContext context) {
-    return Image.file(
-      File(model.value),
-      fit: BoxFit.cover,
-      alignment: Alignment.center,
-      errorBuilder: (context, error, stackTrace) {
-        return _errorImage;
-      },
-    );
+  Widget _buildImageView(BuildContext context) {
+    if (model.value.isEmpty) return _emptyImage;
+    final imageProvider = PreviewImagesCache.get(model.value);
+    return _buildImage(context, imageProvider) ?? _errorImage;
   }
 }
 
