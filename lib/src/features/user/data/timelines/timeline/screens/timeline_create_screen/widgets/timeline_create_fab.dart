@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/router/routes/app_routes.dart';
 import '../../../controllers/timeline_create_controller.dart';
 
 class TimelineCreateFAB extends ConsumerWidget {
@@ -24,9 +26,11 @@ class TimelineCreateFAB extends ConsumerWidget {
     final onPressed = canCreate
         ? () {
             final timeline = ref.read(timelineCreate.notifier).createTimeline();
-            if (timeline != null) {
-              Navigator.of(context).pop();
-            }
+            if (timeline == null) return;
+            context.pushReplacementNamed(
+              AppRoutes.timeline,
+              pathParameters: {'timeline': timeline.name},
+            );
           }
         : null;
 

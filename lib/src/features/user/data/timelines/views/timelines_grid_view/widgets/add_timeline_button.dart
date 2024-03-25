@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../controllers/timelines_controllers.dart';
-import '../../../timeline/views/timeline_create_page_view/timeline_create_page_view.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lifeline/src/router/routes/app_routes.dart';
 
 class AddTimelineButton extends ConsumerWidget {
+  static const _borderRadius = BorderRadius.all(Radius.circular(6.0));
+
   const AddTimelineButton({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () {
-        TimelineCreatePageView.display(context);
-        ref.read(timelinesProvider.notifier);
-      },
+      onTap: () => context.pushNamed(AppRoutes.timelineCreate),
       child: _buildButton(context),
     );
   }
@@ -24,7 +23,7 @@ class AddTimelineButton extends ConsumerWidget {
         border: Border.all(
           color: Theme.of(context).iconTheme.color!,
         ),
-        borderRadius: const BorderRadius.all(Radius.circular(6.0)),
+        borderRadius: _borderRadius,
       ),
       child: const Row(
         mainAxisSize: MainAxisSize.min,

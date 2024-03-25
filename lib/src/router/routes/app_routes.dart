@@ -15,6 +15,7 @@ import '../../features/user/swipeable_screens/screens/timelines/timelines_screen
 // Sub routes
 import '../../features/user/data/upcoming_events/screens/upcoming_event_edit_screen/upcoming_event_edit_screen.dart';
 import '../../features/user/data/timelines/timeline/screens/timeline_screen/timeline_screen.dart';
+import '../../features/user/data/timelines/timeline/screens/timeline_create_screen/timeline_create_screen.dart';
 
 class _NavigatorKeys {
   static _NavigatorKeys instance = _NavigatorKeys._();
@@ -40,7 +41,8 @@ class AppRoutes {
 
   // Sub routes
   static const String upcomingEvent = "upcoming-events/:ue";
-  static const String timeline = ":timeline";
+  static const String timeline = "timeline/:timeline";
+  static const String timelineCreate = "new";
 
   static const _nonAuthAllowed = <String>[
     signin,
@@ -142,6 +144,16 @@ class AppRoutes {
                   child: TimelineScreen(timelineName: timelineName),
                 );
               },
+            ),
+            GoRoute(
+              parentNavigatorKey: navigatorKeys.root,
+              path: timelineCreate,
+              name: timelineCreate,
+              pageBuilder: (context, state) => CustomPageTransitions.fade300(
+                context: context,
+                state: state,
+                child: const TimelineCreateScreen(),
+              ),
             ),
           ],
         ),
