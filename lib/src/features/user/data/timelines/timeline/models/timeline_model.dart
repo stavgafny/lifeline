@@ -24,9 +24,7 @@ class TimelineModel {
       : name = createModel.name,
         entries = [],
         template = createModel.template..sortInputFieldsByOrder(),
-        lastModified = DateTime.now() {
-    print(template);
-  }
+        lastModified = DateTime.now();
 
   TimelineModel copyWith({
     String? name,
