@@ -15,6 +15,7 @@ class ImageInputFieldPreview extends InputFieldPreview<ImageInputFieldModel> {
   }
 
   static Image? _buildImage(BuildContext context, MemoryImage? imageProvider) {
+    // Using cache size on cacheWidth only to maintain image aspect ratio
     final cacheSize = _getCacheSize(context);
     if (imageProvider == null) return null;
     return Image.memory(
@@ -22,7 +23,6 @@ class ImageInputFieldPreview extends InputFieldPreview<ImageInputFieldModel> {
       fit: BoxFit.cover,
       alignment: Alignment.center,
       cacheWidth: cacheSize,
-      cacheHeight: cacheSize,
       filterQuality: FilterQuality.high,
       errorBuilder: (context, error, stackTrace) => _errorImage,
     );
